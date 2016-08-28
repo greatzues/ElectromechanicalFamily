@@ -9,44 +9,72 @@ import {
   AppRegistry,
   StyleSheet,
   Text,
-  View
+  View,
+    Navigator,
+    BackAndroid
 } from 'react-native';
 
+import StartPage from './StartPage';
+import BottomTap from './BottomTap';
+import Toolbar from './Toolbar';
+import Home from './Home';
+
+var navigator;
+BackAndroid.addEventListener('hardwareBackPress', () => {
+    if(navigator && navigator.getCurrentRoutes().length > 1){
+        navigator.pop();
+        return true;
+    }
+    return false;
+});
+
 class ElectromechanicalFamily extends Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      toStartPage : true,
+    };
+  }
+
+  componentDidMount() {
+    this.timer = setTimeout(() => {
+        this.setState({
+            toStartPage: false,
+        });
+    },3000);
+  }
+
+    componentWillUnMount() {
+        this.timer && clearTimeout(this.timer);
+    }
+
   render() {
-    return (
-      <View style={styles.container}>
-        <Text style={styles.welcome}>
-          Welcome to React Native!
-        </Text>
-        <Text style={styles.instructions}>
-          To get started, edit index.android.js
-        </Text>
-        <Text style={styles.instructions}>
-          Double tap R on your keyboard to reload,{'\n'}
-          Shake or press menu button for dev menu
-        </Text>
-      </View>
-    );
+      let defaultName = 'BottomTap';
+      let defaultComponent = BottomTap;
+      if(this.state.toStartPage){
+          return(
+              <StartPage />
+          );
+      }else {
+          var initialRoute = {name: defaultName, component: defaultComponent};
+          return(
+              <Navigator
+                  sceneStyle={styles.container}
+                  initialRoute={initialRoute}
+                  configureScene={(route) => Navigator.SceneConfigs.FadeAndroid}
+                  renderScene={(route, navigator) => {
+                      let Component  = route.component;
+                      return <Component {...route.params} navigator={navigator}/>
+                  }}/>
+          );
+      }
   }
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
     backgroundColor: '#F5FCFF',
-  },
-  welcome: {
-    fontSize: 20,
-    textAlign: 'center',
-    margin: 10,
-  },
-  instructions: {
-    textAlign: 'center',
-    color: '#333333',
-    marginBottom: 5,
   },
 });
 
