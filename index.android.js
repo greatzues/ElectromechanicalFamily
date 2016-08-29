@@ -11,30 +11,35 @@ import {
   Text,
   View,
     Navigator,
-    BackAndroid
+    BackAndroid,
+    ToastAndroid
 } from 'react-native';
-
 import StartPage from './StartPage';
 import BottomTap from './BottomTap';
-import Toolbar from './Toolbar';
-import Home from './Home';
-
-var navigator;
-BackAndroid.addEventListener('hardwareBackPress', () => {
-    if(navigator && navigator.getCurrentRoutes().length > 1){
-        navigator.pop();
-        return true;
-    }
-    return false;
-});
 
 class ElectromechanicalFamily extends Component {
   constructor(props) {
     super(props);
+      var Nav;
     this.state = {
       toStartPage : true,
     };
   }
+
+    onBackAndroid = () => {
+        if(Nav.getCurrentRoutes().length > 1){
+            Nav.pop();
+            return true;
+        }else {if (this.lastBackPressed && this.lastBackPressed + 2000 >= Date.now()) {
+            //最近2秒内按过back键，可以退出应用。
+            return false;
+        }
+            this.lastBackPressed = Date.now();
+            ToastAndroid.show('再按一次退出应用',ToastAndroid.SHORT);
+            return true;
+        }
+
+    };
 
   componentDidMount() {
     this.timer = setTimeout(() => {
@@ -42,10 +47,16 @@ class ElectromechanicalFamily extends Component {
             toStartPage: false,
         });
     },3000);
-  }
 
+    BackAndroid.addEventListener('hardwareBackPress', this.onBackAndroid);
+
+  }
+    //解除定时器
     componentWillUnMount() {
         this.timer && clearTimeout(this.timer);
+
+        BackAndroid.removeEventListener('hardwareBackPress', this.onBackAndroid);
+
     }
 
   render() {
@@ -57,12 +68,14 @@ class ElectromechanicalFamily extends Component {
           );
       }else {
           var initialRoute = {name: defaultName, component: defaultComponent};
+
           return(
               <Navigator
                   sceneStyle={styles.container}
                   initialRoute={initialRoute}
                   configureScene={(route) => Navigator.SceneConfigs.FadeAndroid}
                   renderScene={(route, navigator) => {
+                      Nav = navigator;
                       let Component  = route.component;
                       return <Component {...route.params} navigator={navigator}/>
                   }}/>

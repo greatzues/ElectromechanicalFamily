@@ -21,7 +21,7 @@ export default class Home extends Component {
     render() {
         var navigationView = (
             <View >
-                <Text style={[styles.text,{marginTop: 20}]} onPress={() =>this.setState({absence : '已签到'}) }>{this.state.absence}</Text>
+                <Text style={[styles.text,{marginTop: 20}]} onPress={this.absence.bind(this)}>{this.state.absence}</Text>
             </View>
         );
 
@@ -60,6 +60,11 @@ export default class Home extends Component {
                 </TouchableOpacity>
             </View>
         );
+    }
+
+    absence(){
+        //此处编写签到逻辑
+        this.setState({absence : '已签到'})
     }
 }
 
