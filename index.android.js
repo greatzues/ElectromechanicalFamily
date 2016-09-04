@@ -20,7 +20,6 @@ import BottomTap from './BottomTap';
 class ElectromechanicalFamily extends Component {
   constructor(props) {
     super(props);
-      var Nav;
     this.state = {
       toStartPage : true,
     };

@@ -8,23 +8,16 @@ import {
     View
 } from 'react-native';
 
-import Toolbar from './Toolbar'
-
+import Toolbar from './Toolbar';
+import NewsItems from './NewsItem';
 export default class SchoolNews extends Component {
     render() {
         return (
             <View>
                 <Toolbar/>
-                <Text style={styles.welcome}>
-                    新闻广场
-                </Text>
-                <Text style={styles.instructions}>
-                    To get started, edit index.ios.js
-                </Text>
-                <Text style={styles.instructions}>
-                    Press Cmd+R to reload,{'\n'}
-                    Cmd+D or shake for dev menu
-                </Text>
+                <NewsItems style={{marginTop:20}}/>
+                <NewsItems style={{margin:10}}/>
+                <NewsItems style={{margin:10}}/>
             </View>
         );
     }
