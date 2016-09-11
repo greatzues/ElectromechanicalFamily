@@ -17,6 +17,8 @@ import {
 import StartPage from './StartPage';
 import BottomTap from './BottomTap';
 
+//测试import
+
 class ElectromechanicalFamily extends Component {
   constructor(props) {
     super(props);
@@ -82,6 +84,16 @@ class ElectromechanicalFamily extends Component {
       }
   }
 }
+// //这个类用来快速测试新组件的ui
+// class Test extends Component{
+//     render(){
+//         return(
+//             <View style={styles.container}>
+//
+//             </View>
+//         );
+//     }
+// }
 
 const styles = StyleSheet.create({
   container: {

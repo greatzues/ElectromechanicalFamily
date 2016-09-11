@@ -9,7 +9,7 @@ import SchoolNews from './SchoolNews';
 import Users from './Users';
 import Home from './Home';
 import Login from './Login';
-import MyImagePicker from './myImagePicker'
+// import MyImagePicker from './myImagePicker'
 export default class BottomTap extends Component {
     constructor(props){
         super(props);
@@ -51,7 +51,7 @@ export default class BottomTap extends Component {
                     renderIcon = {() => <Image source={require('./img/me_normal.png')} style={styles.iconStyle}/> }
                     renderSelectedIcon ={() => <Image source={require('./img/me_hight.png')} style={styles.iconStyle}/> }
                     onPress={() => this.setState({selectTab:'user'})}>
-                    <MyImagePicker/>
+                    <Users/>
                 </TabNavigator.Item>
             </TabNavigator>
         );

@@ -384,6 +384,4 @@ const styles = StyleSheet.create({
         width:deviceWidth,
         alignItems:'center',
     },
-});/**
- * Created by zues on 2016/9/3.
- */
+});

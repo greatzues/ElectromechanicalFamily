@@ -7,9 +7,9 @@ import { View, Text, Image, StyleSheet, Navigator } from 'react-native';
 
 var ToolbarAndroid = require('ToolbarAndroid');
 var toolbarActions = [
-    {title: 'Create', icon: require('./img/fav.png'), show: 'always'},
-    {title: 'Filter', icon: require('./img/write.png'), show: 'never'},
-    {title: 'Settings', icon: require('./img/fav.png'), show: 'never'},
+    {title: 'Create', icon: require('./../img/fav.png'), show: 'always'},
+    {title: 'Filter', icon: require('./../img/write.png'), show: 'never'},
+    {title: 'Settings', icon: require('./../img/fav.png'), show: 'never'},
 ];
 export default class Toolbar extends Component {
     constructor(props){
@@ -23,7 +23,7 @@ export default class Toolbar extends Component {
                 actions={toolbarActions}
                 style={styles.toolbar}
                 title= "机电E家人"
-                navIcon = {require('./img/login.png')}
+                navIcon = {require('./../img/login.png')}
                 onIconClicked={this.props.click}
                 onActionSelected={this.onActionSelected}>
 

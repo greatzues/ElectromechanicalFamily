@@ -3,10 +3,12 @@
  */
 import React, { Component } from 'react';
 import { View, Text, Image, StyleSheet, TextInput,
-    TouchableOpacity, ActivityIndicator,Navigator, Dimensions, BackAndroid } from 'react-native';
+    TouchableOpacity, ActivityIndicator,Navigator, Dimensions, BackAndroid, AsyncStorage } from 'react-native';
 import Signup from './Signup';
 import Net from './Net';
 import NormalToolbar from './normalToolbar';
+
+import Storage from 'react-native-storage';
 
 var deviceWidth = Dimensions.get('window').width;
 
@@ -16,7 +18,6 @@ export default class Login extends Component{
         this.state = {
             username : '',
             password : '',
-            img: '',
             editable: true,
             login: false,
             disabled:false,
@@ -95,32 +96,49 @@ export default class Login extends Component{
         if(this.state.password === '' ){
             return alert("密码至少6位以上");
         }
-        this.setState({
-            editable: false,
-            login:true,
-            disabled:true,
-        });
         //登录
         this.logining(this.state.username,this.state.password);
-        this.timer = setTimeout(() => {
-            const { navigator } = this.props;
-            if (navigator){
-                navigator.pop();
-            }
-            this.setState({
-                editable: true,
-                login:false,
-                disabled:false,
-            });
-        },3000);
-        return ;
     }
 
+    //此处编写登录逻辑,然后加到loginButton（）里面去
     logining(myUsername,myPassword){
-        //此处编写登录逻辑,然后加到loginButton（）里面去
         var URL = '/student/login';
-        return new Net().postMethod(URL,myUsername,myPassword).then((data) => {
-            console.log(data.status);
+        return new Net().postLoginMethod(URL,myUsername,myPassword).then((data) => {
+            console.log('data code:'+data.code);
+            var myCode = data.code;
+            if (myCode === 200){
+                this.setState({
+                    editable: false,
+                    login:true,
+                    disabled:true,
+                });
+                this.timer = setTimeout(() => {
+                    const { navigator } = this.props;
+                    if (navigator){
+                        navigator.pop();
+                    }
+                    this.setState({
+                        editable: true,
+                        login:false,
+                        disabled:false,
+                    });
+                },3000);
+            }else {
+                this.setState({
+                    editable: false,
+                    login:true,
+                    disabled:true,
+                });
+                console.log('fail');
+                this.timer = setTimeout(() => {
+                    this.setState({
+                        editable: true,
+                        login:false,
+                        disabled:false,
+                    });
+                },1000);
+                alert("账号或密码错误");
+            }
         });
     }
 

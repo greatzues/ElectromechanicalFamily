@@ -5,7 +5,7 @@ import React, { Component } from 'react';
 import { View, Text, Image, StyleSheet, Dimensions, DrawerLayoutAndroid, TouchableOpacity, Navigator } from 'react-native';
 
 import PicBanner from './PicBanner';
-import Toolbar from './Toolbar';
+import Toolbar from './component/Toolbar';
 import Login from './Login';
 
 const deviceWidth = Dimensions.get('window').width;

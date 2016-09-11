@@ -4,6 +4,7 @@
 import React, { Component } from 'react';
 import { View, Text, StyleSheet, Image, Platform, PixelRatio, TouchableOpacity } from 'react-native';
 import ImagePicker from 'react-native-image-picker';
+import Net from './Net';
 
 export default class MyImagePicker extends Component {
     constructor(props){
@@ -11,6 +12,8 @@ export default class MyImagePicker extends Component {
         this.state ={
             avatarSource: null,
             videoSource: null,
+            imgUrl: null,
+            filename: null,
         }
     }
 
@@ -29,11 +32,12 @@ export default class MyImagePicker extends Component {
          };
 
          ImagePicker.showImagePicker(options, (response) => {
-             console.log('给我看点东西啊',response.path);
-             console.log('然后看一下文件名字好不好',response.fileName);
              console.log('Response = ', response);
 
-
+             this.setState({
+                 imgUrl:response.uri,
+                 fileName:response.fileName,
+             });
              if (response.didCancel) {
                  console.log('User cancelled photo picker');
              }
@@ -90,6 +94,13 @@ export default class MyImagePicker extends Component {
          });
      }
 
+    uploadAvatar(){
+        new Net().postFile('/student/upload',this.state.imgUrl,this.state.filename)
+            .then((data) => {
+                console.log(data.status);
+            });
+    }
+
      render() {
          return (
              <View style={styles.container}>
@@ -106,6 +117,8 @@ export default class MyImagePicker extends Component {
                          <Text>Select a Video</Text>
                      </View>
                  </TouchableOpacity>
+
+                 <TouchableOpacity onPress={this.uploadAvatar.bind(this)}><Text>头像上传</Text></TouchableOpacity>
 
                  { this.state.videoSource &&
                  <Text style={{margin: 8, textAlign: 'center'}}>{this.state.videoSource}</Text>
