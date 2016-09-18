@@ -4,13 +4,7 @@
 import React, { Component } from 'react';
 import { View, Text, Image, StyleSheet, Navigator } from 'react-native';
 
-
 var ToolbarAndroid = require('ToolbarAndroid');
-var toolbarActions = [
-    {title: 'Create', icon: require('./../img/fav.png'), show: 'always'},
-    {title: 'Filter', icon: require('./../img/write.png'), show: 'never'},
-    {title: 'Settings', icon: require('./../img/fav.png'), show: 'never'},
-];
 export default class Toolbar extends Component {
     constructor(props){
         super(props);
@@ -20,12 +14,12 @@ export default class Toolbar extends Component {
     render(){
         return(
             <ToolbarAndroid
-                actions={toolbarActions}
+                actions={this.props.actions}
                 style={styles.toolbar}
-                title= "机电E家人"
-                navIcon = {require('./../img/login.png')}
+                title= {this.props.title}
+                navIcon = {this.props.navIcon}
                 onIconClicked={this.props.click}
-                onActionSelected={this.onActionSelected}>
+                onActionSelected={this.props.onActionSelected}>
 
             </ToolbarAndroid>
         );

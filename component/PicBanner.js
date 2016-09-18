@@ -6,10 +6,10 @@ import { View, Text, Image, StyleSheet, Dimensions } from 'react-native';
 import ViewPager from 'react-native-viewpager';
 
 const BANNER_PIC = [
-    require('./img/1.jpg'),
-    require('./img/2.jpg'),
-    require('./img/3.jpg'),
-    require('./img/4.jpg')
+    require('./../img/1.jpg'),
+    require('./../img/2.jpg'),
+    require('./../img/3.jpg'),
+    require('./../img/4.jpg')
 ];
 
 const deviceWidth = Dimensions.get('window').width;

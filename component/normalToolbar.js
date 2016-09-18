@@ -15,7 +15,7 @@ export default class NormalToolbar extends Component {
     render(){
         return(
             <TouchableOpacity style = {styles.back} onPress={this.props.click}>
-                <Image source={require('./img/back.png')} style={{height: 30,width: 30,alignSelf:'center'}}></Image>
+                <Image source={require('./../img/back.png')} style={{height: 30,width: 30,alignSelf:'center'}}></Image>
                 <Text style={{fontSize:16,alignSelf:'center'}}>返回</Text>
             </TouchableOpacity>
         );

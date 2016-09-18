@@ -4,6 +4,8 @@
 import React, { Component } from 'react';
 import { View, Text, Image, StyleSheet, Dimensions, DrawerLayoutAndroid, TouchableOpacity } from 'react-native';
 
+
+//后期要增加图片显示的问题，一样使用图片上传的代码，不过那只能一次上传一张，我得找一次性上传多张的解决方法
 export default class NewsItem extends Component {
     render(){
         return (

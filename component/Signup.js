@@ -6,7 +6,7 @@
  */
 import React, { Component } from 'react';
 import { View, Text, Image, StyleSheet, ScrollView, TextInput, TouchableOpacity, ActivityIndicator,Navigator, Dimensions } from 'react-native';
-import Net from './Net';
+import Net from '../Net';
 import NormalToolbar from './normalToolbar';
 
 var deviceWidth = Dimensions.get('window').width;
@@ -95,7 +95,8 @@ export default class Signup extends Component{
             disabled:true,
         });
         console.log("正在注册");
-        this.logining(this.state.username, this.state.password);
+        var postData = {username:this.state.username,password:this.state.password};
+        this.logining(postData);
         this.timer = setTimeout(() => {
             const { navigator } = this.props;
             if (navigator){
@@ -109,10 +110,10 @@ export default class Signup extends Component{
         },3000);
     }
 
-    logining(myUsername, myPassword){
+    logining(postData){
         //此处编写注册逻辑,然后加到loginButton（）里面去
         var URL = '/student/register';
-        return new Net().postMethod(URL,myUsername,myPassword).then((responseJson) => {
+        return new Net().postMethod(URL,postData).then((responseJson) => {
             console.log(responseJson.status);
         });
     }

@@ -29,7 +29,7 @@ export default class StartPage extends Component {
         return(
             <View style = {styles.container}>
                 <Animated.Image
-                    source={require('./img/startPage.jpg')}  //以后如果有api之后就可以将json数据解析好之后传入对应的imgURl进去了
+                    source={require('./../img/startPage.jpg')}  //以后如果有api之后就可以将json数据解析好之后传入对应的imgURl进去了
                     style = {{
                         flex:1,
                         width:WINDOW_WIDTH,

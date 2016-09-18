@@ -3,7 +3,7 @@
  */
 import React, { Component } from 'react';
 import { View, Text, Image, StyleSheet, ScrollView, TextInput, TouchableOpacity, ActivityIndicator,Navigator, Dimensions } from 'react-native';
-import Net from './Net';
+import Net from '../Net';
 var deviceWidth = Dimensions.get('window').width;
 
 export default class BasinInfo extends Component {
@@ -42,16 +42,6 @@ export default class BasinInfo extends Component {
         );
     }
 }
-//测试使用
-// class Test extends Component {
-//     render(){
-//         const {myResponse} = this.props;
-//         var response = this.props.myResponse;
-//         return (
-//             <Text>{response.name}</Text>
-//         );
-//     }
-// }
 
 class Info extends Component{
     render(){
@@ -61,7 +51,7 @@ class Info extends Component{
             <View style={styles.container}>
                 <View style = {styles.input}>
                     <Text style={{marginLeft:10}}>姓名:</Text>
-                    <Text style={{marginLeft:10}}>{response.name}</Text>
+                    <Text style={{marginLeft:10}}>{response.realname}</Text>
                 </View>
 
                 <View style = {styles.input}>
@@ -76,7 +66,7 @@ class Info extends Component{
 
                 <View style = {styles.input}>
                     <Text style={{marginLeft:10}}>班导师:</Text>
-                    <Text style={{marginLeft:10}}>{response.name}</Text>
+                    <Text style={{marginLeft:10}}>{response.teacher}</Text>
                 </View>
 
                 <View style = {styles.input}>
@@ -188,7 +178,7 @@ class WorkInfo extends Component{
 const styles = StyleSheet.create({
     container:{
         borderRadius:5,
-        backgroundColor:'#bdb8b8',
+        backgroundColor:'white',
         margin:5,
     },
     textInput: {
@@ -209,6 +199,9 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         width:deviceWidth,
         alignItems:'center',
+        margin:10,
+        borderBottomColor:'#eee',
+        borderBottomWidth:1
     },
 });
 

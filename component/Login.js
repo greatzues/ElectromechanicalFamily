@@ -5,7 +5,7 @@ import React, { Component } from 'react';
 import { View, Text, Image, StyleSheet, TextInput,
     TouchableOpacity, ActivityIndicator,Navigator, Dimensions, BackAndroid, AsyncStorage } from 'react-native';
 import Signup from './Signup';
-import Net from './Net';
+import Net from '../Net';
 import NormalToolbar from './normalToolbar';
 
 import Storage from 'react-native-storage';

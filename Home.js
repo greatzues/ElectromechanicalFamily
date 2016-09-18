@@ -4,11 +4,12 @@
 import React, { Component } from 'react';
 import { View, Text, Image, StyleSheet, Dimensions, DrawerLayoutAndroid, TouchableOpacity, Navigator } from 'react-native';
 
-import PicBanner from './PicBanner';
+import PicBanner from './component/PicBanner';
 import Toolbar from './component/Toolbar';
-import Login from './Login';
-
+import Login from './component/Login';
+import Net from './Net';
 const deviceWidth = Dimensions.get('window').width;
+
 export default class Home extends Component {
     constructor(props){
         super(props);
@@ -27,7 +28,14 @@ export default class Home extends Component {
 
         return (
             <View>
-                <Toolbar ref = "toolbar" click = {this.props.homeClick} />
+
+                <Toolbar  click = {this.props.homeClick}
+                          title= {this.props.title}
+                          navIcon = {this.props.navIcon}
+                          onIconClicked={this.props.click}
+                          onActionSelected={this.props.onActionSelected}
+                          actions={this.props.actions}/>
+
                 <View><PicBanner/></View>
                 <TouchableOpacity>
                     <View style = {styles.textStyle} onPress={() => this.setState}>
@@ -64,7 +72,23 @@ export default class Home extends Component {
 
     absence(){
         //此处编写签到逻辑
-        this.setState({absence : '已签到'})
+        var URL = '/student/sign';
+        var date = new Date();
+        var day = date.getData();
+        var month = date.getMonth();
+        if(day<10){
+            day = "0"+date.getData();
+        }
+        if(month<10){
+            month = "0"+ date.getMonth();
+        }
+        var post = date.getFullYear()+''+month+''+day;
+        var postData = {date:post};
+        console.log(postData);
+        new Net().postMethod(URL,postData).then((responseData) => {
+            console.log(responseData.status);
+        });
+        return this.setState({absence : '已签到'});
     }
 }
 

@@ -5,7 +5,7 @@ import React,{ Component } from 'react';
 import { AsyncStorage } from 'react-native';
 import Storage from 'react-native-storage';
 
-const BASEURL = 'http://10.10.68.90:8888';
+const BASEURL = 'http://10.10.68.101:8888';
 //初始化Storage
 const  storage = new Storage({
     // 最大容量，默认值1000条数据循环存储
@@ -55,7 +55,7 @@ export default class Net  {
     }
 
     //注册
-    postMethod(url,myUsername,myPassword) {
+    postMethod(url,postData) {
         return new Promise((resolve, reject) => {
             fetch(BASEURL+url, {
                 method: 'post',
@@ -63,12 +63,10 @@ export default class Net  {
                     'Accept': 'application/json',
                     'Content-Type': 'application/json',
                 },
-                body:JSON.stringify({
-                    username: myUsername,
-                    password: myPassword,
-                }),
+                body:JSON.stringify(postData),
             })
                 .then((response) => {
+                    console.log(response);
                     if(response.ok){
                         resolve(response.json());
                     }
@@ -115,18 +113,21 @@ export default class Net  {
     }
 
     postFile(url, imgUri,filename){
-        //用来包装响应头的数组
-        //构造request的body里面的东西
+        // 用来包装响应头的数组
+        // 构造request的body里面的东西
         let formData = new FormData();
-        formData.append('avatar', {uri: imgUri, type: 'image/jpeg', name:filename});
+        formData.append('avatar',{uri: imgUri, type: 'image/jpeg', name:filename});
 
         let options = {};
         options.body = formData;
         options.method = 'post';
+        options.headers= {
+            'Content-Type': 'multipart/form-data',
+        };
         return new Promise((resolve, reject) => {
             fetch(BASEURL+ url, options).then((response) => {
                 console.log(response.status);
-                resolve(response)
+                resolve(response);
             })
                 .catch(error => {
                     alert("上传失败");

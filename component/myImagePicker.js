@@ -4,7 +4,7 @@
 import React, { Component } from 'react';
 import { View, Text, StyleSheet, Image, Platform, PixelRatio, TouchableOpacity } from 'react-native';
 import ImagePicker from 'react-native-image-picker';
-import Net from './Net';
+import Net from '../Net';
 
 export default class MyImagePicker extends Component {
     constructor(props){

@@ -14,8 +14,8 @@ import {
     BackAndroid,
     ToastAndroid
 } from 'react-native';
-import StartPage from './StartPage';
-import BottomTap from './BottomTap';
+import StartPage from './component/StartPage';
+import BottomTap from './component/BottomTap';
 
 //测试import
 
@@ -79,7 +79,8 @@ class ElectromechanicalFamily extends Component {
                       Nav = navigator;
                       let Component  = route.component;
                       return <Component {...route.params} navigator={navigator}/>
-                  }}/>
+                  }}
+              />
           );
       }
   }
