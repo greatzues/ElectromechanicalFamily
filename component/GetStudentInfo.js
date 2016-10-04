@@ -1,54 +1,124 @@
 /**
- * Created by zues on 2016/9/8.
+ * Created by zues on 2016/9/30.
  */
 import React, { Component } from 'react';
-import { View, Text, Image, AsyncStorage,StyleSheet, ScrollView, TextInput, TouchableOpacity, ActivityIndicator,Navigator, Dimensions } from 'react-native';
+import { WebView, View, Text, StyleSheet, ListView, Image, Dimensions, ScrollView } from 'react-native';
+import ScrollableTabView, { DefaultTabBar } from 'react-native-scrollable-tab-view';
 import Net from '../Net';
-var deviceWidth = Dimensions.get('window').width;
 
-export default class BasinInfo extends Component {
+//http://10.10.68.101:8888/student/getsomeoneInfo/?studentID=58
+const BASEURL = 'http://119.29.184.235:8080/jd';
+const deviceWidth = Dimensions.get('window').width;
+export default class GetStudentInfo extends Component{
     constructor(props){
         super(props);
-        const {isLogin} = this.props;
-        this.state = {
-            response: '',
-        };
-    }
-
-    componentDidMount() {
-        //需要登录才可以拿到用户信息
-        var myResult = '';
-        AsyncStorage.getItem('username',(error,result) => {
-            myResult = result;
-            if(myResult!==null){
-                this.fetchData()
-            }
-        });
-        return;
-    }
-
-    fetchData(){
-        var URl = '/student/getinfo';
-        var response;
-        new Net().getMethod(URl).then((responseData) => {
-            response = responseData.response;
-            this.setState({response:response});
-        })
-            .catch(error => {
-                alert('网络出现错误');
-                console.error(error);
-            });
+        this.state ={
+            response:{},
+        }
     }
 
     render(){
-        const {name} = this.props;
-        let response = this.state.response;
+        return(
+            <View>
+                <Image
+                    source={require('../img/UserBackground.jpg')}
+                    style={styles.userBackground}>
+                    <View>
+                        <Image style={styles.avatar} source={{uri:BASEURL+this.state.avatarSource}} />
+                    </View>
+                    <Text style={{color:'white'}}>{this.state.pleaseLogin}</Text>
+                </Image>
+
+                <View style={styles.container}>
+                    <ScrollableTabView
+                        style={{height:50}}
+                        renderTabBar={()=><DefaultTabBar backgroundColor='#eee' />}
+                        tabBarPosition='overlayTop'
+                    >
+                        <ScrollView tabLabel='基本信息' style={{paddingTop:40}}>
+                            <Info myResponse={this.state.response}/>
+                        </ScrollView>
+                        <ScrollView tabLabel='工作信息' style={{paddingTop:40}}>
+                            <WorkInfo myResponse={this.state.response}/>
+                        </ScrollView>
+                    </ScrollableTabView>
+                </View>
+            </View>
+        );
+    }
+
+    componentDidMount() {
+        this.fetchData();
+    }
+
+    fetchData(){
+        var URL='/student/getsomeoneInfo/?studentID='+this.props.id;
+        new Net().getMethod(URL).then((responseData) => {
+            console.log('status'+responseData.status);
+            this.setState({
+                response:responseData.response,
+            });
+        })
+    }
+}
+
+const styles = StyleSheet.create({
+    container: {
+        flex: 1,
+        backgroundColor: '#F5FCFF',
+    },
+    avatar:{
+        borderRadius:75,
+        width:80,
+        height:80,
+        borderWidth:2,
+        borderColor:'white',
+        marginTop:30,
+        marginBottom: 10,
+    },
+    userBackground:{
+        height:180,
+        width:deviceWidth,
+        alignItems: 'center',
+    }
+});
+
+class WorkInfo extends Component{
+    render(){
+        const {myResponse} = this.props;
+        var response = this.props.myResponse;
         return(
             <View style={styles.container}>
-                {this.props.name === '基本信息'?
-                    <Info myResponse ={ response }/>
-                    :
-                    <WorkInfo myResponse ={ response }/>}
+
+                <View style = {styles.input}>
+                    <Text style={{marginLeft:10}}>从事行业:</Text>
+                    <Text style={{marginLeft:10}}>{response.presentIndustry}</Text>
+                </View>
+
+                <View style = {styles.input}>
+                    <Text style={{marginLeft:10}}>工作单位:</Text>
+                    <Text style={{marginLeft:10}}>{response.workPlace}</Text>
+                </View>
+
+                <View style = {styles.input}>
+                    <Text style={{marginLeft:10}}>职务:</Text>
+                    <Text style={{marginLeft:10}}>{response.dudy}</Text>
+                </View>
+
+                <View style = {styles.input}>
+                    <Text style={{marginLeft:10}}>职称:</Text>
+                    <Text style={{marginLeft:10}}>{response.professionalTitle}</Text>
+                </View>
+
+                <View style = {styles.input}>
+                    <Text style={{marginLeft:10}}>单位电话:</Text>
+                    <Text style={{marginLeft:10}}>{response.workPhone}</Text>
+                </View>
+
+                <View style = {styles.input}>
+                    <Text style={{marginLeft:10}}>单位地址:</Text>
+                    <Text style={{marginLeft:10}}>{response.workAddress}</Text>
+                </View>
             </View>
         );
     }
@@ -143,76 +213,3 @@ class Info extends Component{
         );
     }
 }
-
-
-class WorkInfo extends Component{
-    render(){
-        const {myResponse} = this.props;
-        var response = this.props.myResponse;
-        return(
-            <View style={styles.container}>
-
-                <View style = {styles.input}>
-                    <Text style={{marginLeft:10}}>从事行业:</Text>
-                    <Text style={{marginLeft:10}}>{response.presentIndustry}</Text>
-                </View>
-
-                <View style = {styles.input}>
-                    <Text style={{marginLeft:10}}>工作单位:</Text>
-                    <Text style={{marginLeft:10}}>{response.workPlace}</Text>
-                </View>
-
-                <View style = {styles.input}>
-                    <Text style={{marginLeft:10}}>职务:</Text>
-                    <Text style={{marginLeft:10}}>{response.dudy}</Text>
-                </View>
-
-                <View style = {styles.input}>
-                    <Text style={{marginLeft:10}}>职称:</Text>
-                    <Text style={{marginLeft:10}}>{response.professionalTitle}</Text>
-                </View>
-
-                <View style = {styles.input}>
-                    <Text style={{marginLeft:10}}>单位电话:</Text>
-                    <Text style={{marginLeft:10}}>{response.workPhone}</Text>
-                </View>
-
-                <View style = {styles.input}>
-                    <Text style={{marginLeft:10}}>单位地址:</Text>
-                    <Text style={{marginLeft:10}}>{response.workAddress}</Text>
-                </View>
-            </View>
-        );
-    }
-}
-
-const styles = StyleSheet.create({
-    container:{
-        borderRadius:5,
-        backgroundColor:'white',
-        margin:5,
-    },
-    textInput: {
-        flex:1,
-        color:'black',
-    },
-    loginButton:{
-        justifyContent:'center',
-        alignItems: 'center',
-        width: deviceWidth - 10,
-        height: 40,
-        backgroundColor: '#337ab7',
-        borderRadius:5,
-        margin:10,
-        alignSelf:'center'
-    },
-    input:{
-        flexDirection: 'row',
-        width:deviceWidth,
-        alignItems:'center',
-        margin:10,
-        borderBottomColor:'#eee',
-        borderBottomWidth:1
-    },
-});
-

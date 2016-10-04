@@ -78,23 +78,13 @@ class ElectromechanicalFamily extends Component {
                   renderScene={(route, navigator) => {
                       Nav = navigator;
                       let Component  = route.component;
-                      return <Component {...route.params} navigator={navigator}/>
+                      return <Component {...route.params} navigator={navigator} route={route}/>
                   }}
               />
           );
       }
   }
 }
-// //这个类用来快速测试新组件的ui
-// class Test extends Component{
-//     render(){
-//         return(
-//             <View style={styles.container}>
-//
-//             </View>
-//         );
-//     }
-// }
 
 const styles = StyleSheet.create({
   container: {

@@ -2,18 +2,20 @@
  * Created by zues on 2016/8/26.
  */
 import React, { Component } from 'react';
-import { StyleSheet, Text, View, Dimensions, Image, TouchableOpacity, ScrollView, Navigator } from 'react-native';
+import { StyleSheet, Text, View, Dimensions, Image, TouchableOpacity, ScrollView, Navigator, AsyncStorage } from 'react-native';
 import ImagePicker from 'react-native-image-picker';
 import Net from './Net';
-import ScrollableTabView, { DefaultTabBar, } from 'react-native-scrollable-tab-view';
+import ScrollableTabView, { DefaultTabBar } from 'react-native-scrollable-tab-view';
 import BaseInfo from './component/BaseInfo';
 
+const BASEURL = 'http://119.29.184.235:8080/jd/avatar/';
 const deviceWidth = Dimensions.get('window').width;
 export default class Users extends Component {
     constructor(props){
         super(props);
         this.state ={
-            userName: '请登录',
+            pleaseLogin: '',
+            myResponse:'',
             avatarSource: null,
             videoSource: null,
             imgUrl: null,
@@ -22,23 +24,27 @@ export default class Users extends Component {
     }
 
     componentDidMount() {
-        this.fetchData();
+        var myResult = '';
+        AsyncStorage.getItem('username',(error,result) => {
+            myResult = result;
+            myResult!==null?this.fetchData():this.setState({pleaseLogin:'请登录'});
+            this.refs.baseInfo.componentDidMount();
+        });
     }
 
     render() {
         return (
-
             <View style={styles.container}>
                 <Image
-                    source={require('./img/UserBackground.jpg')}
+                    source={{uri:'http://119.29.184.235:8080/jd/avatar/58avatar'}}
                     style={styles.userBackground}>
                     <View>
                         { this.state.avatarSource === null ?
                             <Image source={require('./img/UserDafault.png')} style={styles.avatar}></Image> :
-                            <Image style={styles.avatar} source={this.state.avatarSource} />
+                            <Image style={styles.avatar} source={{uri:BASEURL+'58avatar'}} />
                         }
                     </View>
-                    <Text style={{color:'white'}}>你好，{this.state.userName.name}</Text>
+                    <Text style={{color:'white'}}>你好，{this.state.pleaseLogin}</Text>
                     <View style={{flexDirection: 'row',}}>
                         <TouchableOpacity
                             style={{borderRadius:10,borderWidth:1,borderColor:'white',padding:5,marginRight:3}}
@@ -60,10 +66,10 @@ export default class Users extends Component {
                         tabBarPosition='overlayTop'
                     >
                         <ScrollView tabLabel='基本信息' style={{paddingTop:40}}>
-                            <BaseInfo name = '基本信息'/>
+                            <BaseInfo name = '基本信息' ref="baseInfo"/>
                         </ScrollView>
                         <ScrollView tabLabel='工作信息' style={{paddingTop:40}}>
-                            <BaseInfo name = '工作信息'/>
+                            <BaseInfo name = '工作信息' ref="baseInfo"/>
                         </ScrollView>
                     </ScrollableTabView>
                 </View>
@@ -75,10 +81,19 @@ export default class Users extends Component {
     fetchData(){
         var URl = '/student/getinfo';
         var response;
-        new Net().getMethod(URl).then((responseData) => {
+        return new Net().getMethod(URl).then((responseData) => {
             response = responseData.response;
+            console.log('img resource:'+response.avatar);
+            return this.setState({
+                myResponse:response,
+                avatarSource:response.avatar,
+                pleaseLogin:response.name,
+            });
 
-            this.setState({userName:response});
+        })
+            .catch(error => {
+            alert("网络出现错误");
+            console.error(error);
         });
     }
 
@@ -125,13 +140,15 @@ export default class Users extends Component {
                 //   source = {uri: response.uri.replace('file://', ''), isStatic: true};
                 // }
 
-                this.setState({
-                    avatarSource: source
-                });
+                // this.setState({
+                //     avatarSource: source
+                // });
 
-                new Net().postFile('/student/upload2',this.state.imgUrl,this.state.filename)
+                new Net().postFile('/student/upload',this.state.imgUrl,this.state.filename)
                     .then((data) => {
-
+                        this.fetchData();
+                    }).catch(error => {
+                        alert("error message:"+ error);
                     });
             }
         });

@@ -115,6 +115,9 @@ export default class Signup extends Component{
         var URL = '/student/register';
         return new Net().postMethod(URL,postData).then((responseJson) => {
             console.log(responseJson.status);
+        }).catch(error => {
+            alert("网络出现错误");
+            console.error(error);
         });
     }
 

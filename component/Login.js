@@ -74,7 +74,7 @@ export default class Login extends Component{
     backToHome(){
         const { navigator } = this.props;
         if (navigator){
-            navigator.pop();
+            navigator.popToTop();
         }
     }
 
@@ -96,6 +96,13 @@ export default class Login extends Component{
         if(this.state.password === '' ){
             return alert("密码至少6位以上");
         }
+        //保存账号密码，用于自动登录
+        var usernameKey = 'username';
+        var passwordKey = 'password';
+        var usernameValue = this.state.username;
+        var passwordValue = this.state.password;
+        AsyncStorage.setItem(usernameKey,usernameValue);
+        AsyncStorage.setItem(passwordKey,passwordValue);
         //登录
         this.logining(this.state.username,this.state.password);
     }
@@ -115,6 +122,7 @@ export default class Login extends Component{
                 this.timer = setTimeout(() => {
                     const { navigator } = this.props;
                     if (navigator){
+                        // this.props.callback(); //此处注释的部分原本用于登录之后在pop回去之前回调一个函数，然后重新刷新主页。
                         navigator.pop();
                     }
                     this.setState({
@@ -139,6 +147,9 @@ export default class Login extends Component{
                 },1000);
                 alert("账号或密码错误");
             }
+        }).catch(error => {
+            alert("网络出现错误");
+            console.error(error);
         });
     }
 

@@ -6,7 +6,6 @@ import { View, Text, Image, StyleSheet, Dimensions, DrawerLayoutAndroid, Touchab
 
 import PicBanner from './component/PicBanner';
 import Toolbar from './component/Toolbar';
-import Login from './component/Login';
 import Net from './Net';
 const deviceWidth = Dimensions.get('window').width;
 
@@ -21,8 +20,8 @@ export default class Home extends Component {
 
     render() {
         var navigationView = (
-            <View >
-                <Text style={[styles.text,{marginTop: 20}]} onPress={this.absence.bind(this)}>{this.state.absence}</Text>
+            <View style={{backgroundColor:'red'}}>
+                <Text style={[styles.text,{marginTop: 20,color:'white'}]} onPress={this.absence.bind(this)}>{this.state.absence}</Text>
             </View>
         );
 
@@ -38,7 +37,7 @@ export default class Home extends Component {
 
                 <View><PicBanner/></View>
                 <TouchableOpacity>
-                    <View style = {styles.textStyle} onPress={() => this.setState}>
+                    <View style = {styles.textStyle}>
                         <Text style={styles.text}>机电小广场</Text>
                     </View>
                 </TouchableOpacity>
@@ -48,9 +47,9 @@ export default class Home extends Component {
                         drawerPosition={DrawerLayoutAndroid.positions.Right}
                         renderNavigationView={() =>navigationView}>
 
-                            <TouchableOpacity style={styles.drawerLayoutAndroidView} >
+                            <TouchableOpacity style={styles.drawerLayoutAndroidView} onPress={this.props.toMyClass}>
                                 <View ><Text style={styles.drawerLayoutAndroidText}>我的班级我的家</Text></View>
-                                <View style={{flexDirection: 'row',alignItems: 'center',marginLeft:5,marginRight:20}}>
+                                <View style={{flexDirection: 'row',alignItems: 'center',alignSelf:'stretch',marginLeft:5,marginRight:20}}>
                                     <Text>左划签到</Text>
                                     <Image source={require('./img/arrow_left.png')} style={{height: 12}}></Image>
                                 </View>
@@ -59,7 +58,7 @@ export default class Home extends Component {
                     </DrawerLayoutAndroid>
                 </View>
 
-                <TouchableOpacity>
+                <TouchableOpacity onPress={this.props.toBriefNews}>
                     <View style = {styles.textStyle}><Text style={styles.text}>机电简讯</Text></View>
                 </TouchableOpacity>
 
@@ -70,14 +69,16 @@ export default class Home extends Component {
         );
     }
 
+
+
     absence(){
         //此处编写签到逻辑
         var URL = '/student/sign';
         var date = new Date();
-        var day = date.getData();
+        var day = date.getDate();
         var month = date.getMonth();
         if(day<10){
-            day = "0"+date.getData();
+            day = "0"+date.getDate();
         }
         if(month<10){
             month = "0"+ date.getMonth();
@@ -87,6 +88,9 @@ export default class Home extends Component {
         console.log(postData);
         new Net().postMethod(URL,postData).then((responseData) => {
             console.log(responseData.status);
+        }).catch(error => {
+            alert("网络出现错误");
+            console.error(error);
         });
         return this.setState({absence : '已签到'});
     }
@@ -121,7 +125,7 @@ const styles = StyleSheet.create({
         flex: 1,
         width: deviceWidth,
         alignItems:'center',
-        justifyContent:'flex-end',
+        justifyContent:'center',
         backgroundColor:'#eee',
         borderRadius: 5,
         marginTop:5,

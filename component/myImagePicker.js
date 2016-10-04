@@ -98,6 +98,9 @@ export default class MyImagePicker extends Component {
         new Net().postFile('/student/upload',this.state.imgUrl,this.state.filename)
             .then((data) => {
                 console.log(data.status);
+            }).catch(error => {
+                alert("网络出现错误");
+                console.error(error);
             });
     }
 

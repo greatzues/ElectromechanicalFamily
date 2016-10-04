@@ -15,9 +15,6 @@ export default class DisplayUserInfo extends Component{
     constructor(props){
         super(props);
         this.state = {
-            response:{},
-
-                name:'',
                 realname: '',
                 studentId: '',
                 teacher: '',
@@ -45,7 +42,7 @@ export default class DisplayUserInfo extends Component{
     }
 
     render(){
-        var response = this.state.response;
+        var response = this.state;
         return(
             <View style={styles.container}>
                 <Toolbar
@@ -56,10 +53,14 @@ export default class DisplayUserInfo extends Component{
                     actions={toolbarActions}/>
                 <ScrollView>
                 <View style={styles.container}>
+                    <View style={{justifyContent:'center', alignItems:'center',marginTop:5}}>
+                        <Text style={{fontSize:15}}>基本信息</Text>
+                    </View>
+
                     <View style = {styles.input}>
                         <Text style={{marginLeft:10}}>姓名:</Text>
                         <TextInput style={{flex:1}} onChangeText={text => this.setState({realname:text})}
-                            defaultValue={response.realname}/>
+                                    >{response.realname}</TextInput>
 
                     </View>
 
@@ -73,13 +74,13 @@ export default class DisplayUserInfo extends Component{
                     <View style = {styles.input}>
                         <Text style={{marginLeft:10}}>班导师:</Text>
                         <TextInput style={{flex:1}} onChangeText={text => this.setState({teacher:text})}
-                                   defaultValue={response.teacher}/>
+                                    >{response.teacher}</TextInput>
                     </View>
 
                     <View style = {styles.input}>
                         <Text style={{marginLeft:10}}>所学专业:</Text>
                         <TextInput style={{flex:1}} onChangeText={text => this.setState({major:text})}
-                                   defaultValue={response.major}/>
+                                    >{response.major}</TextInput>
                     </View>
 
                     <View style = {styles.input}>
@@ -97,7 +98,8 @@ export default class DisplayUserInfo extends Component{
                     <View style = {styles.input}>
                         <Text style={{marginLeft:10}}>联系电话:</Text>
                         <TextInput style={{flex:1}} onChangeText={text => this.setState({phone:text})}
-                                   defaultValue={response.phone}/>
+                                    >{response.phone}</TextInput>
+
                     </View>
 
                     <View style = {styles.input}>
@@ -109,44 +111,93 @@ export default class DisplayUserInfo extends Component{
                     <View style = {styles.input}>
                         <Text style={{marginLeft:10}}>微信号:</Text>
                         <TextInput style={{flex:1}} onChangeText={text => this.setState({wecharNumber:text})}
-                                   defaultValue={response.wecharNumber}/>
+                                    >{response.wecharNumber}</TextInput>
                     </View>
 
                     <View style = {styles.input}>
                         <Text style={{marginLeft:10}}>性别:</Text>
                         <TextInput style={{flex:1}} onChangeText={text => this.setState({sex:text})}
-                                   defaultValue={response.sex}/>
+                        >{response.sex}</TextInput>
                     </View>
 
                     <View style = {styles.input}>
                         <Text style={{marginLeft:10}}>民族:</Text>
                         <TextInput style={{flex:1}} onChangeText={text => this.setState({nationality:text})}
-                                   defaultValue={response.nationality}/>
+                        >{response.nationality}</TextInput>
                     </View>
 
                     <View style = {styles.input}>
                         <Text style={{marginLeft:10}}>籍贯:</Text>
                         <TextInput style={{flex:1}} onChangeText={text => this.setState({nativePlace:text})}
-                                   defaultValue={response.nativePlace}/>
+                        >{response.nativePlace}</TextInput>
                     </View>
 
                     <View style = {styles.input}>
                         <Text style={{marginLeft:10}}>出生年月:</Text>
                         <TextInput style={{flex:1}} onChangeText={text => this.setState({birthdate:text})}
-                                    >{response.birthdate}</TextInput>
+                        >{response.birthdate}</TextInput>
                     </View>
 
                     <View style = {styles.input}>
                         <Text style={{marginLeft:10}}>政治面貌:</Text>
                         <TextInput style={{flex:1}} onChangeText={text => this.setState({politicalStatus:text})}
-                                   defaultValue={response.politicalStatus}/>
-                        <Text style={{marginLeft:10}}>{response.politicalStatus}</Text>
+                        >{response.politicalStatus}</TextInput>
                     </View>
 
                     <View style = {styles.input}>
                         <Text style={{marginLeft:10}}>家庭地址:</Text>
                         <TextInput style={{flex:1}} onChangeText={text => this.setState({address:text})}
-                                   defaultValue={response.address}/>
+                        >{response.address}</TextInput>
+                    </View>
+
+                    {/*分割线，我是下划线*/}
+                    <View style={{backgroundColor:'skyblue',height:2,width:deviceWidth}}></View>
+
+
+                    <View style={{justifyContent:'center', alignItems:'center',marginTop:5}}>
+                        <Text style={{fontSize:15}}>工作信息</Text>
+                    </View>
+
+                    <View style = {styles.input}>
+                        <Text style={{marginLeft:10}}>从事行业:</Text>
+                        <TextInput style={{flex:1}} onChangeText={text => this.setState({presentIndustry:text})}
+                        >{response.presentIndustry}</TextInput>
+                    </View>
+
+                    <View style = {styles.input}>
+                        <Text style={{marginLeft:10}}>工作单位:</Text>
+                        <TextInput style={{flex:1}} onChangeText={text => this.setState({workPlace:text})}
+                        >{response.workPlace}</TextInput>
+                    </View>
+
+                    <View style = {styles.input}>
+                        <Text style={{marginLeft:10}}>职务:</Text>
+                        <TextInput style={{flex:1}} onChangeText={text => this.setState({dudy:text})}
+                        >{response.dudy}</TextInput>
+                    </View>
+
+                    <View style = {styles.input}>
+                        <Text style={{marginLeft:10}}>职称:</Text>
+                        <TextInput style={{flex:1}} onChangeText={text => this.setState({professionalTitle:text})}
+                        >{response.professionalTitle}</TextInput>
+                    </View>
+
+                    <View style = {styles.input}>
+                        <Text style={{marginLeft:10}}>单位电话:</Text>
+                        <TextInput style={{flex:1}} onChangeText={text => this.setState({workPhone:text})}
+                        >{response.workPhone}</TextInput>
+                    </View>
+
+                    <View style = {styles.input}>
+                        <Text style={{marginLeft:10}}>单位地址:</Text>
+                        <TextInput style={{flex:1}} onChangeText={text => this.setState({workAddress:text})}
+                        >{response.workAddress}</TextInput>
+                    </View>
+
+                    <View style = {styles.input}>
+                        <Text style={{marginLeft:10}}>其他信息:</Text>
+                        <TextInput style={{flex:1}} onChangeText={text => this.setState({others:text})}
+                        >{response.others}</TextInput>
                     </View>
                 </View>
                     </ScrollView>
@@ -162,7 +213,7 @@ export default class DisplayUserInfo extends Component{
         );
     }
 
-    componentWillMount() {
+    componentDidMount() {
         this.fetchData();
     }
 
@@ -197,10 +248,8 @@ export default class DisplayUserInfo extends Component{
         this.updateInfo(postData);
         const { navigator } = this.props;
         if( navigator ) {
-            navigator.push({
-                name: 'BottomTap',
-                component: BottomTap,
-            })
+            this.props.callback();
+            navigator.pop();
         }
     }
 
@@ -223,82 +272,46 @@ export default class DisplayUserInfo extends Component{
         console.log(postData);
         return new Net().postMethod(URL,postData).then((responseJson) => {
             console.log(responseJson.status);
+        }).catch(error => {
+            alert("网络出现错误");
+            console.error(error);
         });
     }
 
+    //拿到原来的信息填写到editText上
     fetchData(){
         var URL = '/student/getinfo';
         return new Net().getMethod(URL).then((responseData) => {
             let response = responseData.response;
-            let data = {
-                    name:response.name,
-                    realname : response.realname,
-                    studentId : response.studentId,
-                    classes : response.classes,
-                    teacher : response.teacher,
-                    major : response.major,
-                    admissionDate : response.admissionDate,
-                    graduationDate : response.graduationDate,
-                    phone : response.phone,
-                    qqNumber : response.qqNumber,
-                    wecharNumber : response.wecharNumber,
-                    sex : response.sex,
-                    nationality : response.nationality,
-                    nativePlace  :response.nativePlace,
-                    birthdate : response.birthdate,
-                    politicalStatus : response.politicalStatus,
-                    address : response.address,
-                    presentIndustry:response.presentIndustry,
-                    workPlace:response.workPlace,
-                    dudy:response.dudy,
-                    professionalTitle:response.professionalTitle,
-                    workPhone:response.workPhone,
-                    workAddress:response.workAddress,
-                    others:response.others,
-                };
-                this.setState({response:data});
-        })
-    }
-}
-
-class WorkInfo extends Component{
-    render(){
-        const {myResponse} = this.props;
-        var response = this.props.myResponse;
-        return(
-            <View style={styles.container}>
-
-                <View style = {styles.input}>
-                    <Text style={{marginLeft:10}}>从事行业:</Text>
-                    <Text style={{marginLeft:10}}>{response.presentIndustry}</Text>
-                </View>
-
-                <View style = {styles.input}>
-                    <Text style={{marginLeft:10}}>工作单位:</Text>
-                    <Text style={{marginLeft:10}}>{response.workPlace}</Text>
-                </View>
-
-                <View style = {styles.input}>
-                    <Text style={{marginLeft:10}}>职务:</Text>
-                    <Text style={{marginLeft:10}}>{response.dudy}</Text>
-                </View>
-
-                <View style = {styles.input}>
-                    <Text style={{marginLeft:10}}>职称:</Text>
-                    <Text style={{marginLeft:10}}>{response.professionalTitle}</Text>
-                </View>
-
-                <View style = {styles.input}>
-                    <Text style={{marginLeft:10}}>单位电话:</Text>
-                    <Text style={{marginLeft:10}}>{response.workPhone}</Text>
-                </View>
-
-                <View style = {styles.input}>
-                    <Text style={{marginLeft:10}}>单位地址:</Text>
-                    <Text style={{marginLeft:10}}>{response.workAddress}</Text>
-                </View>
-            </View>
-        );
+            this.setState({
+                realname : response.realname,
+                studentId : response.studentId,
+                classes : response.classes,
+                teacher : response.teacher,
+                major : response.major,
+                admissionDate : response.admissionDate,
+                graduationDate : response.graduationDate,
+                phone : response.phone,
+                qqNumber : response.qqNumber,
+                wecharNumber : response.wecharNumber,
+                sex : response.sex,
+                nationality : response.nationality,
+                nativePlace  :response.nativePlace,
+                birthdate : response.birthdate,
+                politicalStatus : response.politicalStatus,
+                address : response.address,
+                presentIndustry:response.presentIndustry,
+                workPlace:response.workPlace,
+                dudy:response.dudy,
+                professionalTitle:response.professionalTitle,
+                workPhone:response.workPhone,
+                workAddress:response.workAddress,
+                others:response.others,
+            }) ;
+        }).catch(error => {
+            alert("网络出现错误");
+            console.error(error);
+        });
     }
 }
 
