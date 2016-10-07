@@ -2,7 +2,7 @@
  * Created by zues on 2016/8/25.
  */
 import React, { Component } from 'react';
-import { View, Text, StyleSheet, Animated, Dimensions } from 'react-native';
+import { View, Text, StyleSheet, Animated, Dimensions, StatusBar } from 'react-native';
 
 var WINDOW_WIDTH = Dimensions.get('window').width;
 export default class StartPage extends Component {
@@ -28,6 +28,7 @@ export default class StartPage extends Component {
     render(){
         return(
             <View style = {styles.container}>
+                <StatusBar hidden={true} />
                 <Animated.Image
                     source={require('./../img/startPage.jpg')}  //以后如果有api之后就可以将json数据解析好之后传入对应的imgURl进去了
                     style = {{

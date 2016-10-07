@@ -20,8 +20,8 @@ export default class Home extends Component {
 
     render() {
         var navigationView = (
-            <View style={{backgroundColor:'red'}}>
-                <Text style={[styles.text,{marginTop: 20,color:'white'}]} onPress={this.absence.bind(this)}>{this.state.absence}</Text>
+            <View style={{justifyContent:'center',alignItems:'center'}}>
+                <Text style={[styles.text,{marginTop: 20,color:'grey'}]} onPress={this.absence.bind(this)}>{this.state.absence}</Text>
             </View>
         );
 

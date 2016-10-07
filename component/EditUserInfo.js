@@ -4,13 +4,14 @@
 import React, { Component } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, Navigator, ListView, TextInput, Dimensions, ScrollView } from 'react-native';
 import Toolbar from './Toolbar';
-import Net from '../Net'
-import BottomTap from './BottomTap';
+import Net from '../Net';
 
 const deviceWidth = Dimensions.get('window').width;
 var toolbarActions = [
     {title: '完成', icon: require('./../img/write.png'), show: 'always'},
 ];
+
+
 export default class DisplayUserInfo extends Component{
     constructor(props){
         super(props);
@@ -114,11 +115,9 @@ export default class DisplayUserInfo extends Component{
                                     >{response.wecharNumber}</TextInput>
                     </View>
 
-                    <View style = {styles.input}>
+                    <TouchableOpacity style = {styles.input} onPress={() => Picker.show()}>
                         <Text style={{marginLeft:10}}>性别:</Text>
-                        <TextInput style={{flex:1}} onChangeText={text => this.setState({sex:text})}
-                        >{response.sex}</TextInput>
-                    </View>
+                    </TouchableOpacity>
 
                     <View style = {styles.input}>
                         <Text style={{marginLeft:10}}>民族:</Text>

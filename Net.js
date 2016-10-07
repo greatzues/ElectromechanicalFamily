@@ -45,11 +45,13 @@ export default class Net  {
                 method: 'get',
                 headers:myHeader,
             }).then(response =>{
+                console.log(response);
                 if(response.ok){
                     resolve(response.json());
                 }
             }).catch(error => {
                 alert('请检查网络连接');
+                console.error(error);
                 reject(error);
             });
         } )

@@ -1,16 +1,28 @@
 import React, { Component } from 'react';
-import { WebView, View, Text, StyleSheet } from 'react-native';
+import { View, Text, StyleSheet, Navigator, ListView, Image } from 'react-native';
 import ParallaxScrollView from 'react-native-parallax-scroll-view';
 
 export default class NewsItem extends Component {
     render() {
         return (
-                <View>
-                    <WebView
-                        source={{uri: 'https://github.com/facebook/react-native'}}
-                        style={{marginTop: 20}}
-                    />
-                </View>
+            <View>
+                <ListView
+                    renderRow={this.myRenderRow.bind(this)}
+                >
+
+                </ListView>
+            </View>
+        );
+    }
+
+    myRenderRow(){
+        return (
+            <View style={styles.container}>
+                <Text>今日简讯</Text>
+
+                <Image />
+
+            </View>
         );
     }
 }
@@ -18,6 +30,5 @@ export default class NewsItem extends Component {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: '#3b5998',
     },
 });

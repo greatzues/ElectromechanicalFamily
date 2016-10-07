@@ -2,43 +2,68 @@
  * Created by zues on 2016/9/30.
  */
 import React, { Component } from 'react';
-import { WebView, View, Text, StyleSheet, ListView, Image, Dimensions, ScrollView } from 'react-native';
+import { WebView, View, Text, StyleSheet, ListView, Image, Dimensions, ScrollView, findNodeHandle } from 'react-native';
 import ScrollableTabView, { DefaultTabBar } from 'react-native-scrollable-tab-view';
 import Net from '../Net';
+import NormalToolbar from './normalToolbar';
+var BlurView = require('react-native-blur').BlurView;
 
 //http://10.10.68.101:8888/student/getsomeoneInfo/?studentID=58
-const BASEURL = 'http://119.29.184.235:8080/jd';
+const BASEURL = 'http://119.29.184.235:8080/jd/avatar/';
 const deviceWidth = Dimensions.get('window').width;
 export default class GetStudentInfo extends Component{
     constructor(props){
         super(props);
         this.state ={
             response:{},
+            avatarSource:'',
+            appellation:'', //称谓
+            viewRef:0,
         }
+    }
+
+    imageLoaded() {
+        this.setState({viewRef: findNodeHandle(this.refs.backgroundImage)})
     }
 
     render(){
         return(
-            <View>
+            <View style={styles.container}>
                 <Image
-                    source={require('../img/UserBackground.jpg')}
-                    style={styles.userBackground}>
-                    <View>
-                        <Image style={styles.avatar} source={{uri:BASEURL+this.state.avatarSource}} />
-                    </View>
-                    <Text style={{color:'white'}}>{this.state.pleaseLogin}</Text>
+                    source={{uri:BASEURL+this.state.avatarSource}}
+                    style={styles.userBackground}
+                    ref={'backgroundImage'}
+                    onLoadEnd={this.imageLoaded.bind(this)}>
+                    <BlurView
+                        blurType="dark"
+                        blurRadius={2}
+                        downsampleFactor={5}
+                        overlayColor={'rgba(0, 0, 0, 0.3)'}
+                        style={styles.blurView}
+                        viewRef={this.state.viewRef}
+                    />
+                        <NormalToolbar click={this.back.bind(this)} color="white"/>
+                        <View>
+                            <Image style={styles.avatar} source={{uri:BASEURL+this.state.avatarSource}} />
+                        </View>
+                        <Text style={{color:'white',fontSize:20}}>{
+                            this.state.appellation === '男'?
+                            this.state.response.realname+'先生'
+                            :this.state.response.realname+'小姐'}
+                        </Text>
+
                 </Image>
 
                 <View style={styles.container}>
                     <ScrollableTabView
-                        style={{height:50}}
+                        style={{height:40}}
                         renderTabBar={()=><DefaultTabBar backgroundColor='#eee' />}
                         tabBarPosition='overlayTop'
                     >
-                        <ScrollView tabLabel='基本信息' style={{paddingTop:40}}>
+                        <ScrollView tabLabel='基本信息' style={{paddingTop:50}}>
                             <Info myResponse={this.state.response}/>
                         </ScrollView>
-                        <ScrollView tabLabel='工作信息' style={{paddingTop:40}}>
+                        <ScrollView tabLabel='工作信息' style={{paddingTop:50}}>
                             <WorkInfo myResponse={this.state.response}/>
                         </ScrollView>
                     </ScrollableTabView>
@@ -54,11 +79,20 @@ export default class GetStudentInfo extends Component{
     fetchData(){
         var URL='/student/getsomeoneInfo/?studentID='+this.props.id;
         new Net().getMethod(URL).then((responseData) => {
-            console.log('status'+responseData.status);
+            let response=responseData.response;
             this.setState({
-                response:responseData.response,
+                response:response,
+                avatarSource:response.avatar,
+                appellation:response.sex,
             });
         })
+    }
+
+    back(){
+        const { navigator } = this.props;
+        if (navigator){
+            navigator.pop();
+        }
     }
 }
 
@@ -73,14 +107,31 @@ const styles = StyleSheet.create({
         height:80,
         borderWidth:2,
         borderColor:'white',
-        marginTop:30,
+        marginTop:10,
         marginBottom: 10,
     },
     userBackground:{
         height:180,
         width:deviceWidth,
         alignItems: 'center',
-    }
+    },
+
+    input:{
+        flexDirection: 'row',
+        width:deviceWidth,
+        alignItems:'center',
+        margin:10,
+        borderBottomColor:'#eee',
+        borderBottomWidth:1
+    },
+
+    blurView: {
+        position: "absolute",
+        left: 0,
+        top: 0,
+        bottom: 0,
+        right: 0
+    },
 });
 
 class WorkInfo extends Component{

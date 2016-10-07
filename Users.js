@@ -2,11 +2,12 @@
  * Created by zues on 2016/8/26.
  */
 import React, { Component } from 'react';
-import { StyleSheet, Text, View, Dimensions, Image, TouchableOpacity, ScrollView, Navigator, AsyncStorage } from 'react-native';
+import { StyleSheet, Text, View, Dimensions, Image, TouchableOpacity, ScrollView, Navigator, findNodeHandle ,AsyncStorage } from 'react-native';
 import ImagePicker from 'react-native-image-picker';
 import Net from './Net';
 import ScrollableTabView, { DefaultTabBar } from 'react-native-scrollable-tab-view';
 import BaseInfo from './component/BaseInfo';
+var BlurView = require('react-native-blur').BlurView;
 
 const BASEURL = 'http://119.29.184.235:8080/jd/avatar/';
 const deviceWidth = Dimensions.get('window').width;
@@ -20,6 +21,7 @@ export default class Users extends Component {
             videoSource: null,
             imgUrl: null,
             filename: null,
+            viewRef:0,
         }
     }
 
@@ -32,31 +34,45 @@ export default class Users extends Component {
         });
     }
 
+    imageLoaded() {
+        this.setState({viewRef: findNodeHandle(this.refs.backgroundImage)})
+    }
+
     render() {
         return (
             <View style={styles.container}>
                 <Image
-                    source={{uri:'http://119.29.184.235:8080/jd/avatar/58avatar'}}
-                    style={styles.userBackground}>
-                    <View>
-                        { this.state.avatarSource === null ?
-                            <Image source={require('./img/UserDafault.png')} style={styles.avatar}></Image> :
-                            <Image style={styles.avatar} source={{uri:BASEURL+'58avatar'}} />
-                        }
-                    </View>
-                    <Text style={{color:'white'}}>你好，{this.state.pleaseLogin}</Text>
-                    <View style={{flexDirection: 'row',}}>
-                        <TouchableOpacity
-                            style={{borderRadius:10,borderWidth:1,borderColor:'white',padding:5,marginRight:3}}
-                            onPress={this.avatarUpload.bind(this)}>
-                            <Text style={{color:'white',marginRight:10,marginLeft:10}}>头像上传</Text>
-                        </TouchableOpacity>
-                        <TouchableOpacity
-                            style={{borderRadius:10,borderWidth:1,borderColor:'white',padding:5,marginLeft:3}}
-                            onPress={this.props.toEdit}>
-                            <Text style={{color:'white',marginRight:10,marginLeft:10}}>编辑信息</Text>
-                        </TouchableOpacity>
-                    </View>
+                    source={{uri:BASEURL+this.state.avatarSource}}
+                    style={styles.userBackground}
+                    ref={'backgroundImage'}
+                    onLoadEnd={this.imageLoaded.bind(this)}>
+                        <BlurView
+                            blurType="dark"
+                            blurRadius={2}
+                            downsampleFactor={5}
+                            overlayColor={'rgba(0, 0, 0, 0.3)'}
+                            style={styles.blurView}
+                            viewRef={this.state.viewRef}
+                        />
+                        <View>
+                            { this.state.avatarSource === null ?
+                                <Image source={require('./img/UserDafault.png')} style={styles.avatar}></Image> :
+                                <Image style={styles.avatar} source={{uri:BASEURL+this.state.avatarSource}} />
+                            }
+                        </View>
+                        <Text style={{color:'white'}}>你好，{this.state.pleaseLogin}</Text>
+                        <View style={{flexDirection: 'row',}}>
+                            <TouchableOpacity
+                                style={{borderRadius:10,borderWidth:1,borderColor:'white',padding:5,marginRight:3}}
+                                onPress={this.avatarUpload.bind(this)}>
+                                <Text style={{color:'white',marginRight:10,marginLeft:10}}>头像上传</Text>
+                            </TouchableOpacity>
+                            <TouchableOpacity
+                                style={{borderRadius:10,borderWidth:1,borderColor:'white',padding:5,marginLeft:3}}
+                                onPress={this.props.toEdit}>
+                                <Text style={{color:'white',marginRight:10,marginLeft:10}}>编辑信息</Text>
+                            </TouchableOpacity>
+                        </View>
                 </Image>
 
                 <View style={styles.container}>
@@ -84,6 +100,7 @@ export default class Users extends Component {
         return new Net().getMethod(URl).then((responseData) => {
             response = responseData.response;
             console.log('img resource:'+response.avatar);
+            console.log(response);
             return this.setState({
                 myResponse:response,
                 avatarSource:response.avatar,
@@ -169,11 +186,19 @@ const styles = StyleSheet.create({
         borderWidth:2,
         borderColor:'white',
         marginTop:30,
-        marginBottom: 10,
+        marginBottom: 5,
     },
     userBackground:{
         height:180,
         width:deviceWidth,
         alignItems: 'center',
-    }
+    },
+
+    blurView: {
+        position: "absolute",
+        left: 0,
+        top: 0,
+        bottom: 0,
+        right: 0
+    },
 });

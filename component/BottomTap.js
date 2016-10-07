@@ -15,6 +15,7 @@ import DrawerView from './DrawerView';
 import BriefNews from './BriefNews';
 import DetailPage from './DetailPage';
 import GetClassInfo from './GetClassInfo';
+import NewsItem from '../NewsItem';
 
 var toolbarActions = [
     {title: 'Create', icon: require('./../img/write.png'), show: 'always'},
@@ -74,8 +75,7 @@ export default class BottomTap extends Component {
                     renderIcon = {() => <Image source={require('./../img/discover.png')} style={styles.iconStyle}/> }
                     renderSelectedIcon ={() => <Image source={require('./../img/discover_highlighted.png')} style={styles.iconStyle}/> }
                     onPress={() => this.setState({selectTab:'new'})}>
-                    <MyListView Press={this.Press.bind(this)}
-                    />
+                    <MyListView Press={this.Press.bind(this)}/>
                 </TabNavigator.Item>
 
                 <TabNavigator.Item
