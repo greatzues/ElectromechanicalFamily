@@ -12,7 +12,7 @@ import EditUserInfo from './EditUserInfo';
 import MyListView from './MyListView';
 import Net from '../Net';
 import DrawerView from './DrawerView';
-import BriefNews from './BriefNews';
+import JDGround from './JDGround';
 import DetailPage from './DetailPage';
 import GetClassInfo from './GetClassInfo';
 import NewsItem from '../NewsItem';
@@ -64,6 +64,7 @@ export default class BottomTap extends Component {
                           actions={toolbarActions}
                           toBriefNews={this.toBriefNews.bind(this)}
                           toMyClass={this.toMyClass.bind(this)}
+                          toJDGround={this.toJDGround.bind(this)}
                     />
                 </TabNavigator.Item>
 
@@ -93,6 +94,16 @@ export default class BottomTap extends Component {
         );
     }
     //<MyListView Press={this.Press.bind(this)}/>
+
+    toJDGround(){
+        const {navigator} = this.props;
+        if (navigator){
+            navigator.push({
+                name:'JDGround',
+                component:JDGround,
+            })
+        }
+    }
 
     click(){
         // this.refs.toolbar.onIconClicked();
@@ -151,8 +162,8 @@ export default class BottomTap extends Component {
         const {navigator} = this.props;
         if(navigator){
             navigator.push({
-                name:'DetailPage',
-                component:DetailPage,
+                name:'NewsItem',
+                component:NewsItem,
             });
         }
     }

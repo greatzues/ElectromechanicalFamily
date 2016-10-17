@@ -20,6 +20,7 @@ export default class GetClassInfo extends Component {
         this.state = {
             dataSource:ds,
             userData: [],
+            absence:'请签到',
             id:'',
         };
       }
@@ -28,7 +29,11 @@ export default class GetClassInfo extends Component {
     render(){
         return (
             <View style={styles.container}>
-                <Toolbar title="我的班级" navIcon={require('./../img/back.png')} click={this.backToHome.bind(this)}/>
+                <Toolbar title="我的班级"
+                         navIcon={require('./../img/back.png')}
+                         click={this.backToHome.bind(this)}
+                         actions={[{title:this.state.absence,show: 'always'}]}
+                         onActionSelected={this.onActionSelected.bind(this)}/>
                 <ListView
                     style={styles.container}
                     dataSource={this.state.dataSource.cloneWithRows(this.state.userData)}
@@ -55,6 +60,40 @@ export default class GetClassInfo extends Component {
                 </View>
             </TouchableOpacity>
         )
+    }
+
+    onActionSelected(position){
+        //当一个功能被选中的时候调用这个回调
+        switch (position){
+            case 0:
+                //此处编写签到
+                alert("hello");
+                this.absence();
+                break;
+        }
+    }
+
+    absence(){
+        var URL = '/student/sign';
+        var date = new Date();
+        var day = date.getDate();
+        var month = date.getMonth();
+        if(day<10){
+            day = "0"+date.getDate();
+        }
+        if(month<10){
+            month = "0"+ date.getMonth();
+        }
+        var post = date.getFullYear()+''+month+''+day;
+        var postData = {date:post};
+        console.log(postData);
+        new Net().postMethod(URL,postData).then((responseData) => {
+            console.log(responseData.status);
+        }).catch(error => {
+            alert("网络出现错误");
+            console.error(error);
+        });
+        return this.setState({absence : '已签到'});
     }
 
     componentDidMount() {

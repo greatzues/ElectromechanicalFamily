@@ -19,15 +19,8 @@ export default class Home extends Component {
     }
 
     render() {
-        var navigationView = (
-            <View style={{justifyContent:'center',alignItems:'center'}}>
-                <Text style={[styles.text,{marginTop: 20,color:'grey'}]} onPress={this.absence.bind(this)}>{this.state.absence}</Text>
-            </View>
-        );
-
         return (
             <View>
-
                 <Toolbar  click = {this.props.homeClick}
                           title= {this.props.title}
                           navIcon = {this.props.navIcon}
@@ -36,43 +29,42 @@ export default class Home extends Component {
                           actions={this.props.actions}/>
 
                 <View><PicBanner/></View>
-                <TouchableOpacity>
-                    <View style = {styles.textStyle}>
-                        <Text style={styles.text}>机电小广场</Text>
-                    </View>
-                </TouchableOpacity>
-                <View style={{height: 65}}>
-                    <DrawerLayoutAndroid
-                        drawerWidth={100}
-                        drawerPosition={DrawerLayoutAndroid.positions.Right}
-                        renderNavigationView={() =>navigationView}>
+                <View style={styles.body}>
+                    <TouchableOpacity onPress={this.props.toJDGround}>
+                        <View style = {[styles.textStyle,{backgroundColor:'#bcd3eb'}]}>
+                            <Image source={require('./img/JDGround.png')} style={styles.itemImage}/>
+                            <Text style={styles.text}>机电广场</Text>
+                        </View>
+                    </TouchableOpacity>
 
-                            <TouchableOpacity style={styles.drawerLayoutAndroidView} onPress={this.props.toMyClass}>
-                                <View ><Text style={styles.drawerLayoutAndroidText}>我的班级我的家</Text></View>
-                                <View style={{flexDirection: 'row',alignItems: 'center',alignSelf:'stretch',marginLeft:5,marginRight:20}}>
-                                    <Text>左划签到</Text>
-                                    <Image source={require('./img/arrow_left.png')} style={{height: 12}}></Image>
-                                </View>
-                            </TouchableOpacity>
+                    <TouchableOpacity onPress={this.props.toMyClass}>
+                        <View style = {[styles.textStyle,{backgroundColor:'#cbbceb'}]}>
+                                <Image source={require('./img/JDMyClass.png')} style={styles.itemImage}/>
+                                <Text style={styles.text}>我的班级</Text>
+                        </View>
+                    </TouchableOpacity>
 
-                    </DrawerLayoutAndroid>
+                    <TouchableOpacity onPress={this.props.toBriefNews}>
+                        <View style = {[styles.textStyle,{backgroundColor:'#ebd3bc'}]}>
+                            <Image source={require('./img/JDJianXun.png')} style={styles.itemImage}/>
+                            <Text style={styles.text}>机电简讯</Text>
+                        </View>
+                    </TouchableOpacity>
+
+                     <TouchableOpacity>
+                        <View style = {[styles.textStyle,{backgroundColor:'#ebeabc'}]}>
+                            <Image source={require('./img/JDXiaoYou.png')} style={styles.itemImage}/>
+                            <Text style={styles.text}>校友风采</Text>
+                        </View>
+                    </TouchableOpacity>
                 </View>
-
-                <TouchableOpacity onPress={this.props.toBriefNews}>
-                    <View style = {styles.textStyle}><Text style={styles.text}>机电简讯</Text></View>
-                </TouchableOpacity>
-
-                 <TouchableOpacity>
-                    <View style = {styles.textStyle}><Text style={styles.text}>校友风采</Text></View>
-                </TouchableOpacity>
             </View>
         );
     }
 
 
-
+//此处编写签到逻辑
     absence(){
-        //此处编写签到逻辑
         var URL = '/student/sign';
         var date = new Date();
         var day = date.getDate();
@@ -104,9 +96,8 @@ const styles = StyleSheet.create({
         width: deviceWidth,
         backgroundColor: '#eee',
         alignItems: 'center',
-        justifyContent: 'center',
-        borderColor:'#c1c1c1',
-        borderWidth:1,
+        flexDirection:'row',
+        justifyContent:'center'
     },
 
     text: {
@@ -140,5 +131,19 @@ const styles = StyleSheet.create({
         fontSize: 20,
         fontWeight:'200',
         justifyContent:'center'
+    },
+    body:{
+        flex:1,
+    },
+    itemImage:{
+      height:50,
+        width:50,
+    },
+    toLeft:{
+        flexDirection: 'row',
+        alignItems: 'center',
+        alignSelf:'flex-end',
+        marginLeft:5,
+        marginRight:20,
     },
 });

@@ -22,7 +22,6 @@ export default class MyListView extends Component {
             dataSource:ds,
             updateInfo:'',
             refreshing:false,
-            id:'',
         };
     }
 
@@ -35,22 +34,12 @@ export default class MyListView extends Component {
         });
     }
 
-    getExtra(id){
-        var URl = 'http://news-at.zhihu.com/api/4/story-extra/'+id;
-        new Net().getZhiHuMethod(URl).then((responseData) => {
-            return responseData.comments;
-        })
-            .catch(error => {
-                alert("error message:"+ error);
-            });
-    }
-
     myRenderRow(rowData,sectionID,rowID){
         return (
             <View style={styles.container}>
                 <TouchableOpacity  onPress={() => this.props.Press(rowData.id)}>
                     <View style={styles.cardTop}>
-                        <Image source={{uri:rowData.images[0]}}  style={{borderRadius:15, height:30, width:30,alignItems: 'center'}}/>
+                        <Image source={{uri:rowData.images[0]}}  style={styles.renderRowImg}/>
                         <View style={{flexDirection: 'column',marginLeft:10}}>
                             <Text style={{color:'#f5811f',fontSize:15}}>{rowData.ga_prefix}</Text>
                             <Text style={{color:'#a6acb1', fontSize:10}}>1小时前</Text>
@@ -58,7 +47,7 @@ export default class MyListView extends Component {
                     </View>
 
                     <View style={styles.cardContent}>
-                        <Text style={{fontSize:20, fontWeight:'200'}}>{rowData.title}</Text>
+                        <Text style={{fontSize:20, fontWeight:'200'}} >{rowData.title}</Text>
                     </View>
                 </TouchableOpacity>
 
@@ -105,7 +94,6 @@ export default class MyListView extends Component {
             this.setState({
                 userData : story.stories,
                 refreshing:false,
-                id:story.id,
             });
         });
     }
@@ -192,5 +180,12 @@ const styles = StyleSheet.create({
         alignItems:'center',
         justifyContent:'center',
         backgroundColor:'#ccc',
+    },
+
+    renderRowImg:{
+        borderRadius:15,
+        height:30,
+        width:30,
+        alignItems: 'center',
     },
 });

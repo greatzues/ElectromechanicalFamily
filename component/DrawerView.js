@@ -35,7 +35,7 @@ export default class DrawerView extends Component{
       render(){
           var myResponse = this.state.myResponse;
           return(
-              <View>
+              <View style={styles.container}>
                   <Image
                       source={require('../img/UserBackground.jpg')}
                       style={styles.userBackground}>
@@ -50,19 +50,22 @@ export default class DrawerView extends Component{
                   </Image>
 
                       <TouchableOpacity
-                          style={{borderRadius:10,borderWidth:1,borderColor:'gray',padding:5,marginRight:3}}
+                          style={styles.itemTouch}
                           onPress={this.avatarUpload.bind(this)}>
-                          <Text style={{color:'gray',marginRight:10,marginLeft:10}}>头像上传</Text>
+                          <Image source={require('../img/pic.png')} style={styles.itemImage}></Image>
+                          <Text style={styles.itemText}>头像上传</Text>
                       </TouchableOpacity>
                       <TouchableOpacity
-                          style={{borderRadius:10,borderWidth:1,borderColor:'gray',padding:5,marginLeft:3}}
+                          style={styles.itemTouch}
                           onPress={this.props.quitLogin}>
-                          <Text style={{color:'gray',marginRight:10,marginLeft:10}}>切换账号</Text>
+                          <Image source={require('../img/me_hight.png')} style={styles.itemImage}></Image>
+                          <Text style={styles.itemText}>切换账号</Text>
                       </TouchableOpacity>
                       <TouchableOpacity
-                          style={{borderRadius:10,borderWidth:1,borderColor:'gray',padding:5,marginLeft:3}}
+                          style={styles.itemTouch}
                           onPress={this.props.quitApp}>
-                          <Text style={{color:'gray',marginRight:10,marginLeft:10}}>退出应用</Text>
+                          <Image source={require('../img/back.png')} style={styles.itemImage}></Image>
+                          <Text style={styles.itemText}>退出应用</Text>
                       </TouchableOpacity>
               </View>
           );
@@ -145,7 +148,7 @@ export default class DrawerView extends Component{
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: '#F5FCFF',
+        backgroundColor: 'white',
     },
     avatar:{
         borderRadius:75,
@@ -161,5 +164,23 @@ const styles = StyleSheet.create({
         width:250,
         alignItems: 'center',
         justifyContent: 'center'
-    }
+    },
+    itemTouch:{
+        borderColor:'gray',
+        padding:5,
+        marginLeft:3,
+        flexDirection: 'row',
+        borderBottomWidth:0.7,
+        alignItems:'center',
+        height:50,
+    },
+    itemText:{
+        color:'gray',
+        marginRight:10,
+        marginLeft:10,
+    },
+    itemImage:{
+        height:30,
+        width:30,
+    },
 });

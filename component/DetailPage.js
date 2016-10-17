@@ -5,13 +5,14 @@ import React,{ Component } from 'react';
 import {View, Text, StyleSheet, Navigator, ListView, Image, Dimensions, TouchableOpacity, WebView } from 'react-native';
 import ParallaxScrollView from 'react-native-parallax-scroll-view';
 import Toolbar from './Toolbar';
-import MyListView from './MyListView';
+import NormalToolbar from './normalToolbar';
 import Net from '../Net';
 
 var toolbarActions = [
     {title: '完成', icon: require('./../img/write.png'), show: 'always'},
 ];
 const deviceWidth = Dimensions.get('window').width;
+const deviceHeight = Dimensions.get('window').height;
 export default class DetailPage extends Component{
     // 构造
       constructor(props) {
@@ -47,6 +48,7 @@ export default class DetailPage extends Component{
                 <Image
                     source={{uri:this.state.image}}
                     style={styles.userBackground}>
+                    <NormalToolbar click={this.back.bind(this)} otherStyle={styles.headerBack} color="white"/>
                     <View style={{backgroundColor:'rgba(0, 0, 0, 0.3)',width:deviceWidth,height:50}}>
                         <Text style={{color:'white', fontSize:20}}>{this.state.title}</Text>
                     </View>
@@ -60,16 +62,21 @@ export default class DetailPage extends Component{
             <Toolbar
                 title= "sticky"
                 navIcon = {require('./../img/back.png')}
-                actions={toolbarActions}/>
+                click = {this.back.bind(this)}/>
         );
     }
 
     renderParallaxScrollView(){
         return(
-                <WebView
-                    source={{uri: this.state.share_url}}
-                    style={{marginTop: 20}}
-                />
+            <WebView
+                style={{
+                    flex:1,
+                    backgroundColor: 'rgba(255,255,255,0.8)',
+                    height: deviceHeight - 56,
+                }}
+                source={{uri: this.state.share_url}}
+                scalesPageToFit={true}
+            />
         );
     }
 
@@ -92,6 +99,13 @@ export default class DetailPage extends Component{
         this.fetchData();
     }
 
+    back(){
+        const{navigator} = this.props;
+        if(navigator){
+            navigator.pop();
+        }
+    }
+
 }
 
 const styles = StyleSheet.create({
@@ -111,6 +125,12 @@ const styles = StyleSheet.create({
     userBackground:{
         height:180,
         width:deviceWidth,
-        justifyContent:'flex-end'
-    }
+        justifyContent:'flex-end',
+        flexDirection:'column'
+    },
+    headerBack:{
+        position :'absolute',
+        left:5,
+        top:5,
+    },
 });

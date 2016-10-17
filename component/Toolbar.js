@@ -35,7 +35,7 @@ const styles = StyleSheet.create({
     toolbar: {
         backgroundColor: '#e9eaed',
         height: 56,
-        justifyContent: 'center',
         alignItems: 'center',
+        flexDirection:'row',
     },
 });

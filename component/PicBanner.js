@@ -13,7 +13,6 @@ const BANNER_PIC = [
 ];
 
 const deviceWidth = Dimensions.get('window').width;
-
 export default class PicBanner extends Component {
     constructor(props){
         super(props);
