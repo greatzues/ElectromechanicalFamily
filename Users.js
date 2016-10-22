@@ -79,12 +79,12 @@ export default class Users extends Component {
                     <ScrollableTabView
                         style={{height:50}}
                         renderTabBar={()=><DefaultTabBar backgroundColor='#eee' />}
-                        tabBarPosition='overlayTop'
+                        tabBarPosition='top'
                     >
-                        <ScrollView tabLabel='基本信息' style={{paddingTop:40}}>
+                        <ScrollView tabLabel='基本信息'>
                             <BaseInfo name = '基本信息' ref="baseInfo"/>
                         </ScrollView>
-                        <ScrollView tabLabel='工作信息' style={{paddingTop:40}}>
+                        <ScrollView tabLabel='工作信息'>
                             <BaseInfo name = '工作信息' ref="baseInfo"/>
                         </ScrollView>
                     </ScrollableTabView>

@@ -16,6 +16,9 @@ import JDGround from './JDGround';
 import DetailPage from './DetailPage';
 import GetClassInfo from './GetClassInfo';
 import NewsItem from '../NewsItem';
+import XiaoYouIntroduce from './XiaoYouIntroduce';
+import BanerWebview from './BanerWebview';
+import RNCollapsible from './RNCollapsible';
 
 var toolbarActions = [
     {title: 'Create', icon: require('./../img/write.png'), show: 'always'},
@@ -65,6 +68,8 @@ export default class BottomTap extends Component {
                           toBriefNews={this.toBriefNews.bind(this)}
                           toMyClass={this.toMyClass.bind(this)}
                           toJDGround={this.toJDGround.bind(this)}
+                          toXiaoYouIntro={this.toXiaoYouIntro.bind(this)}
+                          bannerClick={this.bannerClick.bind(this)}
                     />
                 </TabNavigator.Item>
 
@@ -76,7 +81,7 @@ export default class BottomTap extends Component {
                     renderIcon = {() => <Image source={require('./../img/discover.png')} style={styles.iconStyle}/> }
                     renderSelectedIcon ={() => <Image source={require('./../img/discover_highlighted.png')} style={styles.iconStyle}/> }
                     onPress={() => this.setState({selectTab:'new'})}>
-                    <MyListView Press={this.Press.bind(this)}/>
+                    <RNCollapsible/>
                 </TabNavigator.Item>
 
                 <TabNavigator.Item
@@ -94,6 +99,29 @@ export default class BottomTap extends Component {
         );
     }
     //<MyListView Press={this.Press.bind(this)}/>
+
+    bannerClick(uri){
+        const { navigator } = this.props;
+        if( navigator ) {
+            navigator.push({
+                name: 'BanerWebview',
+                component: BanerWebview,
+                params:{
+                    uri:uri,
+                }
+            })
+        }
+    }
+
+    toXiaoYouIntro(){
+        const {navigator} = this.props;
+        if (navigator){
+            navigator.push({
+                name:'XiaoYouIntroduce',
+                component:XiaoYouIntroduce,
+            })
+        }
+    }
 
     toJDGround(){
         const {navigator} = this.props;

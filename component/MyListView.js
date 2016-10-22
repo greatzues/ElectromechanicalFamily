@@ -6,10 +6,15 @@ import { View, Text, StyleSheet, TouchableOpacity, ListView, Dimensions, TextInp
     Navigator } from 'react-native';
 import Net from '../Net';
 import DetailPage from './DetailPage';
-const deviceWidth = Dimensions.get('window').width;
+import * as Animatable from 'react-native-animatable';
+import Collapsible from 'react-native-collapsible';
+import Accordion from 'react-native-collapsible/Accordion';
+
 /**
  * 实现下拉刷新列表，取知乎日报api做的测试
  */
+const BACON_IPSUM = 'Bacon ipsum dolor amet chuck turducken landjaeger tongue spare ribs. Picanha beef prosciutto meatball turkey shoulder shank salami cupim doner jowl pork belly cow. Chicken shankle rump swine tail frankfurter meatloaf ground round flank ham hock tongue shank andouille boudin brisket. ';
+const deviceWidth = Dimensions.get('window').width;
 export default class MyListView extends Component {
     constructor(props){
         super(props);
@@ -25,6 +30,10 @@ export default class MyListView extends Component {
         };
     }
 
+    toggleExpanded = (key) => {
+        this.setState({ collapsed: !this.state.collapsed });
+    }
+
     componentDidMount() {
         this.fetchData().then((responseData) => {
             let story = responseData;
@@ -35,25 +44,25 @@ export default class MyListView extends Component {
     }
 
     myRenderRow(rowData,sectionID,rowID){
+
         return (
             <View style={styles.container}>
-                <TouchableOpacity  onPress={() => this.props.Press(rowData.id)}>
+                <TouchableOpacity>
                     <View style={styles.cardTop}>
                         <Image source={{uri:rowData.images[0]}}  style={styles.renderRowImg}/>
                         <View style={{flexDirection: 'column',marginLeft:10}}>
-                            <Text style={{color:'#f5811f',fontSize:15}}>{rowData.ga_prefix}</Text>
-                            <Text style={{color:'#a6acb1', fontSize:10}}>1小时前</Text>
+                            <Text style={styles.cardavatar}>{rowData.ga_prefix}</Text>
+                            <Text style={styles.cardTime}>1小时前</Text>
                         </View>
-                    </View>
-
-                    <View style={styles.cardContent}>
-                        <Text style={{fontSize:20, fontWeight:'200'}} >{rowData.title}</Text>
+                        <Image source={require('../img/write.png')} style={styles.comment}/>
                     </View>
                 </TouchableOpacity>
-
-                <View style={styles.cardBottom}>
-                    <CardBottom src = {require('../img/good.png')} content={rowData.id} styles={styles.cardBottomItem}/>
-                </View>
+                <TouchableOpacity  onPress={() => this.props.Press(rowData.id)}>
+                    <View style={styles.cardContent}>
+                        <Text style={styles.cardText} >{rowData.title}</Text>
+                        <Image source={{uri:rowData.images[0]}} style={styles.cardImage}/>
+                    </View>
+                </TouchableOpacity>
             </View>
         );
     }
@@ -116,7 +125,6 @@ export default class MyListView extends Component {
                     />
                 }
             >
-
             </ListView>
         );
     }
@@ -136,23 +144,26 @@ class CardBottom extends Component {
 
 const styles = StyleSheet.create({
     container: {
+        flex:1,
         backgroundColor: '#F5FCFF',
         borderRadius:5,
         borderWidth:1,
         borderColor:'#a6acb1',
-        flexWrap:'wrap',
         marginTop:10
     },
 
     cardTop: {
+        flex:1,
         flexDirection: 'row',
         alignSelf:'flex-start',
         alignItems:'center',
         margin:5,
+        width:deviceWidth,
 
     },
 
     cardContent: {
+        flex:1,
         alignSelf:'flex-start',
         marginTop:3,
         marginBottom:3,
@@ -187,5 +198,29 @@ const styles = StyleSheet.create({
         height:30,
         width:30,
         alignItems: 'center',
+    },
+    cardImage:{
+        height:200,
+        flex:1,
+        margin:10,
+    },
+    cardavatar:{
+        color:'#f5811f',
+        fontSize:15
+    },
+    cardTime:{
+        color:'#a6acb1',
+        fontSize:10
+    },
+    cardText:{
+        fontSize:20,
+        fontWeight:'200'
+    },
+    comment:{
+        height:25,
+        width:25,
+        position:'absolute',
+        top:1,
+        right:10,
     },
 });

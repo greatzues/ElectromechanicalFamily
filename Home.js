@@ -28,7 +28,7 @@ export default class Home extends Component {
                           onActionSelected={this.props.onActionSelected}
                           actions={this.props.actions}/>
 
-                <View><PicBanner/></View>
+                <View><PicBanner bannerClick={this.props.bannerClick}/></View>
                 <View style={styles.body}>
                     <TouchableOpacity onPress={this.props.toJDGround}>
                         <View style = {[styles.textStyle,{backgroundColor:'#bcd3eb'}]}>
@@ -51,7 +51,7 @@ export default class Home extends Component {
                         </View>
                     </TouchableOpacity>
 
-                     <TouchableOpacity>
+                     <TouchableOpacity onPress={this.props.toXiaoYouIntro}>
                         <View style = {[styles.textStyle,{backgroundColor:'#ebeabc'}]}>
                             <Image source={require('./img/JDXiaoYou.png')} style={styles.itemImage}/>
                             <Text style={styles.text}>校友风采</Text>
