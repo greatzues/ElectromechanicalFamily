@@ -31,7 +31,9 @@ export default class ExampleView extends Component {
     //传入评论区的id
     _setSection(section) {
         this.setState({ activeSection: section });
-        this.fetchComment(this.state.userData[section].id);
+        if(section !== false){
+            this.fetchComment(this.state.userData[section].id);
+        }
     }
 
     _renderHeader(section, i, isActive) {
