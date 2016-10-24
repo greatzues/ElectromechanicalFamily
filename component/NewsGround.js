@@ -1,15 +1,15 @@
 import React, { Component } from 'react';
 import {
-    StyleSheet, Text, View, TouchableHighlight, ScrollView, RefreshControl, TouchableOpacity, Image, Dimensions, ListView
+    StyleSheet, Text, View, TouchableHighlight, ScrollView, RefreshControl, TouchableOpacity, Image, Dimensions, ListView, TextInput
 } from 'react-native';
 
 import * as Animatable from 'react-native-animatable';
-import Collapsible from 'react-native-collapsible';
 import Accordion from 'react-native-collapsible/Accordion';
 import Net from '../Net';
 
+//需要解决的问题是：在打开一个弹出式view之后打开另外一个将原来折叠回去过程中，由于comment数据还存在渲染的时间，导致数据会出现变化，这对用户体验不好，暂时我考虑使用进度圈圈来防止这个问题。
+//刚刚突然想到解决办法，那就是另外新建一个类，然后再开始渲染的时候就把数据加载好，这样就不会出现这种情况了，给自己点个赞。
 const deviceWidth = Dimensions.get('window').width;
-
 export default class ExampleView extends Component {
     // 构造
       constructor(props) {
@@ -26,6 +26,8 @@ export default class ExampleView extends Component {
             refreshing: false,
             dataSource:ds,
             comment:[],
+            text:'',
+            disabled:true,
         }
       }
     //传入评论区的id
@@ -41,7 +43,7 @@ export default class ExampleView extends Component {
             <Animatable.View duration={400} style={[styles.header, isActive ? styles.active : styles.inactive]} transition="backgroundColor">
                 <View style={styles.cardTop}>
                     <Image source={{uri:section.images[0]}}  style={styles.renderRowImg}/>
-                    <View style={{flexDirection: 'column',marginLeft:10}}>
+                    <View style={styles.avatarAndTime}>
                         <Text style={styles.cardavatar}>{section.ga_prefix}</Text>
                         <Text style={styles.cardTime}>1小时前</Text>
                     </View>
@@ -69,6 +71,13 @@ export default class ExampleView extends Component {
     _renderContent(section, i, isActive) {
         return (
             <Animatable.View duration={400}  style={[styles.content, isActive ? styles.active : styles.inactive]} transition="backgroundColor">
+
+                    <TextInput
+                        placeholder="疯狂的评论吧！"
+                        style={styles.contentTextInput}
+                        value={this.state.value}
+                        onChangeText={(text) => this.setState({text})}
+                    />
                 <ListView
                     dataSource={this.state.dataSource.cloneWithRows(this.state.comment)}
                     renderRow={this.myRenderRow.bind(this)}
@@ -77,6 +86,7 @@ export default class ExampleView extends Component {
             </Animatable.View>
         );
     }
+
     //渲染评论的listview的每一条item的内容
     myRenderRow(rowData,sectionID,rowID){
         return (
@@ -140,7 +150,6 @@ export default class ExampleView extends Component {
                     duration={400}
                     onChange={this._setSection.bind(this)}
                 />
-
             </View>
             </ScrollView>
         );
@@ -156,7 +165,6 @@ const styles = StyleSheet.create({
         textAlign: 'center',
         fontSize: 22,
         fontWeight: '300',
-        marginBottom: 20,
     },
     header: {
         backgroundColor: '#000',
@@ -256,4 +264,20 @@ const styles = StyleSheet.create({
         borderWidth:2,
         borderColor:'white',
     },
+    avatarAndTime:{
+        flexDirection: 'column',
+        marginLeft:10,
+    },
+    contentTextInput:{
+        height:40,
+        borderColor:'gray',
+        borderWidth:0.5,
+    },
+    contentView:{
+        flex:1,
+        flexDirection:'row',
+    },
+    contentText:{
+        fontSize:10,
+    }
 });

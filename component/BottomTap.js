@@ -18,7 +18,8 @@ import GetClassInfo from './GetClassInfo';
 import NewsItem from '../NewsItem';
 import XiaoYouIntroduce from './XiaoYouIntroduce';
 import BanerWebview from './BanerWebview';
-import RNCollapsible from './RNCollapsible';
+import RNCollapsible from './NewsGround';
+import EditMessage from './EditMessage';
 
 var toolbarActions = [
     {title: 'Create', icon: require('./../img/write.png'), show: 'always'},
@@ -99,38 +100,29 @@ export default class BottomTap extends Component {
         );
     }
     //<MyListView Press={this.Press.bind(this)}/>
-
+    //轮播图超链接
     bannerClick(uri){
-        const { navigator } = this.props;
-        if( navigator ) {
+        var params = {uri:uri};
+        this.toOtherPage('BanerWebview',BanerWebview, params);
+    }
+
+    toOtherPage(name, component, params){
+        const {navigator} = this.props;
+        if (navigator){
             navigator.push({
-                name: 'BanerWebview',
-                component: BanerWebview,
-                params:{
-                    uri:uri,
-                }
+                name:name,
+                component:component,
+                params:params
             })
         }
     }
 
     toXiaoYouIntro(){
-        const {navigator} = this.props;
-        if (navigator){
-            navigator.push({
-                name:'XiaoYouIntroduce',
-                component:XiaoYouIntroduce,
-            })
-        }
+        this.toOtherPage('XiaoYouIntroduce',XiaoYouIntroduce);
     }
 
     toJDGround(){
-        const {navigator} = this.props;
-        if (navigator){
-            navigator.push({
-                name:'JDGround',
-                component:JDGround,
-            })
-        }
+        this.toOtherPage('JDGround',JDGround);
     }
 
     click(){
@@ -141,43 +133,21 @@ export default class BottomTap extends Component {
             if(myResult!==null){
                 this.refs.drawer.openDrawer();
             }else{
-                const { navigator } = this.props;
-                if( navigator ) {
-                    navigator.push({
-                        name: 'Login',
-                        component: Login,
-                        params:{
-                            callback:() => this.reRenderData(),
-                        }
-                    })
-                }
+                var params = { callback:() => this.reRenderData(),}
+                this.toOtherPage('Login',Login, params);
             }
         });
 
     }
 
     toMyClass(){
-        const {navigator} = this.props;
-        if(navigator){
-            navigator.push({
-                name:'GetClassInfo',
-                component:GetClassInfo,
-            });
-        }
+        this.toOtherPage('GetClassInfo', GetClassInfo);
     }
-
+    //这是原先没有使用折叠功能时候的新闻广场到达详细页的点击功能
     Press(id){
         console.log(id);
-        const {navigator} = this.props;
-        if(navigator){
-            navigator.push({
-                name:'DetailPage',
-                component:DetailPage,
-                params:{
-                    id:id,
-                }
-            });
-        }
+        var params = {id:id};
+        this.toOtherPage('DetailPage',DetailPage,params);
     }
 
     reRenderData(){
@@ -187,13 +157,7 @@ export default class BottomTap extends Component {
     }
 
     toBriefNews(){
-        const {navigator} = this.props;
-        if(navigator){
-            navigator.push({
-                name:'NewsItem',
-                component:NewsItem,
-            });
-        }
+        this.toOtherPage('NewsItem',NewsItem);
     }
 
     quitApp(){
@@ -208,13 +172,7 @@ export default class BottomTap extends Component {
 
     quitLogin(){
         AsyncStorage.clear();
-        const {navigator} = this.props;
-        if(navigator){
-            navigator.push({
-                name: 'Login',
-                component: Login,
-            });
-        }
+        this.toOtherPage('Login',Login,null);
         this.refs.drawer.closeDrawer();
     }
 
@@ -240,21 +198,12 @@ export default class BottomTap extends Component {
         AsyncStorage.getItem('username',(error,result) => {
             myResult = result;
             if(myResult!==null){
-                const { navigator } = this.props;
-                if( navigator ) {
-                    navigator.push({
-                        name: 'EditUserInfo',
-                        component: EditUserInfo,
-                        params:{
-                            callback:() => this.reRenderUserInfo(),
-                        }
-                    })
-                }
+                var params = {callback:() => this.reRenderUserInfo(),}
+                this.toOtherPage('EditUserInfo',EditUserInfo,params);
             }else{
                 alert('请先登录');
             }
         });
-
     }
 
     reRenderUserInfo(){
@@ -266,9 +215,7 @@ export default class BottomTap extends Component {
         switch (position){
             case 0:
                 //此处编写消息发布
-                alert('this is the '+ (position+1));
-
-
+                this.toOtherPage('EditMessage',EditMessage);
                 break;
             case  1:
                 //此处留下来扩展功能

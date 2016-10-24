@@ -25,6 +25,7 @@
 		BCEFA49A517E415F828A9D95 /* libRNImagePicker.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 5DAC3D2B5FB84779BC0C8850 /* libRNImagePicker.a */; };
 		340C401FCBB846B99FE0FDB8 /* libRCTBEEPickerManager.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 437EDF50BA834B8DB803A358 /* libRCTBEEPickerManager.a */; };
 		CF63DA263BEE4A02973B32B7 /* libRNBlur.a in Frameworks */ = {isa = PBXBuildFile; fileRef = F755695DEBEF4E63B463967F /* libRNBlur.a */; };
+		E4F1198607C24F1B9290F880 /* libimageCropPicker.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 78FD6131B85A4FFC92C02586 /* libimageCropPicker.a */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -135,6 +136,8 @@
 		437EDF50BA834B8DB803A358 /* libRCTBEEPickerManager.a */ = {isa = PBXFileReference; name = "libRCTBEEPickerManager.a"; path = "libRCTBEEPickerManager.a"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = archive.ar; explicitFileType = undefined; includeInIndex = 0; };
 		D90E6C2BC6914A0DACF62997 /* RNBlur.xcodeproj */ = {isa = PBXFileReference; name = "RNBlur.xcodeproj"; path = "../node_modules/react-native-blur/ios/RNBlur.xcodeproj"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = wrapper.pb-project; explicitFileType = undefined; includeInIndex = 0; };
 		F755695DEBEF4E63B463967F /* libRNBlur.a */ = {isa = PBXFileReference; name = "libRNBlur.a"; path = "libRNBlur.a"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = archive.ar; explicitFileType = undefined; includeInIndex = 0; };
+		8CF0746BD735496DAF476ED8 /* ImageCropPicker.xcodeproj */ = {isa = PBXFileReference; name = "ImageCropPicker.xcodeproj"; path = "../node_modules/react-native-image-crop-picker/ios/ImageCropPicker.xcodeproj"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = wrapper.pb-project; explicitFileType = undefined; includeInIndex = 0; };
+		78FD6131B85A4FFC92C02586 /* libimageCropPicker.a */ = {isa = PBXFileReference; name = "libimageCropPicker.a"; path = "libimageCropPicker.a"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = archive.ar; explicitFileType = undefined; includeInIndex = 0; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -163,6 +166,7 @@
 				BCEFA49A517E415F828A9D95 /* libRNImagePicker.a in Frameworks */,
 				340C401FCBB846B99FE0FDB8 /* libRCTBEEPickerManager.a in Frameworks */,
 				CF63DA263BEE4A02973B32B7 /* libRNBlur.a in Frameworks */,
+				E4F1198607C24F1B9290F880 /* libimageCropPicker.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -288,6 +292,7 @@
 				36168AD6D05047AAA7ED75B1 /* RNImagePicker.xcodeproj */,
 				35870DFAB4B44CEBA205960A /* RCTBEEPickerManager.xcodeproj */,
 				D90E6C2BC6914A0DACF62997 /* RNBlur.xcodeproj */,
+				8CF0746BD735496DAF476ED8 /* ImageCropPicker.xcodeproj */,
 			);
 			name = Libraries;
 			sourceTree = "<group>";
@@ -605,6 +610,7 @@
 					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 					"\"$(SRCROOT)/$(TARGET_NAME)\"",
+					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 				);
 			};
 			name = Debug;
@@ -624,6 +630,7 @@
 					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 					"\"$(SRCROOT)/$(TARGET_NAME)\"",
+					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 				);
 			};
 			name = Release;
@@ -640,6 +647,7 @@
 					"$(SRCROOT)\..\node_modules\react-native-image-picker\ios/**",
 					"$(SRCROOT)\..\node_modules\react-native-picker\ios\RCTBEEPickerManager",
 					"$(SRCROOT)\..\node_modules\react-native-blur\ios",
+					"$(SRCROOT)\..\node_modules\react-native-image-crop-picker\ios/**",
 				);
 				INFOPLIST_FILE = "ElectromechanicalFamily/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
@@ -663,6 +671,7 @@
 					"$(SRCROOT)\..\node_modules\react-native-image-picker\ios/**",
 					"$(SRCROOT)\..\node_modules\react-native-picker\ios\RCTBEEPickerManager",
 					"$(SRCROOT)\..\node_modules\react-native-blur\ios",
+					"$(SRCROOT)\..\node_modules\react-native-image-crop-picker\ios/**",
 				);
 				INFOPLIST_FILE = "ElectromechanicalFamily/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
@@ -716,6 +725,7 @@
 					"$(SRCROOT)\..\node_modules\react-native-image-picker\ios/**",
 					"$(SRCROOT)\..\node_modules\react-native-picker\ios\RCTBEEPickerManager",
 					"$(SRCROOT)\..\node_modules\react-native-blur\ios",
+					"$(SRCROOT)\..\node_modules\react-native-image-crop-picker\ios/**",
 				);
 				IPHONEOS_DEPLOYMENT_TARGET = 7.0;
 				MTL_ENABLE_DEBUG_INFO = YES;
@@ -759,6 +769,7 @@
 					"$(SRCROOT)\..\node_modules\react-native-image-picker\ios/**",
 					"$(SRCROOT)\..\node_modules\react-native-picker\ios\RCTBEEPickerManager",
 					"$(SRCROOT)\..\node_modules\react-native-blur\ios",
+					"$(SRCROOT)\..\node_modules\react-native-image-crop-picker\ios/**",
 				);
 				IPHONEOS_DEPLOYMENT_TARGET = 7.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
