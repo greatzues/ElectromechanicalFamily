@@ -30,6 +30,12 @@ export default class DrawerView extends Component{
                 myResult = result;
                 myResult!==null?this.fetchData():this.setState({myResponse:'请登录'});
             });
+        // AsyncStorage.getItem('userInfo',(error, result) => {
+        //     console.log("DrawerView avatar------->>"+result);
+        //     this.setState({
+        //         avatarSource:result.avatar,
+        //     })
+        // });
     }
 
       render(){
@@ -77,6 +83,8 @@ export default class DrawerView extends Component{
         var response;
         return new Net().getMethod(URl).then((responseData) => {
             response = responseData.response;
+            var userClassId = 'userClassId';
+            AsyncStorage.setItem(userClassId,response.classid);
             this.setState({
                 myResponse:response.name,
                 avatarSource:response.avatar,

@@ -6,30 +6,8 @@ import { AsyncStorage } from 'react-native';
 import Storage from 'react-native-storage';
 
 const BASEURL = 'http://119.29.184.235:8080/jd';
-//初始化Storage
-// const  storage = new Storage({
-//     // 最大容量，默认值1000条数据循环存储
-//     size: 1000,
-//
-//     // 存储引擎：对于RN使用AsyncStorage，对于web使用window.localStorage
-//     // 如果不指定则数据只会保存在内存中，重启后即丢失
-//     storageBackend: AsyncStorage,
-//
-//     // 数据过期时间，默认一整天（1000 * 3600 * 24 毫秒），设为null则永不过期
-//     defaultExpires: 1000 * 3600 * 24,
-//
-//     // 读写时在内存中缓存数据。默认启用。
-//     enableCache: true,
-//
-//     // 如果storage中没有相应数据，或数据已过期，
-//     // 则会调用相应的sync同步方法，无缝返回最新数据。
-//     sync: {
-//         // 同步方法的具体说明会在后文提到
-//     }
-// });
-
-//全局调用Storage
-// global.storage = storage;
+// const BASEURL = 'http://10.10.68.117:8888';
+global.BASEURL = BASEURL;
 
 export default class Net  {
     constructor(){}
@@ -119,7 +97,7 @@ export default class Net  {
             })
                 .then((response) => {
                     myHeaders = response.headers;
-                    console.log(...myHeaders); //遍历headers拿到数组对象
+                    console.log(...myHeaders); //遍历headers
                     var keyName = 'myCookie';
                     var keyValue = response.headers.get('set-cookie');
                     AsyncStorage.setItem(keyName,keyValue);
@@ -140,12 +118,12 @@ export default class Net  {
                 })
         });
     }
-
-    postFile(url, imgUri,filename){
+    //上传单个文件
+    postFile(url, imgUri){
         // 用来包装响应头的数组
         // 构造request的body里面的东西
         let formData = new FormData();
-        formData.append('avatar',{uri: imgUri, type: 'image/jpeg', name:filename});
+        formData.append('avatar',{uri: imgUri, type: 'image/jpeg'});
 
         let options = {};
         options.body = formData;
@@ -164,5 +142,24 @@ export default class Net  {
                 })
         })
     }
+    //上传多个文件，需要传递一个formData对象
+    postMultiFile(formData){
+        return new Promise((resolve, reject) => {
+            fetch(BASEURL+'/postmessages',{
+                body:formData,
+                method:'post',
+                header:{
+                    'Content-Type': 'multipart/form-data',
+                    'Accept': 'application/json',
+                }
+            }).then(response => {
+                console.log(response);
+            })
+            .catch(err => {
+                console.log('error:'+err);
+            })
+        })
+    }
+
 
 }

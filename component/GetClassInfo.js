@@ -2,7 +2,7 @@
  * Created by zues on 2016/9/29.
  */
 import React, { Component } from 'react';
-import { WebView, View, Text, StyleSheet, ListView, Image, TouchableOpacity, Navigator } from 'react-native';
+import { WebView, View, Text, StyleSheet, ListView, Image, TouchableOpacity, Navigator, ToastAndroid, AsyncStorage } from 'react-native';
 import Net from '../Net';
 import GetStudentInfo from './GetStudentInfo';
 import Toolbar from './Toolbar';
@@ -30,7 +30,6 @@ export default class GetClassInfo extends Component {
         return (
             <View style={styles.container}>
                 <Toolbar title="我的班级"
-                         navIcon={require('./../img/back.png')}
                          click={this.backToHome.bind(this)}
                          actions={[{title:this.state.absence,show: 'always'}]}
                          onActionSelected={this.onActionSelected.bind(this)}/>
@@ -48,9 +47,9 @@ export default class GetClassInfo extends Component {
 
 //<Image source={{uri:BASEURL+rowData.avatar}} style={styles.avatar} />
     myRenderRow(rowData,sectionID,rowID){
-        console.log(rowData.avatar);
+        console.log(rowData);
         return (
-            <TouchableOpacity onPress={() => this.Press(rowData.id)} style={styles.studentItem}>
+            <TouchableOpacity onPress={() => this.props.getStudentInfo(rowData.id)} style={styles.studentItem}>
                 { rowData.avatar !== null ?
                     <Image style={styles.avatar} source={{uri:BASEURL+rowData.avatar}} />:
                     <Image source={require('../img/UserDafault.png')} style={styles.avatar}></Image>
@@ -67,7 +66,6 @@ export default class GetClassInfo extends Component {
         switch (position){
             case 0:
                 //此处编写签到
-                alert("hello");
                 this.absence();
                 break;
         }
@@ -93,6 +91,7 @@ export default class GetClassInfo extends Component {
             alert("网络出现错误");
             console.error(error);
         });
+        ToastAndroid.show("已签到",ToastAndroid.LONG);
         return this.setState({absence : '已签到'});
     }
 
@@ -101,13 +100,15 @@ export default class GetClassInfo extends Component {
     }
 
     fetchData(){
-        var URl = '/student/getclasssinfo?classid=44';
-        return new Net().getMethod(URl).then((responseData) => {
-            console.log(responseData.status);
-            let students = responseData.response.students;
-            this.setState({
-                userData:students,
-                id:students.id,
+        return AsyncStorage.getItem('userClassId',(error, result) => {
+            var URl = '/student/getclasssinfo?classid='+result;
+             new Net().getMethod(URl).then((responseData) => {
+                console.log(responseData.status);
+                let students = responseData.response.students;
+                this.setState({
+                    userData:students,
+                    id:students.id,
+                });
             });
         });
     }

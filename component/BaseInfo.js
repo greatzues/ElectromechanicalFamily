@@ -71,11 +71,6 @@ class Info extends Component{
                 </View>
 
                 <View style = {styles.input}>
-                    <Text style={{marginLeft:10}}>班级:</Text>
-                    <Text style={{marginLeft:10}}>{response.classes}</Text>
-                </View>
-
-                <View style = {styles.input}>
                     <Text style={{marginLeft:10}}>班导师:</Text>
                     <Text style={{marginLeft:10}}>{response.teacher}</Text>
                 </View>

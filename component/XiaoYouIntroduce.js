@@ -30,19 +30,19 @@ export default class XiaoYouIntroduce extends Component{
                       renderTabBar={()=><DefaultTabBar backgroundColor='#FFF' />}
                       tabBarPosition='top'
                   >
-                      <ScrollView tabLabel='温家林'>
+                      <ScrollView tabLabel='唐杰英'>
                         <XiaoYouItem />
                       </ScrollView>
-                      <ScrollView tabLabel='校友2'>
+                      <ScrollView tabLabel='黄振炼'>
                         <XiaoYouItem />
                       </ScrollView>
-                      <ScrollView tabLabel='校友3'>
+                      <ScrollView tabLabel='李智峣'>
                           <XiaoYouItem />
                       </ScrollView>
-                      <ScrollView tabLabel='校友4'>
+                      <ScrollView tabLabel='林亮'>
                           <XiaoYouItem />
                       </ScrollView>
-                      <ScrollView tabLabel='校友5'>
+                      <ScrollView tabLabel='李志雄'>
                           <XiaoYouItem />
                       </ScrollView>
                   </ScrollableTabView>

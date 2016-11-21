@@ -2,7 +2,7 @@
  * Created by zues on 2016/8/27.
  */
 import React, { Component } from 'react';
-import { View, Text, Image, StyleSheet, Navigator } from 'react-native';
+import { View, Text, Image, StyleSheet, Navigator,SwitchAndroid } from 'react-native';
 
 var ToolbarAndroid = require('ToolbarAndroid');
 export default class Toolbar extends Component {
@@ -16,26 +16,29 @@ export default class Toolbar extends Component {
             <ToolbarAndroid
                 actions={this.props.actions}
                 style={styles.toolbar}
-                title= {this.props.title}
                 navIcon = {this.props.navIcon}
+                logo={this.props.logo}
                 onIconClicked={this.props.click}
                 onActionSelected={this.props.onActionSelected}>
 
+                <View style={{height: 56, flexDirection: 'row', alignItems: 'center'}}>
+                    <Text>{this.props.title}</Text>
+                </View>
             </ToolbarAndroid>
         );
     }
 
-    onActionSelected(position){
-        //当一个功能被选中的时候调用这个回调
-        // alert('this is the '+ (position+1));
-    }
 }
 
 const styles = StyleSheet.create({
     toolbar: {
         backgroundColor: '#e9eaed',
-        height: 56,
+        height: 50,
         alignItems: 'center',
         flexDirection:'row',
     },
+    JDLogo:{
+       height:30,
+        width:50,
+    }
 });

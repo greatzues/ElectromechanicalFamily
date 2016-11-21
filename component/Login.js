@@ -70,7 +70,7 @@ export default class Login extends Component{
             </View>
         );
     }
-
+    //这个方法也可以全局
     backToHome(){
         const { navigator } = this.props;
         if (navigator){
@@ -111,7 +111,6 @@ export default class Login extends Component{
     logining(myUsername,myPassword){
         var URL = '/student/login';
         return new Net().postLoginMethod(URL,myUsername,myPassword).then((data) => {
-            console.log('data code:'+data.code);
             var myCode = data.code;
             if (myCode === 200){
                 this.setState({

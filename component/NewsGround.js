@@ -6,11 +6,12 @@ import {
 import * as Animatable from 'react-native-animatable';
 import Accordion from 'react-native-collapsible/Accordion';
 import Net from '../Net';
+import Toolbar from './Toolbar';
 
 //需要解决的问题是：在打开一个弹出式view之后打开另外一个将原来折叠回去过程中，由于comment数据还存在渲染的时间，导致数据会出现变化，这对用户体验不好，暂时我考虑使用进度圈圈来防止这个问题。
 //刚刚突然想到解决办法，那就是另外新建一个类，然后再开始渲染的时候就把数据加载好，这样就不会出现这种情况了，给自己点个赞。
 const deviceWidth = Dimensions.get('window').width;
-export default class ExampleView extends Component {
+export default class NewsGround extends Component {
     // 构造
       constructor(props) {
         super(props);
@@ -141,7 +142,7 @@ export default class ExampleView extends Component {
                 }
             >
             <View style={styles.container}>
-                <Text style={styles.title}>新闻广场</Text>
+                <Toolbar title= "新闻广场"/>
                 <Accordion
                     activeSection={this.state.activeSection}
                     sections={this.state.userData}

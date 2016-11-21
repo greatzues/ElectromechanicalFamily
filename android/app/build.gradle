@@ -97,6 +97,7 @@ android {
         }
 		renderscriptTargetApi 20
 		renderscriptSupportModeEnabled true
+        vectorDrawables.useSupportLibrary = true
     }
     splits {
         abi {
@@ -128,6 +129,7 @@ android {
 }
 
 dependencies {
+    compile project(':react-native-picker')
     compile project(':react-native-image-crop-picker')
     compile project(':react-native-blur')
     compile project(':react-native-fileupload')
@@ -158,15 +160,5 @@ buildscript {
     }
 }
 
-android {
-    defaultConfig {
-        // Stops the Gradle plugin¡¯s automatic rasterization of vectors
-        generatedDensities = []
-    }
-    // Flag to tell aapt to keep the attribute ids around
-    aaptOptions {
-        additionalParameters "--no-version-vectors"
-    }
-}
 
 

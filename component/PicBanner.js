@@ -8,11 +8,10 @@ import ViewPager from 'react-native-viewpager';
 
 //以后有api之后就可以把数据录进去了，这里只是模拟数据
 const BANNER_PIC = [
-    ['https://images.unsplash.com/photo-1441742917377-57f78ee0e582?h=1024','http://http://www.wyu.edu.cn/'],
-    ['https://images.unsplash.com/photo-1441716844725-09cedc13a4e7?h=1024','http://www.baidu.com'],
-    ['https://images.unsplash.com/photo-1441448770220-76743f9e6af6?h=1024','http://www.baidu.com'],
-    ['https://images.unsplash.com/photo-1441260038675-7329ab4cc264?h=1024','http://www.baidu.com'],
-    ['https://images.unsplash.com/photo-1441126270775-739547c8680c?h=1024','http://www.baidu.com'],
+    ['http://www.wyu.edu.cn/news/file/indexpic/20160427100422762276.jpg','http://www.wyu.edu.cn/'],
+    ['http://www.wyu.edu.cn/news/file/indexpic/2015100600112345.jpg','http://dept.wyu.edu.cn/kyc/kjc/'],
+    ['http://www.wyu.edu.cn/news/file/indexpic/20151120083072957295.jpg','http://www.google.com'],
+    ['http://www.wyu.edu.cn/news/file/indexpic/20160604212098269826.jpg','http://jwc.wyu.edu.cn/www/'],
 ];
 const deviceWidth = Dimensions.get('window').width;
 export default class PicBanner extends Component {
@@ -56,4 +55,4 @@ const styles = StyleSheet.create({
         height: 170,
         resizeMode: 'stretch',
     },
-})
+});

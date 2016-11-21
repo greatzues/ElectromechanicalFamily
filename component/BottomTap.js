@@ -9,7 +9,6 @@ import Users from '../Users';
 import Home from '../Home';
 import Login from './Login';
 import EditUserInfo from './EditUserInfo';
-import MyListView from './MyListView';
 import Net from '../Net';
 import DrawerView from './DrawerView';
 import JDGround from './JDGround';
@@ -18,8 +17,9 @@ import GetClassInfo from './GetClassInfo';
 import NewsItem from '../NewsItem';
 import XiaoYouIntroduce from './XiaoYouIntroduce';
 import BanerWebview from './BanerWebview';
-import RNCollapsible from './NewsGround';
+import NewsGround from './NewsGround';
 import EditMessage from './EditMessage';
+import GetStudentInfo from './GetStudentInfo';
 
 var toolbarActions = [
     {title: 'Create', icon: require('./../img/write.png'), show: 'always'},
@@ -63,11 +63,9 @@ export default class BottomTap extends Component {
                     onPress={() => this.setState({selectTab:'home'})}>
                     <Home homeClick={this.click.bind(this)}
                           title= "机电E家人"
-                          navIcon = {require('./../img/login.png')}
                           onActionSelected={this.onActionSelected.bind(this)}
                           actions={toolbarActions}
                           toBriefNews={this.toBriefNews.bind(this)}
-                          toMyClass={this.toMyClass.bind(this)}
                           toJDGround={this.toJDGround.bind(this)}
                           toXiaoYouIntro={this.toXiaoYouIntro.bind(this)}
                           bannerClick={this.bannerClick.bind(this)}
@@ -82,7 +80,7 @@ export default class BottomTap extends Component {
                     renderIcon = {() => <Image source={require('./../img/discover.png')} style={styles.iconStyle}/> }
                     renderSelectedIcon ={() => <Image source={require('./../img/discover_highlighted.png')} style={styles.iconStyle}/> }
                     onPress={() => this.setState({selectTab:'new'})}>
-                    <RNCollapsible/>
+                    <NewsGround/>
                 </TabNavigator.Item>
 
                 <TabNavigator.Item
@@ -95,6 +93,17 @@ export default class BottomTap extends Component {
                     onPress={() => this.setState({selectTab:'user'})}>
                     <Users toEdit={this.toEdit.bind(this)} ref="user"/>
                 </TabNavigator.Item>
+
+                <TabNavigator.Item
+                    title = "我的班级我的家"
+                    selected = {this.state.selectTab === 'myClass'}
+                    selectedTitleStyle = {styles.seletedTextStyle}
+                    titleStyle ={styles.textStyle}
+                    renderIcon = {() => <Image source={require('./../img/myClass.png')} style={styles.iconStyle}/> }
+                    renderSelectedIcon ={() => <Image source={require('./../img/myClass_selected.png')} style={styles.iconStyle}/> }
+                    onPress={() => this.setState({selectTab:'myClass'})}>
+                    <GetClassInfo getStudentInfo={this.getStudentInfo.bind(this)}/>
+                </TabNavigator.Item>
             </TabNavigator>
             </DrawerLayoutAndroid>
         );
@@ -105,7 +114,7 @@ export default class BottomTap extends Component {
         var params = {uri:uri};
         this.toOtherPage('BanerWebview',BanerWebview, params);
     }
-
+    //封装跳转的逻辑
     toOtherPage(name, component, params){
         const {navigator} = this.props;
         if (navigator){
@@ -139,9 +148,10 @@ export default class BottomTap extends Component {
         });
 
     }
-
-    toMyClass(){
-        this.toOtherPage('GetClassInfo', GetClassInfo);
+    //我将原来放在home的我的班级放到底部tab了
+    toMyClass(classId){
+        // this.toOtherPage('GetClassInfo', GetClassInfo);
+        this.setState({selectTab:'myClass'});
     }
     //这是原先没有使用折叠功能时候的新闻广场到达详细页的点击功能
     Press(id){
@@ -229,6 +239,19 @@ export default class BottomTap extends Component {
 
 
                 break;
+        }
+    }
+
+    getStudentInfo(id){
+        const {navigator} = this.props;
+        if(navigator){
+            navigator.push({
+                name:'GetStudentInfo',
+                component:GetStudentInfo,
+                params:{
+                    id:id,
+                }
+            });
         }
     }
 

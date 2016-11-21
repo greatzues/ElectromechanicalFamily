@@ -23,10 +23,12 @@ export default class Home extends Component {
             <View>
                 <Toolbar  click = {this.props.homeClick}
                           title= {this.props.title}
-                          navIcon = {this.props.navIcon}
+                          navIcon = {require('./img/homeTop1.png')}
                           onIconClicked={this.props.click}
                           onActionSelected={this.props.onActionSelected}
-                          actions={this.props.actions}/>
+                          actions={this.props.actions}
+                          logo={require('./img/homeTop2.png')}
+                />
 
                 <View><PicBanner bannerClick={this.props.bannerClick}/></View>
                 <View style={styles.body}>
@@ -34,13 +36,6 @@ export default class Home extends Component {
                         <View style = {[styles.textStyle,{backgroundColor:'#bcd3eb'}]}>
                             <Image source={require('./img/JDGround.png')} style={styles.itemImage}/>
                             <Text style={styles.text}>机电广场</Text>
-                        </View>
-                    </TouchableOpacity>
-
-                    <TouchableOpacity onPress={this.props.toMyClass}>
-                        <View style = {[styles.textStyle,{backgroundColor:'#cbbceb'}]}>
-                                <Image source={require('./img/JDMyClass.png')} style={styles.itemImage}/>
-                                <Text style={styles.text}>我的班级</Text>
                         </View>
                     </TouchableOpacity>
 
@@ -62,7 +57,13 @@ export default class Home extends Component {
         );
     }
 
-
+    renderTop(){
+        return(
+            <View style={{height:30}}>
+                <Image source={require('./../img/homeTop2.png')} style={{height:10,width:60}}></Image>
+            </View>
+        );
+    }
 //此处编写签到逻辑
     absence(){
         var URL = '/student/sign';
