@@ -38,7 +38,7 @@ export default class BanerWebview extends Component{
 
     render() {
         return (
-            <View style={[styles.container]}>
+            <View style={styles.container}>
                 <View style={[styles.addressBarRow]}>
                     <TouchableOpacity onPress={this.goBack.bind(this)}>
                         <View style={this.state.backButtonEnabled ? styles.navButton : styles.disabledButton}>

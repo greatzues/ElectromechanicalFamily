@@ -2,37 +2,28 @@
  * Created by zues on 2016/8/26.
  */
 import React, { Component } from 'react';
-import { StyleSheet, Text, View, Dimensions, Image, TouchableOpacity, ScrollView, Navigator, findNodeHandle ,AsyncStorage } from 'react-native';
-// import ImagePicker from 'react-native-image-picker';
-import Net from './Net';
+import { StyleSheet, Text, View, Dimensions, Image, TouchableOpacity, ScrollView, Navigator, findNodeHandle ,AsyncStorage, ToastAndroid } from 'react-native';
+import Net from './Tool';
 import ScrollableTabView, { DefaultTabBar } from 'react-native-scrollable-tab-view';
 import BaseInfo from './component/BaseInfo';
 import myImagePicker from 'react-native-image-crop-picker';
+// import ImagePicker from 'react-native-image-picker';
 
 var BlurView = require('react-native-blur').BlurView;
 
-var BASEURL = 'http://119.29.184.235:8080/jd/avatar/';
-var deviceWidth = Dimensions.get('window').width;
-
+const AVATAR = 'http://119.29.184.235:8080/jd/avatar/';
+const INFO = '/students/getinfo';
+const UPLOAD = '/students/upload';
 export default class Users extends Component {
     constructor(props){
         super(props);
         this.state ={
             pleaseLogin: '',
-            myResponse:'',
+            myResponse:'请登录',
             avatarSource: null,
             viewRef:0,
             image:null,
         }
-    }
-
-    componentDidMount() {
-        var myResult = '';
-        AsyncStorage.getItem('username',(error,result) => {
-            myResult = result;
-            myResult!==null?this.fetchData():this.setState({pleaseLogin:'请登录'});
-            this.refs.baseInfo.componentDidMount();
-        });
     }
 
     imageLoaded() {
@@ -43,7 +34,7 @@ export default class Users extends Component {
         return (
             <View style={styles.container}>
                 <Image
-                    source={{uri:BASEURL+this.state.avatarSource}}
+                    source={this.props.avatar === null?require('./img/UserBackground.jpg'):{uri:AVATAR+this.props.avatar}}
                     style={styles.userBackground}
                     ref={'backgroundImage'}
                     onLoadEnd={this.imageLoaded.bind(this)}>
@@ -56,12 +47,12 @@ export default class Users extends Component {
                             viewRef={this.state.viewRef}
                         />
                         <View>
-                            { this.state.avatarSource === null ?
+                            { this.props.avatar === null ?
                                 <Image source={require('./img/UserDafault.png')} style={styles.avatar}></Image> :
-                                <Image style={styles.avatar} source={{uri:'http://119.29.184.235:8080/jd/avatar/58avatar'}} />
+                                <Image style={styles.avatar} source={{uri:AVATAR+this.props.avatar}} />
                             }
                         </View>
-                        <Text style={{color:'white'}}>你好，{this.state.pleaseLogin}</Text>
+                        <Text style={{color:'white'}}>你好，{this.props.username===null?this.state.myResponse:this.props.username}</Text>
                         <View style={{flexDirection: 'row',}}>
                             <TouchableOpacity
                                 style={styles.bottomAvatar}
@@ -83,10 +74,10 @@ export default class Users extends Component {
                         tabBarPosition='top'
                     >
                         <ScrollView tabLabel='基本信息'>
-                            <BaseInfo name = '基本信息' ref="baseInfo"/>
+                            <BaseInfo name = '基本信息' ref="baseInfo" baseResponse={this.props.userResponse}/>
                         </ScrollView>
                         <ScrollView tabLabel='工作信息'>
-                            <BaseInfo name = '工作信息' ref="baseInfo"/>
+                            <BaseInfo name = '工作信息' ref="baseInfo" baseResponse={this.props.userResponse}/>
                         </ScrollView>
                     </ScrollableTabView>
                 </View>
@@ -95,10 +86,10 @@ export default class Users extends Component {
     }
     //backgroundColor='rgba(255, 255, 255, 0.7)'这个是原来的tabBar,透明色，透明度为0.7。
     fetchData(){
-        var URl = '/student/getinfo';
         var response;
-        return new Net().getMethod(URl).then((responseData) => {
+        return new Net().getMethod(INFO).then((responseData) => {
             response = responseData.response;
+            console.log(response);
             return this.setState({
                 myResponse:response,
                 avatarSource:response.avatar,
@@ -113,30 +104,32 @@ export default class Users extends Component {
     }
 
     pickSingle(){
-        myImagePicker.openPicker({
-            width: 300,
-            height: 400,
-            cropping: true
-        }).then(image => {
-            this.setState({
-                image:image.path,
+        if(this.props.avatar === null){
+            ToastAndroid.show('请先登录', ToastAndroid.SHORT)
+        }else {
+            myImagePicker.openPicker({
+                width: 300,
+                height: 400,
+                cropping: true
+            }).then(image => {
+                this.setState({
+                    image:image.path,
+                });
+                this.updateAvatar(image.path);
+            }).catch(e => {
+                console.log('Error:'+e);
             });
-            AsyncStorage.setItem('avatarPath',image.path);
-            this.updateAvatar(image.path);
-        }).catch(e => {
-            console.log('Error:'+e);
-        });
+        }
     }
 
     updateAvatar(url){
-        new Net().postFile('/student/upload',url)
+        new Net().postFile(UPLOAD,url)
             .then((data) => {
                 this.fetchData();
             }).catch(error => {
             alert("error message:"+ error);
         });
     }
-
 }
 
 const styles = StyleSheet.create({
@@ -155,7 +148,7 @@ const styles = StyleSheet.create({
     },
     userBackground:{
         height:180,
-        width:deviceWidth,
+        width:device.width,
         alignItems: 'center',
     },
 

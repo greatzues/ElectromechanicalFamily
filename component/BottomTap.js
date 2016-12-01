@@ -2,14 +2,14 @@
  * Created by zues on 2016/8/26.
  */
 import React, { Component } from 'react';
-import { View, Text, StyleSheet, Image, Navigator, DrawerLayoutAndroid, AsyncStorage, ToastAndroid, BackAndroid } from 'react-native';
+import { View, Text, StyleSheet, Image, Navigator, DeviceEventEmitter, DrawerLayoutAndroid, AsyncStorage, ToastAndroid, BackAndroid } from 'react-native';
 import TabNavigator from 'react-native-tab-navigator';
 
 import Users from '../Users';
 import Home from '../Home';
 import Login from './Login';
 import EditUserInfo from './EditUserInfo';
-import Net from '../Net';
+import Net from '../Tool';
 import DrawerView from './DrawerView';
 import JDGround from './JDGround';
 import DetailPage from './DetailPage';
@@ -26,12 +26,18 @@ var toolbarActions = [
     {title: 'Filter', icon: require('./../img/write.png'), show: 'never'},
     {title: 'Settings', icon: require('./../img/fav.png'), show: 'never'},
 ];
-
+const LOGIN = '/students/login';
+const INFO = '/students/getinfo';
 export default class BottomTap extends Component {
     constructor(props){
         super(props);
         this.state = {
             selectTab: 'home',
+            avatar:null,
+            username:null,
+            refresh:false,
+            response:null,
+            classNumber:null,
         };
     };
 
@@ -39,10 +45,19 @@ export default class BottomTap extends Component {
         this.autoLogin();
     }
 
+    componentWillUnmount(){
+        this.subscription.remove();
+    };
+
     render(){
         var navigationView = (
             <View style={{ backgroundColor: '#eee'}}>
-                <DrawerView quitLogin={this.quitLogin.bind(this)} quitApp={this.quitApp.bind(this)} ref="drawerView"/>
+                <DrawerView
+                    quitLogin={this.quitLogin.bind(this)}
+                    quitApp={this.quitApp.bind(this)}
+                    avatar={this.state.avatar}
+                    username={this.state.username}
+                />
             </View>
         );
 
@@ -51,7 +66,8 @@ export default class BottomTap extends Component {
                 ref="drawer"
                 drawerWidth={250}
                 drawerPosition={DrawerLayoutAndroid.positions.Left}
-                renderNavigationView={() => navigationView}>
+                renderNavigationView={() => navigationView}
+                drawerLockMode={this.state.refresh===false?'locked-closed':'unlocked'}>
             <TabNavigator>
                 <TabNavigator.Item
                     title = "主页"
@@ -61,7 +77,7 @@ export default class BottomTap extends Component {
                     renderIcon = {() => <Image source={require('./../img/home.png')} style={styles.iconStyle}/> }
                     renderSelectedIcon ={() => <Image source={require('./../img/home_selected.png')} style={styles.iconStyle}/> }
                     onPress={() => this.setState({selectTab:'home'})}>
-                    <Home homeClick={this.click.bind(this)}
+                    <Home homeClick={this.toLogin.bind(this)}
                           title= "机电E家人"
                           onActionSelected={this.onActionSelected.bind(this)}
                           actions={toolbarActions}
@@ -91,7 +107,8 @@ export default class BottomTap extends Component {
                     renderIcon = {() => <Image source={require('./../img/me_normal.png')} style={styles.iconStyle}/> }
                     renderSelectedIcon ={() => <Image source={require('./../img/me_hight.png')} style={styles.iconStyle}/> }
                     onPress={() => this.setState({selectTab:'user'})}>
-                    <Users toEdit={this.toEdit.bind(this)} ref="user"/>
+                    <Users toEdit={this.toEdit.bind(this)} ref="user" userResponse={this.state.response}
+                           avatar={this.state.avatar} username={this.state.username}/>
                 </TabNavigator.Item>
 
                 <TabNavigator.Item
@@ -102,72 +119,57 @@ export default class BottomTap extends Component {
                     renderIcon = {() => <Image source={require('./../img/myClass.png')} style={styles.iconStyle}/> }
                     renderSelectedIcon ={() => <Image source={require('./../img/myClass_selected.png')} style={styles.iconStyle}/> }
                     onPress={() => this.setState({selectTab:'myClass'})}>
-                    <GetClassInfo getStudentInfo={this.getStudentInfo.bind(this)}/>
+                    <GetClassInfo getStudentInfo={this.getStudentInfo.bind(this)} getClass={this.state.classNumber}/>
                 </TabNavigator.Item>
             </TabNavigator>
             </DrawerLayoutAndroid>
         );
     }
-    //<MyListView Press={this.Press.bind(this)}/>
+
     //轮播图超链接
     bannerClick(uri){
         var params = {uri:uri};
-        this.toOtherPage('BanerWebview',BanerWebview, params);
-    }
-    //封装跳转的逻辑
-    toOtherPage(name, component, params){
-        const {navigator} = this.props;
-        if (navigator){
-            navigator.push({
-                name:name,
-                component:component,
-                params:params
-            })
-        }
+        new Net().toOther(this.props,'BanerWebview',BanerWebview, params);
     }
 
     toXiaoYouIntro(){
-        this.toOtherPage('XiaoYouIntroduce',XiaoYouIntroduce);
+        new Net().toOther(this.props,'XiaoYouIntroduce',XiaoYouIntroduce);
     }
 
     toJDGround(){
-        this.toOtherPage('JDGround',JDGround);
+        new Net().toOther(this.props,'JDGround',JDGround);
     }
 
-    click(){
-        // this.refs.toolbar.onIconClicked();
-        var myResult = '';
-        AsyncStorage.getItem('username',(error,result) => {
-            myResult = result;
-            if(myResult!==null){
-                this.refs.drawer.openDrawer();
-            }else{
-                var params = { callback:() => this.reRenderData(),}
-                this.toOtherPage('Login',Login, params);
-            }
-        });
-
-    }
-    //我将原来放在home的我的班级放到底部tab了
-    toMyClass(classId){
-        // this.toOtherPage('GetClassInfo', GetClassInfo);
-        this.setState({selectTab:'myClass'});
-    }
-    //这是原先没有使用折叠功能时候的新闻广场到达详细页的点击功能
-    Press(id){
-        console.log(id);
-        var params = {id:id};
-        this.toOtherPage('DetailPage',DetailPage,params);
+    toLogin(){
+        storage.load({key:'loginState'}).then(r =>{
+            this.refs.drawer.openDrawer();
+        }).catch(e => {
+            var params = {update:(ifRefresh) => this.reRenderData(ifRefresh)};
+            new Net().toOther(this.props,'Login',Login,params);
+            console.log(e);
+        })
     }
 
-    reRenderData(){
-        this.setState({selectTab:'home'});
-        this.refs.user.componentDidMount();
-        this.refs.drawerView.componentDidMount();
+    //重新渲染更新之后的getInfo数据和自动登录之后的getInfo数据
+    reRenderData(ifRefresh){
+        if(ifRefresh === true){
+            new Net().getMethod(INFO).then((r) => {
+                this.setState({
+                    username:r.response.realname,
+                    avatar:r.response.avatar,
+                    classNumber:r.response.classNumber,
+                    id:r.response.id,
+                    response:r.response
+                });
+            }).catch(error => {
+                console.log(error);
+            });
+        }
+        return null;
     }
 
     toBriefNews(){
-        this.toOtherPage('NewsItem',NewsItem);
+        new Net().toOther(this.props, 'NewsItem',NewsItem);
     }
 
     quitApp(){
@@ -181,43 +183,35 @@ export default class BottomTap extends Component {
     }
 
     quitLogin(){
-        AsyncStorage.clear();
-        this.toOtherPage('Login',Login,null);
+        storage.remove({key: 'loginState'});
+        new Net().toOther(this.props,'Login',Login,null);
         this.refs.drawer.closeDrawer();
     }
 
     autoLogin(){
-        var URL = '/student/login';
-        var username = '';
-        var password = '';
-        //分别拿到在AsyncStorage中储存的username和password，这里取的方式比较特别，是在数组里面取。
-        AsyncStorage.multiGet(['username','password'],(error, result) => {
-            username=result[0][1];
-            password =result[1][1];
-            new Net().postLoginMethod(URL,username,password).then((responseData) => {
-                console.log(responseData.status);
+        new Net().loadKey('loginState').then(r => {
+            new Net().postLoginMethod(LOGIN,r.username,r.password).then((responseData) => {
+                this.setState({refresh:true})
+                this.reRenderData(true);
             }).catch(error => {
                 alert("网络出现错误");
                 console.error(error);
             });
-        });
+        }).catch(e => {
+            console.log(e);
+        })
     }
 
     toEdit(){
-        var myResult = '';
-        AsyncStorage.getItem('username',(error,result) => {
-            myResult = result;
-            if(myResult!==null){
-                var params = {callback:() => this.reRenderUserInfo(),}
-                this.toOtherPage('EditUserInfo',EditUserInfo,params);
-            }else{
-                alert('请先登录');
+        new Net().loadKey('loginState').then(r => {
+            if(r.username){
+                var params = {id:this.state.id,update:(ifRefresh) => this.reRenderData(ifRefresh)};
+                new Net().toOther(this.props,'EditUserInfo',EditUserInfo,params);
             }
-        });
-    }
-
-    reRenderUserInfo(){
-        this.refs.user.componentDidMount();
+        }).catch(e => {
+            ToastAndroid.show('请先登录',ToastAndroid.SHORT);
+            console.log(e);
+        })
     }
 
     onActionSelected(position){
@@ -225,7 +219,7 @@ export default class BottomTap extends Component {
         switch (position){
             case 0:
                 //此处编写消息发布
-                this.toOtherPage('EditMessage',EditMessage);
+                new Net().toOther(this.props, 'EditMessage',EditMessage);
                 break;
             case  1:
                 //此处留下来扩展功能
@@ -243,18 +237,9 @@ export default class BottomTap extends Component {
     }
 
     getStudentInfo(id){
-        const {navigator} = this.props;
-        if(navigator){
-            navigator.push({
-                name:'GetStudentInfo',
-                component:GetStudentInfo,
-                params:{
-                    id:id,
-                }
-            });
-        }
+        var params ={id:id};
+        new Net().toOther(this.props,'GetStudentInfo', GetStudentInfo,params);
     }
-
 }
 
 const styles = StyleSheet.create({

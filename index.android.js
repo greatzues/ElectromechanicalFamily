@@ -12,12 +12,20 @@ import {
   View,
     Navigator,
     BackAndroid,
-    ToastAndroid
+    ToastAndroid,
+    AsyncStorage
 } from 'react-native';
 import StartPage from './component/StartPage';
 import BottomTap from './component/BottomTap';
+import Storage from 'react-native-storage';
 
-//测试import
+var storage = new Storage({
+    size: 1000,
+    storageBackend: AsyncStorage,
+    defaultExpires: 1000 * 3600 * 24,
+    enableCache: true,
+});
+global.storage = storage;
 
 class ElectromechanicalFamily extends Component {
   constructor(props) {
@@ -55,9 +63,7 @@ class ElectromechanicalFamily extends Component {
     //解除定时器
     componentWillUnMount() {
         this.timer && clearTimeout(this.timer);
-
         BackAndroid.removeEventListener('hardwareBackPress', this.onBackAndroid);
-
     }
 
   render() {

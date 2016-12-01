@@ -2,57 +2,40 @@
  * Created by zues on 2016/9/20.
  */
 import React, { Component } from 'react';
-import { View, Text, StyleSheet, Image, Navigator, Dimensions, TouchableOpacity, AsyncStorage } from 'react-native';
-import Net from '../Net';
+import { View, Text, StyleSheet, Image, Navigator, Dimensions, TouchableOpacity, AsyncStorage, DeviceEventEmitter } from 'react-native';
+import Net from '../Tool';
 import ImagePicker from 'react-native-image-picker';
 import Login from './Login';
 
-const BASEURL = 'http://119.29.184.235:8080/jd/avatar/';
-const deviceWidth = Dimensions.get('window').width;
+const AVATAR = 'http://119.29.184.235:8080/jd/avatar/';
+const LISTENERKEY = 'reRender';
 export default class DrawerView extends Component{
     // 构造
       constructor(props) {
         super(props);
         // 初始状态
           this.state ={
-              myResponse:'',
-              avatarSource: null,
-              videoSource: null,
+              myResponse:'请登录',
+              avatarSource:null,
               imgUrl: null,
               filename: null,
-              isLogin:false,
           }
       }
 
-    componentDidMount() {
-            var myResult = '';
-            AsyncStorage.getItem('username',(error,result) => {
-                myResult = result;
-                myResult!==null?this.fetchData():this.setState({myResponse:'请登录'});
-            });
-        // AsyncStorage.getItem('userInfo',(error, result) => {
-        //     console.log("DrawerView avatar------->>"+result);
-        //     this.setState({
-        //         avatarSource:result.avatar,
-        //     })
-        // });
-    }
-
       render(){
-          var myResponse = this.state.myResponse;
           return(
               <View style={styles.container}>
                   <Image
                       source={require('../img/UserBackground.jpg')}
                       style={styles.userBackground}>
                       <View>
-                          { this.state.avatarSource === null ?
+                          { this.props.avatar === null ?
                               <Image source={require('../img/UserDafault.png')} style={styles.avatar}></Image> :
-                              <Image style={styles.avatar} source={{uri:BASEURL+this.state.avatarSource}} />
+                              <Image style={styles.avatar} source={{uri:AVATAR+this.props.avatar}} />
                           }
                       </View>
-                      <Text style={{color:'white'}}>你好，{myResponse}</Text>
-                      {this.state.isLogin?<Text style={{color:'gray'}}>您已登录</Text>:null}
+                      <Text style={{color:'white'}}>你好，{this.props.username===null?this.state.myResponse:this.props.username}</Text>
+                      {this.props.avatar === null?null:<Text style={{color:'gray'}}>您已登录</Text>}
                   </Image>
 
                       <TouchableOpacity
@@ -76,25 +59,6 @@ export default class DrawerView extends Component{
               </View>
           );
       }
-
-
-    fetchData(){
-        var URl = '/student/getinfo';
-        var response;
-        return new Net().getMethod(URl).then((responseData) => {
-            response = responseData.response;
-            var userClassId = 'userClassId';
-            AsyncStorage.setItem(userClassId,response.classid);
-            this.setState({
-                myResponse:response.name,
-                avatarSource:response.avatar,
-                isLogin:true,
-            });
-        }).catch(error => {
-            alert("网络出现错误");
-            console.error(error);
-        });
-    }
 
     avatarUpload(){
         const options = {
@@ -143,13 +107,12 @@ export default class DrawerView extends Component{
                     avatarSource: source
                 });
 
-                new Net().postFile('/student/upload2',this.state.imgUrl,this.state.filename)
+                new Net().postFile('/students/upload',this.state.imgUrl,this.state.filename)
                     .then((data) => {
 
                     });
             }
         });
-
     }
 }
 

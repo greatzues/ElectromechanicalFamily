@@ -2,10 +2,10 @@ import React, { Component } from 'react';
 import { View, Text, StyleSheet, ListView, Image, PixelRatio, Dimensions, TouchableOpacity } from 'react-native';
 import ParallaxScrollView from 'react-native-parallax-scroll-view';
 import ViewPager from 'react-native-viewpager';
-import Net from './Net';
+import Net from './Tool';
 import DetailPage from './component/DetailPage';
 
-const window = Dimensions.get('window');
+const LATEST = 'http://news-at.zhihu.com/api/4/news/latest';
 const AVATAR_SIZE = 120;
 const ROW_HEIGHT = 60;
 const PARALLAX_HEADER_HEIGHT = 200;
@@ -104,10 +104,7 @@ export default class NewsItem extends Component {
     }
 
     back(){
-        const{navigator} = this.props;
-        if(navigator){
-            navigator.pop();
-        }
+        new Net().back(this.props);
     };
 
     myRenderRow(rowData,sectionID,rowID){
@@ -133,24 +130,14 @@ export default class NewsItem extends Component {
     }
 
     fetchData(){
-        var url = 'http://news-at.zhihu.com/api/4/news/latest';
-        return new Net().getZhiHuMethod(url).catch(error => {
+        return new Net().getZhiHuMethod(LATEST).catch(error => {
             alert("error message:"+ error);
         });
     }
 
     Press(id){
-        console.log(id);
-        const {navigator} = this.props;
-        if(navigator){
-            navigator.push({
-                name:'DetailPage',
-                component:DetailPage,
-                params:{
-                    id:id,
-                }
-            });
-        }
+        var params = {id:id};
+        new Net().toOther(this.props, 'DetailPage',DetailPage,params);
     }
 
     componentDidMount() {

@@ -3,11 +3,13 @@
  */
 import React, { Component } from 'react';
 import { WebView, View, Text, StyleSheet, ListView, Image, TouchableOpacity, Navigator, ToastAndroid, AsyncStorage } from 'react-native';
-import Net from '../Net';
+import Net from '../Tool';
 import GetStudentInfo from './GetStudentInfo';
 import Toolbar from './Toolbar';
 
-const BASEURL = 'http://119.29.184.235:8080/jd/avatar/';
+const AVATAR = 'http://119.29.184.235:8080/jd/avatar/';
+const CLASS = '/students';
+const SIGN = '/students/sign';
 export default class GetClassInfo extends Component {
     // 构造
       constructor(props) {
@@ -30,7 +32,6 @@ export default class GetClassInfo extends Component {
         return (
             <View style={styles.container}>
                 <Toolbar title="我的班级"
-                         click={this.backToHome.bind(this)}
                          actions={[{title:this.state.absence,show: 'always'}]}
                          onActionSelected={this.onActionSelected.bind(this)}/>
                 <ListView
@@ -45,17 +46,16 @@ export default class GetClassInfo extends Component {
         );
     }
 
-//<Image source={{uri:BASEURL+rowData.avatar}} style={styles.avatar} />
     myRenderRow(rowData,sectionID,rowID){
-        console.log(rowData);
         return (
             <TouchableOpacity onPress={() => this.props.getStudentInfo(rowData.id)} style={styles.studentItem}>
-                { rowData.avatar !== null ?
-                    <Image style={styles.avatar} source={{uri:BASEURL+rowData.avatar}} />:
+                { rowData.avatar ?
+                    <Image style={styles.avatar} source={{uri:AVATAR+rowData.avatar}} />:
                     <Image source={require('../img/UserDafault.png')} style={styles.avatar}></Image>
                 }
-                <View>
-                    <Text style={styles.name}>{rowData.name}</Text>
+                <View style={{ justifyContent: 'space-between',flexDirection:'row',flex:1}}>
+                    <Text style={styles.name}>{rowData.realname}</Text>
+                    <Text style={styles.class}>{rowData.classNumber}班</Text>
                 </View>
             </TouchableOpacity>
         )
@@ -72,7 +72,6 @@ export default class GetClassInfo extends Component {
     }
 
     absence(){
-        var URL = '/student/sign';
         var date = new Date();
         var day = date.getDate();
         var month = date.getMonth();
@@ -85,7 +84,7 @@ export default class GetClassInfo extends Component {
         var post = date.getFullYear()+''+month+''+day;
         var postData = {date:post};
         console.log(postData);
-        new Net().postMethod(URL,postData).then((responseData) => {
+        new Net().postMethod(SIGN,postData).then((responseData) => {
             console.log(responseData.status);
         }).catch(error => {
             alert("网络出现错误");
@@ -98,39 +97,22 @@ export default class GetClassInfo extends Component {
     componentDidMount() {
         this.fetchData();
     }
-
+    //拿到学生的id传过去
     fetchData(){
-        return AsyncStorage.getItem('userClassId',(error, result) => {
-            var URl = '/student/getclasssinfo?classid='+result;
-             new Net().getMethod(URl).then((responseData) => {
+        if(this.props.getClass !== null){
+            new Net().getMethod(CLASS+'?page=1&&classNumber'+this.props.getClass).then((responseData) => {
                 console.log(responseData.status);
-                let students = responseData.response.students;
+                let students = responseData.students;
                 this.setState({
                     userData:students,
-                    id:students.id,
                 });
             });
-        });
-    }
-
-    backToHome(){
-        const { navigator } = this.props;
-        if (navigator){
-            navigator.popToTop();
         }
     }
 
     Press(id){
-        const {navigator} = this.props;
-        if(navigator){
-            navigator.push({
-                name:'GetStudentInfo',
-                component:GetStudentInfo,
-                params:{
-                    id:id,
-                }
-            });
-        }
+        var params = {id:id};
+        new Net().toOther(this.props, 'GetStudentInfo',GetStudentInfo,params);
     }
     //toLowerCase()方法可以把字符串中的大写字母转换为小写，toUpperCase()方法可以把字符串中的小写字母转换为大写。
 }
@@ -147,6 +129,7 @@ const styles = StyleSheet.create({
         borderBottomColor:'#eee',
         marginRight:10,
         marginLeft:10,
+        position: 'relative'
     },
 
     avatar:{
@@ -159,5 +142,9 @@ const styles = StyleSheet.create({
 
     name:{
         fontSize:20
+    },
+
+    class:{
+        alignSelf:'center'
     }
 });

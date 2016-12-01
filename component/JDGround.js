@@ -2,14 +2,12 @@
  * Created by zues on 2016/8/26.
  */
 import React, { Component } from 'react';
-import {
-    StyleSheet, Text, View ,  ListView, RefreshControl, TouchableOpacity, Navigator, Image, Dimensions
-} from 'react-native';
+import {StyleSheet, Text, View ,  ListView, RefreshControl, TouchableOpacity, Navigator, Image, Dimensions} from 'react-native';
 import Toolbar from './Toolbar';
-import Net from '../Net';
+import Net from '../Tool';
 import DetailPage from './DetailPage';
 
-const deviceWidth = Dimensions.get('window').width;
+const NEWS = '/news?page=';
 export default class SchoolNews extends Component {
     constructor(props){
         super(props);
@@ -18,17 +16,17 @@ export default class SchoolNews extends Component {
             sectionHeaderHasChanged: (s1, s2) => s1 !== s2
         });
         this.state={
-            userData: {},
+            news: {},
             dataSource:ds,
             refreshing:false,
+            page:'1',
         };
     }
 
     componentDidMount() {
-        this.fetchData().then((responseData) => {
-            let story = responseData;
+        this.fetchData().then(r => {
             this.setState({
-                userData : story.stories,
+                news : r.newsList,
             });
         });
     }
@@ -37,9 +35,9 @@ export default class SchoolNews extends Component {
         return (
             <TouchableOpacity  onPress={() => this.Press(rowData.id)}>
                 <View style={styles.itemBody}>
-                    <Image source={{uri:rowData.images[0]}} style={styles.renderRowImg}/>
+                    <Text>{rowData.title}</Text>
                     <View style={styles.renderRowItem}>
-                        <Text style={styles.itemTitle} ellipsizeMode="tail" numberOfLines={1}  >{rowData.title}</Text>
+                        <Text style={styles.itemTitle} ellipsizeMode="tail" numberOfLines={1}  >{rowData.summary}</Text>
                         <Text style={styles.itemTime}>1小时前</Text>
                     </View>
                 </View>
@@ -56,7 +54,7 @@ export default class SchoolNews extends Component {
                          navIcon = {require('../img/back.png')}
                 />
                 <ListView
-                    dataSource={this.state.dataSource.cloneWithRows(this.state.userData)}
+                    dataSource={this.state.dataSource.cloneWithRows(this.state.news)}
                     renderRow={this.myRenderRow.bind(this)}
                     enableEmptySections={true}
                     refreshControl={
@@ -78,40 +76,26 @@ export default class SchoolNews extends Component {
 
 
     Press(id){
-        console.log(id);
-        const {navigator} = this.props;
-        if(navigator){
-            navigator.push({
-                name:'DetailPage',
-                component:DetailPage,
-                params:{
-                    id:id,
-                }
-            });
-        }
+        var params = {id:id};
+        new Net().toOther(this.props,'DetailPage',DetailPage,params);
     }
 
     back(){
-        const{navigator} = this.props;
-        if(navigator){
-            navigator.pop();
-        }
+        new Net().back(this.props);
     };
 
     fetchData(){
-        var url = 'http://news-at.zhihu.com/api/4/news/latest';
-        return new Net().getZhiHuMethod(url).catch(error => {
-            alert("error message:"+ error);
-        });
+        return new Net().getMethod(NEWS+'1').catch(e => {
+            console.log(e);
+        })
     }
 
 //拿到接口之后修改一下story
     onRefresh(){
         this.setState({refreshing: true});
-        this.fetchData().then((responseData) => {
-            let story = responseData;
+        this.fetchData().then(r => {
             this.setState({
-                userData : story.stories,
+                news : r.newsList,
                 refreshing:false,
             });
         });
@@ -146,7 +130,7 @@ const styles = StyleSheet.create({
     itemTitle:{
         fontSize:20,
         fontWeight:'200',
-        width:deviceWidth-30
+        width:window.width-30
     },
     itemTime:{
         color:'#a6acb1',

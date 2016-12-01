@@ -2,20 +2,27 @@
  * Created by zues on 2016/9/6.
  */
 import React, { Component } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, Navigator, ListView, TextInput, Dimensions, ScrollView } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, Navigator, ListView, TextInput, dismissKeyboard , ScrollView } from 'react-native';
 import Toolbar from './Toolbar';
-import Net from '../Net';
+import Net from '../Tool';
+import Picker from 'react-native-picker';
+import { Kaede } from 'react-native-textinput-effects';
 
-const deviceWidth = Dimensions.get('window').width;
-var toolbarActions = [
-    {title: '完成', icon: require('./../img/write.png'), show: 'always'},
-];
-
-
+const UPDATE = '/students/';
+const INFO = '/students/getinfo';
+const toolbarActions = [{title: '完成', icon: require('./../img/write.png'), show: 'always'},];
+const title = ['姓名','班导','专业','入校时间','毕业时间','联系电话','qq号码','微信账号','性别','民族','籍贯','出生年月','政治面貌'
+    ,'家庭住址','从事行业','工作单位','职务','职称','单位电话','单位地址','其他'];
 export default class DisplayUserInfo extends Component{
     constructor(props){
         super(props);
+        var ds = new ListView.DataSource({
+            rowHasChanged: (r1, r2) => r1 !== r2,
+            sectionHeaderHasChanged: (s1, s2) => s1 !== s2
+        });
         this.state = {
+                dataSource:ds,
+                userData:[],
                 realname: '',
                 studentId: '',
                 teacher: '',
@@ -43,7 +50,6 @@ export default class DisplayUserInfo extends Component{
     }
 
     render(){
-        var response = this.state;
         return(
             <View style={styles.container}>
                 <Toolbar
@@ -52,154 +58,12 @@ export default class DisplayUserInfo extends Component{
                     navIcon = {require('./../img/back.png')}
                     onActionSelected={this.onActionSelected.bind(this)}
                     actions={toolbarActions}/>
-                <ScrollView>
-                <View style={styles.container}>
-                    <View style={{justifyContent:'center', alignItems:'center',marginTop:5}}>
-                        <Text style={{fontSize:15}}>基本信息</Text>
-                    </View>
 
-                    <View style = {styles.input}>
-                        <Text style={{marginLeft:10}}>姓名:</Text>
-                        <TextInput style={{flex:1}} onChangeText={text => this.setState({realname:text})}
-                                    >{response.realname}</TextInput>
-
-                    </View>
-
-                    <View style = {styles.input}>
-                        <Text style={{marginLeft:10}}>学号:</Text>
-                        <TextInput style={{flex:1}} onChangeText={(text) => this.setState({studentId:text})}
-                                   >{response.studentId}</TextInput>
-                    </View>
-
-
-                    <View style = {styles.input}>
-                        <Text style={{marginLeft:10}}>班导师:</Text>
-                        <TextInput style={{flex:1}} onChangeText={text => this.setState({teacher:text})}
-                                    >{response.teacher}</TextInput>
-                    </View>
-
-                    <View style = {styles.input}>
-                        <Text style={{marginLeft:10}}>所学专业:</Text>
-                        <TextInput style={{flex:1}} onChangeText={text => this.setState({major:text})}
-                                    >{response.major}</TextInput>
-                    </View>
-
-                    <View style = {styles.input}>
-                        <Text style={{marginLeft:10}}>入校时间:</Text>
-                        <TextInput style={{flex:1}} onChangeText={text => this.setState({admissionDate:text})}
-                                   >{response.admissionDate}</TextInput>
-                    </View>
-
-                    <View style = {styles.input}>
-                        <Text style={{marginLeft:10}}>毕业时间:</Text>
-                        <TextInput style={{flex:1}} onChangeText={text => this.setState({graduationDate:text})}
-                                    >{response.graduationDate}</TextInput>
-                    </View>
-
-                    <View style = {styles.input}>
-                        <Text style={{marginLeft:10}}>联系电话:</Text>
-                        <TextInput style={{flex:1}} onChangeText={text => this.setState({phone:text})}
-                                    >{response.phone}</TextInput>
-
-                    </View>
-
-                    <View style = {styles.input}>
-                        <Text style={{marginLeft:10}}>QQ号码:</Text>
-                        <TextInput style={{flex:1}} onChangeText={text => this.setState({qqNumber:text})}
-                                    >{response.qqNumber}</TextInput>
-                    </View>
-
-                    <View style = {styles.input}>
-                        <Text style={{marginLeft:10}}>微信号:</Text>
-                        <TextInput style={{flex:1}} onChangeText={text => this.setState({wecharNumber:text})}
-                                    >{response.wecharNumber}</TextInput>
-                    </View>
-
-                    <TouchableOpacity style = {styles.input} onPress={() => Picker.show()}>
-                        <Text style={{marginLeft:10}}>性别:</Text>
-                    </TouchableOpacity>
-
-                    <View style = {styles.input}>
-                        <Text style={{marginLeft:10}}>民族:</Text>
-                        <TextInput style={{flex:1}} onChangeText={text => this.setState({nationality:text})}
-                        >{response.nationality}</TextInput>
-                    </View>
-
-                    <View style = {styles.input}>
-                        <Text style={{marginLeft:10}}>籍贯:</Text>
-                        <TextInput style={{flex:1}} onChangeText={text => this.setState({nativePlace:text})}
-                        >{response.nativePlace}</TextInput>
-                    </View>
-
-                    <View style = {styles.input}>
-                        <Text style={{marginLeft:10}}>出生年月:</Text>
-                        <TextInput style={{flex:1}} onChangeText={text => this.setState({birthdate:text})}
-                        >{response.birthdate}</TextInput>
-                    </View>
-
-                    <View style = {styles.input}>
-                        <Text style={{marginLeft:10}}>政治面貌:</Text>
-                        <TextInput style={{flex:1}} onChangeText={text => this.setState({politicalStatus:text})}
-                        >{response.politicalStatus}</TextInput>
-                    </View>
-
-                    <View style = {styles.input}>
-                        <Text style={{marginLeft:10}}>家庭地址:</Text>
-                        <TextInput style={{flex:1}} onChangeText={text => this.setState({address:text})}
-                        >{response.address}</TextInput>
-                    </View>
-
-                    {/*分割线，我是下划线*/}
-                    <View style={{backgroundColor:'skyblue',height:2,width:deviceWidth}}></View>
-
-
-                    <View style={{justifyContent:'center', alignItems:'center',marginTop:5}}>
-                        <Text style={{fontSize:15}}>工作信息</Text>
-                    </View>
-
-                    <View style = {styles.input}>
-                        <Text style={{marginLeft:10}}>从事行业:</Text>
-                        <TextInput style={{flex:1}} onChangeText={text => this.setState({presentIndustry:text})}
-                        >{response.presentIndustry}</TextInput>
-                    </View>
-
-                    <View style = {styles.input}>
-                        <Text style={{marginLeft:10}}>工作单位:</Text>
-                        <TextInput style={{flex:1}} onChangeText={text => this.setState({workPlace:text})}
-                        >{response.workPlace}</TextInput>
-                    </View>
-
-                    <View style = {styles.input}>
-                        <Text style={{marginLeft:10}}>职务:</Text>
-                        <TextInput style={{flex:1}} onChangeText={text => this.setState({dudy:text})}
-                        >{response.dudy}</TextInput>
-                    </View>
-
-                    <View style = {styles.input}>
-                        <Text style={{marginLeft:10}}>职称:</Text>
-                        <TextInput style={{flex:1}} onChangeText={text => this.setState({professionalTitle:text})}
-                        >{response.professionalTitle}</TextInput>
-                    </View>
-
-                    <View style = {styles.input}>
-                        <Text style={{marginLeft:10}}>单位电话:</Text>
-                        <TextInput style={{flex:1}} onChangeText={text => this.setState({workPhone:text})}
-                        >{response.workPhone}</TextInput>
-                    </View>
-
-                    <View style = {styles.input}>
-                        <Text style={{marginLeft:10}}>单位地址:</Text>
-                        <TextInput style={{flex:1}} onChangeText={text => this.setState({workAddress:text})}
-                        >{response.workAddress}</TextInput>
-                    </View>
-
-                    <View style = {styles.input}>
-                        <Text style={{marginLeft:10}}>其他信息:</Text>
-                        <TextInput style={{flex:1}} onChangeText={text => this.setState({others:text})}
-                        >{response.others}</TextInput>
-                    </View>
-                </View>
-                    </ScrollView>
+                <ListView
+                    dataSource={this.state.dataSource.cloneWithRows(this.state.userData)}
+                    renderRow={this.renderRow.bind(this)}
+                    enableEmptySections={true}
+                />
 
                 <TouchableOpacity
                     onPress = {this.editDoneButton.bind(this)}
@@ -212,16 +76,180 @@ export default class DisplayUserInfo extends Component{
         );
     }
 
+    renderRow(rowData, sectionID, rowID){
+
+            if(title[rowID]==='性别'){
+                return (
+                        <Kaede
+                            label={title[rowID]}
+                            onFocus={this.pickSex.bind(this)}
+                            placeholder={rowData}
+                            editable={false}
+                            value={this.state.sex}
+                            ref="textInput"
+                        />
+                );
+            }else if(title[rowID]==='出生年月'){
+                return (
+                    <Kaede
+                        label={title[rowID]}
+                        onFocus={this.showDatePicker.bind(this)}
+                        placeholder={rowData}
+                        value={this.state.birthdate}
+                        editable={false}
+                    />
+                );
+            }else if(title[rowID]==='家庭住址'){
+                return (
+                    <Kaede
+                        label={title[rowID]}
+                        onFocus={this.showAreaPicker.bind(this)}
+                        placeholder={rowData}
+                        value={this.state.address}
+                        editable={false}
+                    />
+                );
+            }else{
+                return(
+                    <Kaede
+                        label={title[rowID]}
+                        placeholder={rowData}
+                        labelStyle={{color: 'grey', backgroundColor: 'white'}}
+                        inputStyle={{color: 'grey', backgroundColor: '#e9eaed'}}
+                        keyboardType="numeric"
+                        style={styles.textInput}
+                        value={this.state.rowData}
+                        onChangeText={text => this.setState({rowData:text})}
+                    />
+                )
+            }
+    }
+
+
+    pickSex(){
+        Picker.init({
+            pickerData: ['男','女'],
+            selectedValue: [0],
+            onPickerConfirm: data => {
+                this.setState({sex:data[0]});
+            },
+            onPickerCancel: data => {
+                console.log(data);
+            },
+            onPickerSelect: data => {
+                console.log(data);
+            }
+        });
+        Picker.show();
+    }
+
+    createAreaData(callback){
+        fetch('https://raw.githubusercontent.com/beefe/react-native-picker/master/example/PickerTest/area.json').then(res => {
+            res.json().then(area => {
+                let data = [];
+                let len = area.length;
+                for(let i=0;i<len;i++){
+                    let city = [];
+                    for(let j=0,cityLen=area[i]['city'].length;j<cityLen;j++){
+                        let _city = {};
+                        _city[area[i]['city'][j]['name']] = area[i]['city'][j]['area'];
+                        city.push(_city);
+                    }
+
+                    let _data = {};
+                    _data[area[i]['name']] = city;
+                    data.push(_data);
+                }
+                callback(data);
+            });
+        }, err => {
+            console.log(err);
+        });
+    }
+
+    showAreaPicker() {
+        this.createAreaData(data => {
+            Picker.init({
+                pickerData: data,
+                selectedValue: ['河北', '唐山', '古冶区'],
+                onPickerConfirm: pickedValue => {
+                    var area = pickedValue[0]+'省'+pickedValue[1]+'市'+pickedValue[2];
+                    this.setState({address:area});
+                },
+                onPickerCancel: pickedValue => {
+                    console.log('area', pickedValue);
+                },
+                onPickerSelect: pickedValue => {
+                    console.log('area', pickedValue);
+                }
+            });
+            Picker.show();
+        });
+    }
+
     componentDidMount() {
         this.fetchData();
     }
 
+    createDateData(){
+        let date = [];
+        for(let i=1990;i<2000;i++){
+            let month = [];
+            for(let j = 1;j<13;j++){
+                let day = [];
+                if(j === 2){
+                    for(let k=1;k<29;k++){
+                        day.push(k+'日');
+                    }
+                    //Leap day for years that are divisible by 4, such as 2000, 2004
+                    if(i%4 === 0){
+                        day.push(29+'日');
+                    }
+                }
+                else if(j in {1:1, 3:1, 5:1, 7:1, 8:1, 10:1, 12:1}){
+                    for(let k=1;k<32;k++){
+                        day.push(k+'日');
+                    }
+                }
+                else{
+                    for(let k=1;k<31;k++){
+                        day.push(k+'日');
+                    }
+                }
+                let _month = {};
+                _month[j+'日'] = day;
+                month.push(_month);
+            }
+            let _date = {};
+            _date[i+'日'] = month;
+            date.push(_date);
+        }
+        return date;
+    }
+
+    showDatePicker() {
+        var data = this.createDateData();
+        Picker.init({
+            pickerData: data,
+            selectedValue: ['2015', '12', '12'],
+            onPickerConfirm: pickedValue => {
+                var date = pickedValue[0]+'-'+pickedValue[1]+'-'+pickedValue[2];
+                this.setState({birthdate:date})
+            },
+            onPickerCancel: pickedValue => {
+                console.log('date', pickedValue);
+            },
+            onPickerSelect: pickedValue => {
+                console.log('date', pickedValue);
+            }
+        });
+        Picker.show();
+    }
 
     //编辑完成
     editDoneButton(){
         var postData = {
             realname: this.state.realname,
-            studentId: this.state.studentId,
             teacher: this.state.teacher,
             major: this.state.major,
             admissionDate: this.state.admissionDate,
@@ -245,16 +273,15 @@ export default class DisplayUserInfo extends Component{
         };
         console.log(postData);
         this.updateInfo(postData);
-        const { navigator } = this.props;
-        if( navigator ) {
-            this.props.callback();
-            navigator.pop();
-        }
+        this.back();
     }
 
     //取消编辑，返回到user页面
     back(){
         const { navigator } = this.props;
+        if(this.props.update){
+            this.props.update(true);
+        }
         if (navigator){
             navigator.pop();
         }
@@ -267,9 +294,7 @@ export default class DisplayUserInfo extends Component{
     }
 
     updateInfo(postData){
-        var URL = '/student/updateinfo';
-        console.log(postData);
-        return new Net().postMethod(URL,postData).then((responseJson) => {
+        return new Net().putMethod(UPDATE+this.props.id,postData).then((responseJson) => {
             console.log(responseJson.status);
         }).catch(error => {
             alert("网络出现错误");
@@ -279,44 +304,45 @@ export default class DisplayUserInfo extends Component{
 
     //拿到原来的信息填写到editText上
     fetchData(){
-        var URL = '/student/getinfo';
-        return new Net().getMethod(URL).then((responseData) => {
+        return new Net().getMethod(INFO).then((responseData) => {
             let response = responseData.response;
             this.setState({
-                realname : response.realname,
-                studentId : response.studentId,
-                classes : response.classes,
-                teacher : response.teacher,
-                major : response.major,
-                admissionDate : response.admissionDate,
-                graduationDate : response.graduationDate,
-                phone : response.phone,
-                qqNumber : response.qqNumber,
-                wecharNumber : response.wecharNumber,
-                sex : response.sex,
-                nationality : response.nationality,
-                nativePlace  :response.nativePlace,
-                birthdate : response.birthdate,
-                politicalStatus : response.politicalStatus,
-                address : response.address,
-                presentIndustry:response.presentIndustry,
-                workPlace:response.workPlace,
-                dudy:response.dudy,
-                professionalTitle:response.professionalTitle,
-                workPhone:response.workPhone,
-                workAddress:response.workAddress,
-                others:response.others,
-            }) ;
+                userData:[
+                    response.realname,
+                    response.teacher,
+                    response.major,
+                    new Net().timeToDate(response.admissionDate),
+                    new Net().timeToDate(response.graduationDate),
+                    response.phone,
+                    response.qqNumber,
+                    response.wecharNumber,
+                    response.sex,
+                    response.nationality,
+                    response.nativePlace,
+                    new Net().timeToDate(response.birthdate),
+                    response.politicalStatus,
+                    response.address,
+                    response.presentIndustry,
+                    response.workPlace,
+                    response.dudy,
+                    response.professionalTitle,
+                    response.workPhone,
+                    response.workAddress,
+                    response.others
+                ]
+            });
         }).catch(error => {
             alert("网络出现错误");
             console.error(error);
         });
     }
+
 }
 
 const styles = StyleSheet.create({
     container:{
         flex:1,
+        backgroundColor:'white'
     },
     textInput: {
         flex:1,
@@ -325,7 +351,7 @@ const styles = StyleSheet.create({
     loginButton:{
         justifyContent:'center',
         alignItems: 'center',
-        width: deviceWidth - 10,
+        width: device.width - 10,
         height: 40,
         backgroundColor: '#337ab7',
         borderRadius:5,
@@ -334,8 +360,12 @@ const styles = StyleSheet.create({
     },
     input:{
         flexDirection: 'row',
-        width:deviceWidth,
-        alignItems:'center'
+        width:device.width,
+        alignItems:'center',
+        padding:8,
+        borderBottomWidth: 0.7,
+        borderBottomColor: '#bcd3eb',
+        borderStyle: 'solid'
     },
     rowTitle:{
         height:30,
@@ -346,10 +376,13 @@ const styles = StyleSheet.create({
     loginButton:{
         justifyContent:'center',
         alignItems: 'center',
-        width: deviceWidth - 10,
+        width: device.width - 10,
         height: 40,
         backgroundColor: '#337ab7',
         borderRadius:5,
         margin:10,
     },
+    textInput:{
+        marginTop: 10,
+    }
 });

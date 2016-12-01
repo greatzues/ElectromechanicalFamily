@@ -6,9 +6,6 @@ import { View, Text, Image, StyleSheet, Dimensions, DrawerLayoutAndroid, Touchab
 
 import PicBanner from './component/PicBanner';
 import Toolbar from './component/Toolbar';
-import Net from './Net';
-const deviceWidth = Dimensions.get('window').width;
-
 export default class Home extends Component {
     constructor(props){
         super(props);
@@ -56,37 +53,6 @@ export default class Home extends Component {
             </View>
         );
     }
-
-    renderTop(){
-        return(
-            <View style={{height:30}}>
-                <Image source={require('./../img/homeTop2.png')} style={{height:10,width:60}}></Image>
-            </View>
-        );
-    }
-//此处编写签到逻辑
-    absence(){
-        var URL = '/student/sign';
-        var date = new Date();
-        var day = date.getDate();
-        var month = date.getMonth();
-        if(day<10){
-            day = "0"+date.getDate();
-        }
-        if(month<10){
-            month = "0"+ date.getMonth();
-        }
-        var post = date.getFullYear()+''+month+''+day;
-        var postData = {date:post};
-        console.log(postData);
-        new Net().postMethod(URL,postData).then((responseData) => {
-            console.log(responseData.status);
-        }).catch(error => {
-            alert("网络出现错误");
-            console.error(error);
-        });
-        return this.setState({absence : '已签到'});
-    }
 }
 
 const styles = StyleSheet.create({
@@ -94,7 +60,7 @@ const styles = StyleSheet.create({
         marginTop:5,
         borderRadius: 5,
         height: 65,
-        width: deviceWidth,
+        width: device.width,
         backgroundColor: '#eee',
         alignItems: 'center',
         flexDirection:'row',
@@ -115,7 +81,7 @@ const styles = StyleSheet.create({
     drawerLayoutAndroidView: {
         flexDirection:'row',
         flex: 1,
-        width: deviceWidth,
+        width: device.width,
         alignItems:'center',
         justifyContent:'center',
         backgroundColor:'#eee',

@@ -4,13 +4,13 @@
 import React, { Component } from 'react';
 import { WebView, View, Text, StyleSheet, ListView, Image, Dimensions, ScrollView, findNodeHandle } from 'react-native';
 import ScrollableTabView, { DefaultTabBar } from 'react-native-scrollable-tab-view';
-import Net from '../Net';
+import Net from '../Tool';
 import NormalToolbar from './normalToolbar';
+import BaseInfo from '../component/BaseInfo';
 var BlurView = require('react-native-blur').BlurView;
 
 //http://10.10.68.101:8888/student/getsomeoneInfo/?studentID=58
-const BASEURL = 'http://119.29.184.235:8080/jd/avatar/';
-const deviceWidth = Dimensions.get('window').width;
+const AVATAR = 'http://119.29.184.235:8080/jd/avatar/';
 export default class GetStudentInfo extends Component{
     constructor(props){
         super(props);
@@ -30,7 +30,7 @@ export default class GetStudentInfo extends Component{
         return(
             <View style={styles.container}>
                 <Image
-                    source={{uri:BASEURL+this.state.avatarSource}}
+                    source={{uri:AVATAR+this.state.avatarSource}}
                     style={styles.userBackground}
                     ref={'backgroundImage'}
                     onLoadEnd={this.imageLoaded.bind(this)}>
@@ -44,7 +44,7 @@ export default class GetStudentInfo extends Component{
                     />
                         <NormalToolbar click={this.back.bind(this)} color="white"/>
                         <View>
-                            <Image style={styles.avatar} source={{uri:BASEURL+this.state.avatarSource}} />
+                            <Image style={styles.avatar} source={{uri:AVATAR+this.state.avatarSource}} />
                         </View>
                         <Text style={{color:'white',fontSize:20}}>{
                             this.state.appellation === '男'?
@@ -60,11 +60,11 @@ export default class GetStudentInfo extends Component{
                         renderTabBar={()=><DefaultTabBar backgroundColor='#eee' />}
                         tabBarPosition='overlayTop'
                     >
-                        <ScrollView tabLabel='基本信息' style={{paddingTop:50}}>
-                            <Info myResponse={this.state.response}/>
+                        <ScrollView tabLabel='基本信息'>
+                            <BaseInfo name = '基本信息' ref="baseInfo" baseResponse={this.state.response}/>
                         </ScrollView>
-                        <ScrollView tabLabel='工作信息' style={{paddingTop:50}}>
-                            <WorkInfo myResponse={this.state.response}/>
+                        <ScrollView tabLabel='工作信息'>
+                            <BaseInfo name = '工作信息' ref="baseInfo" baseResponse={this.state.response}/>
                         </ScrollView>
                     </ScrollableTabView>
                 </View>
@@ -77,9 +77,8 @@ export default class GetStudentInfo extends Component{
     }
 
     fetchData(){
-        var URL='/student/getsomeoneInfo/?studentID='+this.props.id;
-        new Net().getMethod(URL).then((responseData) => {
-            let response=responseData.response;
+        var URL='/students/'+this.props.id;
+        new Net().getMethod(URL).then((response) => {
             this.setState({
                 response:response,
                 avatarSource:response.avatar,
@@ -89,10 +88,7 @@ export default class GetStudentInfo extends Component{
     }
 
     back(){
-        const { navigator } = this.props;
-        if (navigator){
-            navigator.pop();
-        }
+        new Net().back(this.props);
     }
 }
 
@@ -112,13 +108,13 @@ const styles = StyleSheet.create({
     },
     userBackground:{
         height:180,
-        width:deviceWidth,
+        width:device.width,
         alignItems: 'center',
     },
 
     input:{
         flexDirection: 'row',
-        width:deviceWidth,
+        width:device.width,
         alignItems:'center',
         margin:10,
         borderBottomColor:'#eee',

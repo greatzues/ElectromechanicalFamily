@@ -10,7 +10,7 @@ import ViewPager from 'react-native-viewpager';
 const BANNER_PIC = [
     ['http://www.wyu.edu.cn/news/file/indexpic/20160427100422762276.jpg','http://www.wyu.edu.cn/'],
     ['http://www.wyu.edu.cn/news/file/indexpic/2015100600112345.jpg','http://dept.wyu.edu.cn/kyc/kjc/'],
-    ['http://www.wyu.edu.cn/news/file/indexpic/20151120083072957295.jpg','http://www.google.com'],
+    ['http://www.wyu.edu.cn/news/file/indexpic/20151120083072957295.jpg','http://dept.wyu.edu.cn/jidianxi/'],
     ['http://www.wyu.edu.cn/news/file/indexpic/20160604212098269826.jpg','http://jwc.wyu.edu.cn/www/'],
 ];
 const deviceWidth = Dimensions.get('window').width;

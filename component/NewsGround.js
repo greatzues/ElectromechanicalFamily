@@ -5,7 +5,7 @@ import {
 
 import * as Animatable from 'react-native-animatable';
 import Accordion from 'react-native-collapsible/Accordion';
-import Net from '../Net';
+import Net from '../Tool';
 import Toolbar from './Toolbar';
 
 //需要解决的问题是：在打开一个弹出式view之后打开另外一个将原来折叠回去过程中，由于comment数据还存在渲染的时间，导致数据会出现变化，这对用户体验不好，暂时我考虑使用进度圈圈来防止这个问题。
@@ -35,7 +35,7 @@ export default class NewsGround extends Component {
     _setSection(section) {
         this.setState({ activeSection: section });
         if(section !== false){
-            this.fetchComment(this.state.userData[section].id);
+            this.fetchComment(this.state.userData[section].messageId);
         }
     }
 
@@ -45,14 +45,20 @@ export default class NewsGround extends Component {
                 <View style={styles.cardTop}>
                     <Image source={{uri:section.images[0]}}  style={styles.renderRowImg}/>
                     <View style={styles.avatarAndTime}>
-                        <Text style={styles.cardavatar}>{section.ga_prefix}</Text>
-                        <Text style={styles.cardTime}>1小时前</Text>
+                        <Text style={styles.cardavatar}>{section.belong}</Text>
+                        <Text style={styles.cardTime}>{section.date}</Text>
                     </View>
                     <Image source={require('../img/write.png')} style={styles.comment}/>
                 </View>
                 <View style={styles.cardContent}>
                     <Text style={styles.cardText} >{section.title}</Text>
-                    <Image source={{uri:section.images[0]}} style={styles.cardImage}/>
+                    <ListView
+                        ref="listView"
+                        dataSource={this.state.dataSource.cloneWithRows(this.state.images)}
+                        renderRow={this.renderRow.bind(this)}
+                        contentContainerStyle={styles.list}
+                        enableEmptySections={true}
+                    />
                 </View>
             </Animatable.View>
         );
@@ -62,7 +68,7 @@ export default class NewsGround extends Component {
         var url = 'http://news-at.zhihu.com/api/4/story/'+id+'/short-comments';
         return new Net().getZhiHuMethod(url)
             .then(data => {
-                this.setState({comment:data.comments})
+                this.setState({comment:data.message})
             })
             .catch(error => {
             alert("error message:"+ error);
@@ -101,9 +107,8 @@ export default class NewsGround extends Component {
     onRefresh(){
         this.setState({refreshing: true});
         this.fetchData().then((responseData) => {
-            let story = responseData;
             this.setState({
-                userData : story.stories,
+                userData : responseData.messages,
                 refreshing:false,
             });
         });
@@ -111,19 +116,32 @@ export default class NewsGround extends Component {
 
     //获取原始数据
     fetchData(){
-        var url = 'http://news-at.zhihu.com/api/4/news/latest';
-        return new Net().getZhiHuMethod(url).catch(error => {
+        var url = '/messages';
+        return new Net().getMethod(url).catch(error => {
             alert("error message:"+ error);
         });
     }
     //在组件渲染完调用获取数据操作
     componentDidMount() {
         this.fetchData().then((responseData) => {
-            let story = responseData;
             this.setState({
-                userData : story.stories,
+                userData : responseData.messages,
             });
         });
+    }
+
+    renderRow(rowData, sectionID, rowID){
+        return (
+                <View>
+                    <View style={styles.itemContainer}>
+                        <Image
+                            style={styles.imageItem}
+                            source={{uri:rowData.uri}}
+                            resizeMode='contain'
+                        />
+                    </View>
+                </View>
+        );
     }
 
     render() {
@@ -280,5 +298,12 @@ const styles = StyleSheet.create({
     },
     contentText:{
         fontSize:10,
-    }
+    },
+    imageItem:{
+        width:window.width*0.3,
+        height:80,
+    },
+    itemContainer:{
+        padding:3,
+    },
 });

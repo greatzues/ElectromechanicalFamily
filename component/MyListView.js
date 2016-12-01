@@ -4,7 +4,7 @@
 import React, { Component } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, ListView, Dimensions, TextInput, Image, RefreshControl, ToastAndroid,
     Navigator } from 'react-native';
-import Net from '../Net';
+import Net from '../Tool';
 import DetailPage from './DetailPage';
 import * as Animatable from 'react-native-animatable';
 import Collapsible from 'react-native-collapsible';
@@ -68,16 +68,8 @@ export default class MyListView extends Component {
     }
 
     Press(id){
-        const {navigator} = this.props;
-        if(navigator){
-           navigator.push({
-                name:'DetailPage',
-                component:DetailPage,
-                params:{
-                    id:id,
-                }
-            });
-        }
+        var params = {id:id};
+        new Net().toOther(this.props, 'DetailPage',DetailPage,params);
     }
 
     fetchData(){
@@ -126,18 +118,6 @@ export default class MyListView extends Component {
                 }
             >
             </ListView>
-        );
-    }
-}
-
-class CardBottom extends Component {
-    render(){
-        const {src,styles,content} = this.props;
-        return(
-            <View style={[this.props.styles,{flexDirection: 'row',justifyContent : 'center'}]}>
-                <Image source={this.props.src} style={{height:15,width:15}}></Image>
-                <Text style={{color:'#a6acb1',fontSize:10,marginLeft:5}} onPress={this.props.press}>{this.props.content}</Text>
-            </View>
         );
     }
 }

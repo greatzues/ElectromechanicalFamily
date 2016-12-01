@@ -6,7 +6,7 @@ import { View, Text, Image, StyleSheet, ListView, TextInput, TouchableOpacity,
     Navigator, Dimensions, Alert, ToastAndroid, TouchableWithoutFeedback } from 'react-native';
 import Toolbar from './Toolbar';
 import ImagePicker from 'react-native-image-crop-picker';
-import Net from '../Net';
+import Net from '../Tool';
 import PicDetail from './PicDetail';
 
 var toolbarActions = [{title: 'camera', icon: require('./../img/camera.png'), show: 'always'},];
@@ -107,14 +107,10 @@ export default class EditMessage extends Component{
     }
     //从相册选择图片
     pickCamera(){
-        ImagePicker.openCamera({
-            width: 300,
-            height: 400,
-            cropping: true
-        }).then(image => {
+        new Net().pickCamera(image => {
             this.state.images.push({uri:image.path,type:image.mime,name:image.path.replace(/^.*[\\\/]/, '')});
             this.setState({images:this.state.images});
-        }).catch(e => alert(e));
+        });
     }
     //文件上传
     fileUpload(){
@@ -155,22 +151,14 @@ export default class EditMessage extends Component{
     }
     //选择多图片上传，这里暂时还没解决先拍照然后再上传文件，图片增加的问题
     pickMultiple() {
-        ImagePicker.openPicker({
-            multiple: true,
-            maxFiles: 9 //ios only
-        }).then(images => {
-            // var root = images.map(i=>{
-            //     this.state.images.push({uri: i.path, type: i.mime,name:i.path.replace(/^.*[\\\/]/, '')});
-            //     return this.state.images;
-            // });
-            // console.log(root);
+        new Net().pickMultiple(images => {
             this.setState({
                 images: images.map(i => {
                     //console.log("filename",i.path.replace(/^.*[\\\/]/, '')); //正则匹配拿到filename
                     return {uri: i.path, type: i.mime,name:i.path.replace(/^.*[\\\/]/, '')};
                 })
             });
-        }).catch(e => alert(e));
+        })
     }
 
     onActionSelected(position){
@@ -196,21 +184,12 @@ export default class EditMessage extends Component{
     }
     //这个方法封装到工具类
     back(){
-        const { navigator } = this.props;
-        if (navigator){
-            navigator.pop();
-        }
+        new Net().back(this.props);
     }
 
     toPicDetail(uri){
-        const {navigator} = this.props;
-        if (navigator){
-            navigator.push({
-                name:'PicDetail',
-                component:PicDetail,
-                params:{uri:uri}
-            })
-        }
+        var params = {uri:uri};
+        new Net().toOther(this.props,'PicDetail', PicDetail, params)
     }
 
     deletePic(rowID){
