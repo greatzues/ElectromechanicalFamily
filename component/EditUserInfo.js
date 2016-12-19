@@ -2,54 +2,48 @@
  * Created by zues on 2016/9/6.
  */
 import React, { Component } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, Navigator, ListView, TextInput, dismissKeyboard , ScrollView } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, Navigator, ListView, TextInput , ScrollView } from 'react-native';
 import Toolbar from './Toolbar';
 import Net from '../Tool';
 import Picker from 'react-native-picker';
 import { Kaede } from 'react-native-textinput-effects';
+import dismissKeyboard from 'react-native-dismiss-keyboard'
 
 const UPDATE = '/students/';
 const INFO = '/students/getinfo';
 const toolbarActions = [{title: '完成', icon: require('./../img/write.png'), show: 'always'},];
-const title = ['姓名','班导','专业','入校时间','毕业时间','联系电话','qq号码','微信账号','性别','民族','籍贯','出生年月','政治面貌'
-    ,'家庭住址','从事行业','工作单位','职务','职称','单位电话','单位地址','其他'];
-export default class DisplayUserInfo extends Component{
-    constructor(props){
-        super(props);
-        var ds = new ListView.DataSource({
-            rowHasChanged: (r1, r2) => r1 !== r2,
-            sectionHeaderHasChanged: (s1, s2) => s1 !== s2
-        });
-        this.state = {
-                dataSource:ds,
-                userData:[],
-                realname: '',
-                studentId: '',
-                teacher: '',
-                major: '',
-                admissionDate: '',
-                graduationDate: '',
-                phone: '',
-                qqNumber: '',
-                wecharNumber: '',
-                sex: '',
-                nationality: '',
-                nativePlace: '',
-                birthdate: '',
-                politicalStatus: '',
-                address: '',
-                presentIndustry:'',
-                workPlace:'',
-                dudy:'',
-                professionalTitle:'',
-                workPhone:'',
-                workAddress:'',
-                others:'',
 
+//打开时间选择器的时候会出现进程意外死亡的问题，以及编辑完之后的页面更新问题
+export default class DisplayUserInfo extends Component{
+    constructor(props) {
+        super(props);
+        this.state = {
+            realname: '',
+            teacher: '',
+            major: '',
+            admissionDate: '',
+            graduationDate: '',
+            phone: '',
+            qqNumber: '',
+            wecharNumber: '',
+            sex: '',
+            nationality: '',
+            nativePlace: '',
+            birthdate: '',
+            politicalStatus: '',
+            address: '',
+            presentIndustry: '',
+            workPlace: '',
+            dudy: '',
+            professionalTitle: '',
+            workPhone: '',
+            workAddress: '',
+            others: '',
         };
     }
 
     render(){
+        var response = this.state;
         return(
             <View style={styles.container}>
                 <Toolbar
@@ -58,12 +52,31 @@ export default class DisplayUserInfo extends Component{
                     navIcon = {require('./../img/back.png')}
                     onActionSelected={this.onActionSelected.bind(this)}
                     actions={toolbarActions}/>
-
-                <ListView
-                    dataSource={this.state.dataSource.cloneWithRows(this.state.userData)}
-                    renderRow={this.renderRow.bind(this)}
-                    enableEmptySections={true}
-                />
+                <ScrollView>
+                    <View style={styles.container}>
+                        {this.myModel('姓名',   response.realname,(text)=>this.setState({realname:text}))}
+                        {this.myModel('班导',   response.teacher,(text)=>this.setState({teacher:text}))}
+                        {this.myModel('专业',   response.major,(text)=>this.setState({major:text}))}
+                        {this.myModel('入校时间','请选择时间',(text)=>this.setState({admissionDate:text}),this.showDatePicker.bind(this))}
+                        {this.myModel('毕业时间','请选择时间',(text)=>this.setState({graduationDate:text}),this.showDatePicker.bind(this))}
+                        {this.myModel('电话',   response.phone,(text)=>this.setState({phone:text}))}
+                        {this.myModel('QQ',    response.qqNumber,(text)=>this.setState({qqNumber:text}))}
+                        {this.myModel('微信',   response.wecharNumber,(text)=>this.setState({wecharNumber:text}))}
+                        {this.myModel('性别',   response.sex,(text)=>this.setState({sex:text}),this.pickSex.bind(this))}
+                        {this.myModel('民族',   response.nationality,(text)=>this.setState({nationality:text}))}
+                        {this.myModel('籍贯',   response.nativePlace,(text)=>this.setState({nativePlace:text}))}
+                        {this.myModel('出生年月','请选择时间',(text)=>this.setState({birthdate:text}),this.showDatePicker.bind(this))}
+                        {this.myModel('政治面貌',response.politicalStatus,(text)=>this.setState({politicalStatus:text}))}
+                        {this.myModel('家庭地址',response.address,(text)=>this.setState({address:text}),this.showAreaPicker.bind(this))}
+                        {this.myModel('从事行业',response.presentIndustry,(text)=>this.setState({presentIndustry:text}))}
+                        {this.myModel('工作单位',response.workPlace,(text)=>this.setState({workPlace:text}))}
+                        {this.myModel('职务',    response.dudy,(text)=>this.setState({dudy:text}))}
+                        {this.myModel('职称',    response.professionalTitle,(text)=>this.setState({professionalTitle:text}))}
+                        {this.myModel('单位电话',response.workPhone,(text)=>this.setState({workPhone:text}))}
+                        {this.myModel('单位地址',response.workAddress,(text)=>this.setState({workAddress:text}))}
+                        {this.myModel('其他信息',response.others,(text)=>this.setState({others:text}))}
+                    </View>
+                </ScrollView>
 
                 <TouchableOpacity
                     onPress = {this.editDoneButton.bind(this)}
@@ -76,64 +89,30 @@ export default class DisplayUserInfo extends Component{
         );
     }
 
-    renderRow(rowData, sectionID, rowID){
-
-            if(title[rowID]==='性别'){
-                return (
-                        <Kaede
-                            label={title[rowID]}
-                            onFocus={this.pickSex.bind(this)}
-                            placeholder={rowData}
-                            editable={false}
-                            value={this.state.sex}
-                            ref="textInput"
-                        />
-                );
-            }else if(title[rowID]==='出生年月'){
-                return (
-                    <Kaede
-                        label={title[rowID]}
-                        onFocus={this.showDatePicker.bind(this)}
-                        placeholder={rowData}
-                        value={this.state.birthdate}
-                        editable={false}
-                    />
-                );
-            }else if(title[rowID]==='家庭住址'){
-                return (
-                    <Kaede
-                        label={title[rowID]}
-                        onFocus={this.showAreaPicker.bind(this)}
-                        placeholder={rowData}
-                        value={this.state.address}
-                        editable={false}
-                    />
-                );
-            }else{
-                return(
-                    <Kaede
-                        label={title[rowID]}
-                        placeholder={rowData}
-                        labelStyle={{color: 'grey', backgroundColor: 'white'}}
-                        inputStyle={{color: 'grey', backgroundColor: '#e9eaed'}}
-                        keyboardType="numeric"
-                        style={styles.textInput}
-                        value={this.state.rowData}
-                        onChangeText={text => this.setState({rowData:text})}
-                    />
-                )
-            }
+    myModel(Label,placeholder,onChangeText,focus){
+        return (
+            <Kaede
+                label={Label}
+                placeholder={placeholder}
+                labelStyle={styles.labelStyle}
+                inputStyle={styles.inputStyle}
+                style={styles.textInput}
+                onChangeText={onChangeText}
+                onFocus={focus}
+            />
+        );
     }
-
 
     pickSex(){
         Picker.init({
             pickerData: ['男','女'],
             selectedValue: [0],
             onPickerConfirm: data => {
+                dismissKeyboard();
                 this.setState({sex:data[0]});
             },
             onPickerCancel: data => {
+                dismissKeyboard();
                 console.log(data);
             },
             onPickerSelect: data => {
@@ -233,10 +212,12 @@ export default class DisplayUserInfo extends Component{
             pickerData: data,
             selectedValue: ['2015', '12', '12'],
             onPickerConfirm: pickedValue => {
+                dismissKeyboard();
                 var date = pickedValue[0]+'-'+pickedValue[1]+'-'+pickedValue[2];
                 this.setState({birthdate:date})
             },
             onPickerCancel: pickedValue => {
+                dismissKeyboard();
                 console.log('date', pickedValue);
             },
             onPickerSelect: pickedValue => {
@@ -307,30 +288,29 @@ export default class DisplayUserInfo extends Component{
         return new Net().getMethod(INFO).then((responseData) => {
             let response = responseData.response;
             this.setState({
-                userData:[
-                    response.realname,
-                    response.teacher,
-                    response.major,
-                    new Net().timeToDate(response.admissionDate),
-                    new Net().timeToDate(response.graduationDate),
-                    response.phone,
-                    response.qqNumber,
-                    response.wecharNumber,
-                    response.sex,
-                    response.nationality,
-                    response.nativePlace,
-                    new Net().timeToDate(response.birthdate),
-                    response.politicalStatus,
-                    response.address,
-                    response.presentIndustry,
-                    response.workPlace,
-                    response.dudy,
-                    response.professionalTitle,
-                    response.workPhone,
-                    response.workAddress,
-                    response.others
-                ]
-            });
+                realname : response.realname,
+                classes : response.classes,
+                teacher : response.teacher,
+                major : response.major,
+                admissionDate : response.admissionDate,
+                graduationDate : response.graduationDate,
+                phone : response.phone,
+                qqNumber : response.qqNumber,
+                wecharNumber : response.wecharNumber,
+                sex : response.sex,
+                nationality : response.nationality,
+                nativePlace  :response.nativePlace,
+                birthdate : response.birthdate,
+                politicalStatus : response.politicalStatus,
+                address : response.address,
+                presentIndustry:response.presentIndustry,
+                workPlace:response.workPlace,
+                dudy:response.dudy,
+                professionalTitle:response.professionalTitle,
+                workPhone:response.workPhone,
+                workAddress:response.workAddress,
+                others:response.others,
+            }) ;
         }).catch(error => {
             alert("网络出现错误");
             console.error(error);
@@ -351,7 +331,7 @@ const styles = StyleSheet.create({
     loginButton:{
         justifyContent:'center',
         alignItems: 'center',
-        width: device.width - 10,
+        width: window.width - 10,
         height: 40,
         backgroundColor: '#337ab7',
         borderRadius:5,
@@ -360,7 +340,7 @@ const styles = StyleSheet.create({
     },
     input:{
         flexDirection: 'row',
-        width:device.width,
+        width:window.width,
         alignItems:'center',
         padding:8,
         borderBottomWidth: 0.7,
@@ -376,7 +356,7 @@ const styles = StyleSheet.create({
     loginButton:{
         justifyContent:'center',
         alignItems: 'center',
-        width: device.width - 10,
+        width: window.width - 10,
         height: 40,
         backgroundColor: '#337ab7',
         borderRadius:5,
@@ -384,5 +364,15 @@ const styles = StyleSheet.create({
     },
     textInput:{
         marginTop: 10,
-    }
+    },
+
+    labelStyle:{
+        color: 'grey',
+        backgroundColor: 'white'
+    },
+    inputStyle:{
+        color: 'grey',
+        backgroundColor: '#e9eaed'
+    },
+
 });

@@ -48,7 +48,7 @@ export default class DrawerView extends Component{
                           style={styles.itemTouch}
                           onPress={this.props.quitLogin}>
                           <Image source={require('../img/me_hight.png')} style={styles.itemImage}></Image>
-                          <Text style={styles.itemText}>切换账号</Text>
+                          <Text style={styles.itemText}>退出登录</Text>
                       </TouchableOpacity>
                       <TouchableOpacity
                           style={styles.itemTouch}

@@ -74,7 +74,6 @@ export default class SchoolNews extends Component {
         );
     }
 
-
     Press(id){
         var params = {id:id};
         new Net().toOther(this.props,'DetailPage',DetailPage,params);

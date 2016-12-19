@@ -260,7 +260,7 @@ export default class Net  {
         D = date.getDate() + ' ';
         return Y+M+D;
     }
-
+    //将日期格式1970-01-01转化为时间戳
     dateToTime(myDate){
         var date = new Date(myDate.replace(/-/g, '/'));
         return date.getTime();

@@ -1,25 +1,51 @@
 import React, { Component } from 'react';
 import {
-    StyleSheet, Text, View, TouchableHighlight, ScrollView, RefreshControl, TouchableOpacity, Image, Dimensions, ListView, TextInput
-} from 'react-native';
+    StyleSheet, Text, View, TouchableHighlight, ScrollView, RefreshControl,
+    TouchableOpacity, Image, Dimensions, ListView, TextInput, Navigator} from 'react-native';
 
 import * as Animatable from 'react-native-animatable';
 import Accordion from 'react-native-collapsible/Accordion';
 import Net from '../Tool';
 import Toolbar from './Toolbar';
+import Lightbox from 'react-native-lightbox';
+import  Carousel from 'react-native-looped-carousel';
 
-//需要解决的问题是：在打开一个弹出式view之后打开另外一个将原来折叠回去过程中，由于comment数据还存在渲染的时间，导致数据会出现变化，这对用户体验不好，暂时我考虑使用进度圈圈来防止这个问题。
-//刚刚突然想到解决办法，那就是另外新建一个类，然后再开始渲染的时候就把数据加载好，这样就不会出现这种情况了，给自己点个赞。
+//下拉加载
 const deviceWidth = Dimensions.get('window').width;
-export default class NewsGround extends Component {
+const MESSAGE = '/messages';
+const COMMENT = '/comments';
+
+//使用图片预览需要直接在页面内使用一个导航，于是有两个class
+export default class NewsGround extends Component{
+    renderScene(route, navigator) {
+        var Component = route.component;
+
+        return (
+            <Component navigator={navigator} route={route} {...route.passProps} />
+        );
+    }
+
+    render() {
+        return (
+            <Navigator
+                ref="navigator"
+                style={{ flex: 1 }}
+                renderScene={this.renderScene.bind(this)}
+                initialRoute={{
+                    component: Test,
+                }}
+            />
+        );
+    }
+}
+
+
+class Test extends Component {
     // 构造
       constructor(props) {
         super(props);
         // 初始状态
-          var ds = new ListView.DataSource({
-              rowHasChanged: (r1, r2) => r1 !== r2,
-              sectionHeaderHasChanged: (s1, s2) => s1 !== s2
-          });
+        var ds = new ListView.DataSource({rowHasChanged: (r1, r2) => r1 !== r2});
         this.state = {
             activeSection: false,
             collapsed: true,
@@ -29,6 +55,7 @@ export default class NewsGround extends Component {
             comment:[],
             text:'',
             disabled:true,
+            page:1
         }
       }
     //传入评论区的id
@@ -36,6 +63,10 @@ export default class NewsGround extends Component {
         this.setState({ activeSection: section });
         if(section !== false){
             this.fetchComment(this.state.userData[section].messageId);
+            this.setState({
+                messageId:this.state.userData[section].messageId,
+                from:this.state.userData[section].belong,
+            })
         }
     }
 
@@ -43,7 +74,7 @@ export default class NewsGround extends Component {
         return (
             <Animatable.View duration={400} style={[styles.header, isActive ? styles.active : styles.inactive]} transition="backgroundColor">
                 <View style={styles.cardTop}>
-                    <Image source={{uri:section.images[0]}}  style={styles.renderRowImg}/>
+                    <Image source={require('../img/UserDafault.png')}  style={styles.renderRowImg}/>
                     <View style={styles.avatarAndTime}>
                         <Text style={styles.cardavatar}>{section.belong}</Text>
                         <Text style={styles.cardTime}>{section.date}</Text>
@@ -51,27 +82,44 @@ export default class NewsGround extends Component {
                     <Image source={require('../img/write.png')} style={styles.comment}/>
                 </View>
                 <View style={styles.cardContent}>
-                    <Text style={styles.cardText} >{section.title}</Text>
+                    <Text style={styles.cardText} >{section.messageText}</Text>
                     <ListView
-                        ref="listView"
-                        dataSource={this.state.dataSource.cloneWithRows(this.state.images)}
+                        dataSource={this.state.dataSource.cloneWithRows(
+                            [section.messagePic1,section.messagePic2,section.messagePic3,
+                                section.messagePic4,section.messagePic5,section.messagePic6,
+                                    section.messagePic7,section.messagePic8,section.messagePic9])}
                         renderRow={this.renderRow.bind(this)}
                         contentContainerStyle={styles.list}
                         enableEmptySections={true}
+                        initialListSize={1}
                     />
                 </View>
+
             </Animatable.View>
         );
     }
+
+    renderCarousel(uri) {
+        return (
+            <Carousel style={{ width: device.width, height: device.height }}>
+                <Image
+                    style={{flex: 1}}
+                    resizeMode="contain"
+                    source={{ uri: uri }}
+                />
+            </Carousel>
+        );
+    }
+
     //获取评论
     fetchComment(id){
-        var url = 'http://news-at.zhihu.com/api/4/story/'+id+'/short-comments';
-        return new Net().getZhiHuMethod(url)
+        var url = COMMENT+"?filters={messageId:"+id+"}";
+        return new Net().getMethod(url)
             .then(data => {
-                this.setState({comment:data.message})
+                this.setState({comment:data.comments})
             })
             .catch(error => {
-            alert("error message:"+ error);
+            console.log(error);
         });
     }
     //渲染每一个item的主体内容
@@ -83,7 +131,9 @@ export default class NewsGround extends Component {
                         placeholder="疯狂的评论吧！"
                         style={styles.contentTextInput}
                         value={this.state.value}
-                        onChangeText={(text) => this.setState({text})}
+                        onChangeText={ t => this.setState({text:t})}
+                        underlineColorAndroid="transparent"
+                        onSubmitEditing={this.postComment.bind(this)}
                     />
                 <ListView
                     dataSource={this.state.dataSource.cloneWithRows(this.state.comment)}
@@ -93,22 +143,34 @@ export default class NewsGround extends Component {
             </Animatable.View>
         );
     }
+    //提交评论
+    postComment(event){
+        var postData = {
+            'messageId':this.state.messageId,
+            'from':this.props.id,
+            'to':this.state.from,
+            'commentInfo':event.nativeEvent.text
+        };
+        new Net().postMethod(COMMENT,postData).then(r => {
+            console.log(r);
+        })
+    }
 
     //渲染评论的listview的每一条item的内容
     myRenderRow(rowData,sectionID,rowID){
         return (
             <View style={{flexDirection:'row',alignItems:'center'}}>
-                <Image source={{uri:rowData.avatar}} style={styles.avatar}/>
-                <Text>{rowData.content}</Text>
+                <Image source={require('../img/UserDafault.png')} style={styles.avatar}/>
+                <Text>{rowData.fromName}@{rowData.toName}:{rowData.commentInfo}</Text>
             </View>
         );
     }
     //顶部下拉刷新
     onRefresh(){
         this.setState({refreshing: true});
-        this.fetchData().then((responseData) => {
+        this.fetchData().then(r => {
             this.setState({
-                userData : responseData.messages,
+                userData : r.messages,
                 refreshing:false,
             });
         });
@@ -116,32 +178,38 @@ export default class NewsGround extends Component {
 
     //获取原始数据
     fetchData(){
-        var url = '/messages';
+        var url = '/messages?page='+this.state.page;
         return new Net().getMethod(url).catch(error => {
             alert("error message:"+ error);
         });
     }
     //在组件渲染完调用获取数据操作
     componentDidMount() {
-        this.fetchData().then((responseData) => {
+        this.fetchData().then(r => {
             this.setState({
-                userData : responseData.messages,
+                userData : r.messages,
             });
         });
     }
 
     renderRow(rowData, sectionID, rowID){
-        return (
+        var picUri = BASEURL+'/message/'+rowData;
+        if(rowData!==null){
+            return (
                 <View>
                     <View style={styles.itemContainer}>
-                        <Image
-                            style={styles.imageItem}
-                            source={{uri:rowData.uri}}
-                            resizeMode='contain'
-                        />
+                        <Lightbox navigator={this.props.navigator} springConfig={{tension: 15, friction: 7}} swipeToDismiss={false} renderContent={this.renderCarousel.bind(this,picUri)}>
+                            <Image
+                                style={styles.imageItem}
+                                source={{uri:picUri}}
+                                resizeMode='contain'
+                            />
+                        </Lightbox>
                     </View>
                 </View>
-        );
+            );
+        }
+        return null
     }
 
     render() {
@@ -157,19 +225,18 @@ export default class NewsGround extends Component {
                         colors={['#ff0000', '#00ff00', '#0000ff']}
                         progressBackgroundColor='rgba(255, 255, 255, 0.7)'
                     />
-                }
-            >
-            <View style={styles.container}>
-                <Toolbar title= "新闻广场"/>
-                <Accordion
-                    activeSection={this.state.activeSection}
-                    sections={this.state.userData}
-                    renderHeader={this._renderHeader}
-                    renderContent={this._renderContent.bind(this)}
-                    duration={400}
-                    onChange={this._setSection.bind(this)}
-                />
-            </View>
+                }>
+                <View style={styles.container}>
+                    <Toolbar title= "新闻广场"/>
+                    <Accordion
+                        activeSection={this.state.activeSection}
+                        sections={this.state.userData}
+                        renderHeader={this._renderHeader.bind(this)}
+                        renderContent={this._renderContent.bind(this)}
+                        duration={400}
+                        onChange={this._setSection.bind(this)}
+                    />
+                </View>
             </ScrollView>
         );
     }
@@ -289,8 +356,6 @@ const styles = StyleSheet.create({
     },
     contentTextInput:{
         height:40,
-        borderColor:'gray',
-        borderWidth:0.5,
     },
     contentView:{
         flex:1,
@@ -300,10 +365,15 @@ const styles = StyleSheet.create({
         fontSize:10,
     },
     imageItem:{
-        width:window.width*0.3,
+        width:device.width*0.3,
         height:80,
     },
     itemContainer:{
         padding:3,
+    },
+    list:{
+        flexDirection: 'row',
+        flexWrap: 'wrap',
+        alignItems: 'flex-start',
     },
 });

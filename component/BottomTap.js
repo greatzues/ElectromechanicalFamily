@@ -2,8 +2,9 @@
  * Created by zues on 2016/8/26.
  */
 import React, { Component } from 'react';
-import { View, Text, StyleSheet, Image, Navigator, DeviceEventEmitter, DrawerLayoutAndroid, AsyncStorage, ToastAndroid, BackAndroid } from 'react-native';
+import { View, Text, StyleSheet, Image, Navigator, DeviceEventEmitter, AsyncStorage, ToastAndroid, BackAndroid } from 'react-native';
 import TabNavigator from 'react-native-tab-navigator';
+import DrawerLayout from 'react-native-drawer-layout';
 
 import Users from '../Users';
 import Home from '../Home';
@@ -62,10 +63,9 @@ export default class BottomTap extends Component {
         );
 
         return(
-            <DrawerLayoutAndroid
+            <DrawerLayout
                 ref="drawer"
                 drawerWidth={250}
-                drawerPosition={DrawerLayoutAndroid.positions.Left}
                 renderNavigationView={() => navigationView}
                 drawerLockMode={this.state.refresh===false?'locked-closed':'unlocked'}>
             <TabNavigator>
@@ -96,7 +96,7 @@ export default class BottomTap extends Component {
                     renderIcon = {() => <Image source={require('./../img/discover.png')} style={styles.iconStyle}/> }
                     renderSelectedIcon ={() => <Image source={require('./../img/discover_highlighted.png')} style={styles.iconStyle}/> }
                     onPress={() => this.setState({selectTab:'new'})}>
-                    <NewsGround/>
+                    <NewsGround id={this.state.id}/>
                 </TabNavigator.Item>
 
                 <TabNavigator.Item
@@ -122,7 +122,7 @@ export default class BottomTap extends Component {
                     <GetClassInfo getStudentInfo={this.getStudentInfo.bind(this)} getClass={this.state.classNumber}/>
                 </TabNavigator.Item>
             </TabNavigator>
-            </DrawerLayoutAndroid>
+            </DrawerLayout>
         );
     }
 
@@ -191,7 +191,7 @@ export default class BottomTap extends Component {
     autoLogin(){
         new Net().loadKey('loginState').then(r => {
             new Net().postLoginMethod(LOGIN,r.username,r.password).then((responseData) => {
-                this.setState({refresh:true})
+                this.setState({refresh:true});
                 this.reRenderData(true);
             }).catch(error => {
                 alert("网络出现错误");
@@ -211,7 +211,9 @@ export default class BottomTap extends Component {
         }).catch(e => {
             ToastAndroid.show('请先登录',ToastAndroid.SHORT);
             console.log(e);
-        })
+        });
+        // var params = {id:this.state.id,update:(ifRefresh) => this.reRenderData(ifRefresh)};
+        // new Net().toOther(this.props,'EditUserInfo',EditUserInfo,params);
     }
 
     onActionSelected(position){
@@ -219,7 +221,17 @@ export default class BottomTap extends Component {
         switch (position){
             case 0:
                 //此处编写消息发布
-                new Net().toOther(this.props, 'EditMessage',EditMessage);
+                new Net().loadKey('loginState').then(r => {
+                    if(r.username){
+                        var params = {id:this.state.id,update:(ifRefresh) => this.reRenderData(ifRefresh)};
+                        new Net().toOther(this.props, 'EditMessage',EditMessage,params);
+                    }
+                }).catch(e => {
+                    ToastAndroid.show('请先登录',ToastAndroid.SHORT);
+                    console.log(e);
+                });
+
+                // new Net().toOther(this.props, 'EditMessage',EditMessage);
                 break;
             case  1:
                 //此处留下来扩展功能

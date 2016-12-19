@@ -140,11 +140,10 @@ export default class NewsItem extends Component {
         new Net().toOther(this.props, 'DetailPage',DetailPage,params);
     }
 
-    componentDidMount() {
-        this.fetchData().then((responseData) => {
-            let story = responseData;
+    componentWillMount() {
+        this.fetchData().then(r => {
             this.setState({
-                userData : story.stories,
+                userData : r.stories,
             });
         });
     }
