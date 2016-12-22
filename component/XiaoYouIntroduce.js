@@ -4,7 +4,7 @@
 import React, { Component } from 'react';
 import { StyleSheet, Text, View, Dimensions, Image, ScrollView, Navigator, TouchableOpacity } from 'react-native';
 import XiaoYouItem from './XiaoYouItem';
-import Toolbar from './Toolbar';
+import NormalToolbar from './NormalToolbar';
 import ViewPager from 'react-native-viewpager';
 
 //以后有api之后就可以把数据录进去了，这里只是模拟数据
@@ -33,11 +33,9 @@ export default class XiaoYouIntroduce extends Component{
       render(){
           return (
               <View style={styles.container}>
-                  <Toolbar style={{position: 'absolute',top: 0, left: 0}}
-                           click = {this.back.bind(this)}
-                           title= "校友风采"
-                           navIcon = {require('../img/back.png')}
-                  />
+                  <NormalToolbar title='校友风采'
+                                 leftImageSource={require('../img/back.png')}
+                                 leftItemFunc={this.back.bind(this)}/>
 
                   <ViewPager
                       style={{height:80}}

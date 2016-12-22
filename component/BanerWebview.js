@@ -146,7 +146,8 @@ var styles = StyleSheet.create({
     },
     addressBarRow: {
         flexDirection: 'row',
-        padding: 8,
+        padding: 5,
+        marginTop:10,
     },
     webView: {
         backgroundColor: BGWASH,

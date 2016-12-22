@@ -5,7 +5,7 @@ import React, { Component } from 'react';
 import { WebView, View, Text, StyleSheet, ListView, Image, Dimensions, ScrollView, findNodeHandle } from 'react-native';
 import ScrollableTabView, { DefaultTabBar } from 'react-native-scrollable-tab-view';
 import Net from '../Tool';
-import NormalToolbar from './normalToolbar';
+import NormalToolbar from './NormalToolbar';
 import BaseInfo from '../component/BaseInfo';
 var BlurView = require('react-native-blur').BlurView;
 
@@ -42,11 +42,10 @@ export default class GetStudentInfo extends Component{
                         style={styles.blurView}
                         viewRef={this.state.viewRef}
                     />
-                        <NormalToolbar click={this.back.bind(this)} color="white"/>
                         <View>
                             <Image style={styles.avatar} source={{uri:AVATAR+this.state.avatarSource}} />
                         </View>
-                        <Text style={{color:'white',fontSize:20}}>{
+                        <Text style={{color:'white',fontSize:20, backgroundColor: 'transparent',}}>{
                             this.state.appellation === '男'?
                             this.state.response.realname+'先生'
                             :this.state.response.realname+'小姐'}
@@ -98,12 +97,12 @@ const styles = StyleSheet.create({
         backgroundColor: '#F5FCFF',
     },
     avatar:{
-        borderRadius:75,
+        borderRadius:40,
         width:80,
         height:80,
         borderWidth:2,
         borderColor:'white',
-        marginTop:10,
+        marginTop:50,
         marginBottom: 10,
     },
     userBackground:{

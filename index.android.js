@@ -13,11 +13,16 @@ import {
     Navigator,
     BackAndroid,
     ToastAndroid,
-    AsyncStorage
+    AsyncStorage,
+    TouchableOpacity,
+    Image
 } from 'react-native';
 import StartPage from './component/StartPage';
 import BottomTap from './component/BottomTap';
 import Storage from 'react-native-storage';
+import EditMessage from './component/EditMessage';
+import Net from './Tool';
+import Login from './component/Login';
 
 var storage = new Storage({
     size: 1000,
@@ -67,7 +72,7 @@ class ElectromechanicalFamily extends Component {
     }
 
   render() {
-      let defaultName = 'BottomTap';
+      let defaultName = '机电E家人';
       let defaultComponent = BottomTap;
       if(this.state.toStartPage){
           return(
@@ -80,7 +85,7 @@ class ElectromechanicalFamily extends Component {
               <Navigator
                   sceneStyle={styles.container}
                   initialRoute={initialRoute}
-                  configureScene={(route) => Navigator.SceneConfigs.FadeAndroid}
+                  configureScene={(route) => Navigator.SceneConfigs.PushFromRight}
                   renderScene={(route, navigator) => {
                       Nav = navigator;
                       let Component  = route.component;
@@ -92,11 +97,89 @@ class ElectromechanicalFamily extends Component {
   }
 }
 
+var NavigationBarRouteMapper = {
+    LeftButton(route, navigator, index, navState) {
+        if (index > 0) {
+            return (
+                <View style={styles.navContainer}>
+                    <TouchableOpacity
+                        underlayColor='transparent'
+                        onPress={() => {if (index > 0) {navigator.pop()}}}>
+                        <Text style={styles.leftNavButtonText}>
+                            返回
+                        </Text>
+                    </TouchableOpacity>
+                </View>
+            );
+        } else {
+            return (
+                <View style={styles.navContainer}>
+                    <TouchableOpacity
+                        underlayColor='transparent'
+                        onPress={() => route.hhh}>
+                        <Image source={require('./img/login.png')} />
+                    </TouchableOpacity>
+                </View>
+            )
+        }
+    },
+    RightButton(route, navigator, index, navState) {
+        if (route.onPress)
+            return (
+                <View style={styles.navContainer}>
+                    <TouchableOpacity
+                        onPress={() => route.onPress()}>
+                        <Text style={styles.rightNavButtonText}>
+                            {route.rightText || '右键'}
+                        </Text>
+                    </TouchableOpacity>
+                </View>
+            );
+    },
+    Title(route, navigator, index, navState) {
+        return (
+            <View style={styles.navContainer}>
+                <Text style={styles.title}>
+                    {route.name}
+                </Text>
+            </View>
+        );
+    }
+};
+
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#F5FCFF',
-  },
+    navContainer: {
+        backgroundColor: '#81c04d',
+        paddingTop: 12,
+        paddingBottom: 8,
+    },
+    // 导航栏文字
+    headText: {
+        color: '#ffffff',
+        fontSize: 22
+    },
+    // 左面导航按钮
+    leftNavButtonText: {
+        color: '#ffffff',
+        fontSize: 18,
+        marginLeft: 13
+    },
+    // 右面导航按钮
+    rightNavButtonText: {
+        color: '#ffffff',
+        fontSize: 18,
+        marginRight: 13
+    },
+    // 标题
+    title: {
+        fontSize: 18,
+        color: '#fff',
+        textAlign: 'center',
+        alignItems: 'center',
+        justifyContent: 'center',
+        fontWeight: 'bold',
+        flex: 1                //Step 3
+    }
 });
 
 AppRegistry.registerComponent('ElectromechanicalFamily', () => ElectromechanicalFamily);

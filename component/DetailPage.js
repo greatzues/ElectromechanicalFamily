@@ -4,8 +4,7 @@
 import React,{ Component } from 'react';
 import {View, Text, StyleSheet, Navigator, ListView, Image, Dimensions, TouchableOpacity, WebView } from 'react-native';
 import ParallaxScrollView from 'react-native-parallax-scroll-view';
-import Toolbar from './Toolbar';
-import NormalToolbar from './normalToolbar';
+import NormalToolbar from './NormalToolbar';
 import Net from '../Tool';
 
 const AVATAR_SIZE = 120;
@@ -94,10 +93,10 @@ export default class DetailPage extends Component{
 
     renderStickyHeader(){
         return(
-            <Toolbar
-                title= {this.state.title}
-                navIcon = {require('./../img/back.png')}
-                click = {this.back.bind(this)}/>
+            <NormalToolbar
+                title={this.state.title}
+                leftImageSource={require('../img/back.png')}
+                leftItemFunc={this.back.bind(this)}/>
         );
     }
 

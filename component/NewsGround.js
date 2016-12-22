@@ -6,7 +6,7 @@ import {
 import * as Animatable from 'react-native-animatable';
 import Accordion from 'react-native-collapsible/Accordion';
 import Net from '../Tool';
-import Toolbar from './Toolbar';
+import NormalToolbar from './NormalToolbar';
 import Lightbox from 'react-native-lightbox';
 import  Carousel from 'react-native-looped-carousel';
 
@@ -227,7 +227,7 @@ class Test extends Component {
                     />
                 }>
                 <View style={styles.container}>
-                    <Toolbar title= "新闻广场"/>
+                    <NormalToolbar title='新闻广场' rightItemFunc={this.props.toShare} />
                     <Accordion
                         activeSection={this.state.activeSection}
                         sections={this.state.userData}

@@ -3,9 +3,9 @@
  */
 import React, { Component } from 'react';
 import { View, Text, Image, StyleSheet, Dimensions, DrawerLayoutAndroid, TouchableOpacity, Navigator } from 'react-native';
-
 import PicBanner from './component/PicBanner';
-import Toolbar from './component/Toolbar';
+import NormalToolbar from './component/NormalToolbar';
+
 export default class Home extends Component {
     constructor(props){
         super(props);
@@ -18,15 +18,13 @@ export default class Home extends Component {
     render() {
         return (
             <View>
-                <Toolbar  click = {this.props.homeClick}
-                          title= {this.props.title}
-                          navIcon = {require('./img/homeTop1.png')}
-                          onIconClicked={this.props.click}
-                          onActionSelected={this.props.onActionSelected}
-                          actions={this.props.actions}
-                          logo={require('./img/homeTop2.png')}
-                />
-
+                <NormalToolbar
+                    title='机电E家人'
+                    leftImageSource={require('./img/login.png')}
+                    rightItemTitle='分享'
+                    rightTextColor='#3393F2'
+                    leftItemFunc={this.props.toLogin}
+                    rightItemFunc={this.props.toShare}/>
                 <View><PicBanner bannerClick={this.props.bannerClick}/></View>
                 <View style={styles.body}>
                     <TouchableOpacity onPress={this.props.toJDGround}>

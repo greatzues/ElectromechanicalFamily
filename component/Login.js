@@ -5,7 +5,7 @@ import React, { Component } from 'react';
 import { View, Text, Image, StyleSheet, TextInput, DeviceEventEmitter,
     TouchableOpacity, ActivityIndicator,Navigator, Dimensions, BackAndroid, AsyncStorage, findNodeHandle } from 'react-native';
 import Net from '../Tool';
-import NormalToolbar from './normalToolbar';
+import NormalToolbar from './NormalToolbar';
 var BlurView = require('react-native-blur').BlurView;
 
 export default class Login extends Component{
@@ -48,12 +48,12 @@ export default class Login extends Component{
                         {this.state.login ?
                             <View >
                                 <ActivityIndicator />
-                                <Text>正在登录...</Text>
+                                <Text style={{backgroundColor: 'transparent'}}>正在登录...</Text>
                             </View> :
                             null}
 
                         <View style = {styles.input}>
-                            <Text style={{marginLeft:10,color:'white'}}>账号:</Text>
+                            <Text style={{marginLeft:10,color:'white',backgroundColor: 'transparent'}}>账号:</Text>
                             <TextInput
                                 style = {styles.textInput}
                                 placeholder="请输入学号"
@@ -65,7 +65,7 @@ export default class Login extends Component{
                         </View>
 
                         <View style = {styles.input}>
-                            <Text style={{marginLeft:10,color:'white'}}>密码:</Text>
+                            <Text style={{marginLeft:10,color:'white',backgroundColor: 'transparent'}}>密码:</Text>
                             <TextInput
                                 style = {styles.textInput}
                                 placeholder="请输入密码"
@@ -198,6 +198,7 @@ const styles = StyleSheet.create({
         fontSize:40,
         fontFamily:'Verdana',
         color:'white',
+        backgroundColor: 'transparent',
         alignSelf:'center'
     },
     blurView: {

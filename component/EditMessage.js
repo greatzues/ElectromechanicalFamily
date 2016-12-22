@@ -4,12 +4,10 @@
 import React, { Component } from 'react';
 import { View, Text, Image, StyleSheet, ListView, TextInput, TouchableOpacity,
     Navigator, Dimensions, Alert, ToastAndroid, TouchableWithoutFeedback } from 'react-native';
-import Toolbar from './Toolbar';
-import ImagePicker from 'react-native-image-crop-picker';
+import NormalToolbar from './NormalToolbar';
 import Net from '../Tool';
 import PicDetail from './PicDetail';
 
-var toolbarActions = [{title: 'camera', icon: require('./../img/camera.png'), show: 'always'},];
 var window = Dimensions.get('window'); //这个参数可以全局使用
 
 
@@ -31,13 +29,13 @@ export default class EditMessage extends Component{
     render(){
         return(
             <View style={styles.container}>
-                <Toolbar
-                    title="班级圈"
-                    navIcon = {require('../img/back.png')}
-                    click={this.click.bind(this)}
-                    actions={toolbarActions}
-                    onActionSelected={this.onActionSelected.bind(this)}
-                />
+                <NormalToolbar
+                    title='班级圈'
+                    leftImageSource={require('../img/back.png')}
+                    rightItemTitle='拍照'
+                    rightTextColor='#3393F2'
+                    leftItemFunc={this.back.bind(this)}
+                    rightItemFunc={this.pickCamera.bind(this)}/>
 
                     <TextInput
                         multiline={true}
@@ -159,16 +157,6 @@ export default class EditMessage extends Component{
                 })
             });
         })
-    }
-
-    onActionSelected(position){
-        //当一个功能被选中的时候调用这个回调
-        switch (position){
-            case 0:
-                //此处编写消息发布,如果消息为空弹出toast
-                this.pickCamera();
-                break;
-        }
     }
 
     //确认退出编辑

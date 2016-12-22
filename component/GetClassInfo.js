@@ -5,7 +5,7 @@ import React, { Component } from 'react';
 import { WebView, View, Text, StyleSheet, ListView, Image, TouchableOpacity, Navigator, ToastAndroid, AsyncStorage } from 'react-native';
 import Net from '../Tool';
 import GetStudentInfo from './GetStudentInfo';
-import Toolbar from './Toolbar';
+import NormalToolbar from './NormalToolbar';
 
 const AVATAR = 'http://119.29.184.235:8080/jd/avatar/';
 const CLASS = '/students';
@@ -31,9 +31,7 @@ export default class GetClassInfo extends Component {
     render(){
         return (
             <View style={styles.container}>
-                <Toolbar title="我的班级"
-                         actions={[{title:this.state.absence,show: 'always'}]}
-                         onActionSelected={this.onActionSelected.bind(this)}/>
+                <NormalToolbar title="我的班级" rightItemFunc={this.absence.bind(this)} rightItemTitle={this.state.absence}/>
                 <ListView
                     style={styles.container}
                     dataSource={this.state.dataSource.cloneWithRows(this.state.userData)}
@@ -61,15 +59,6 @@ export default class GetClassInfo extends Component {
         )
     }
 
-    onActionSelected(position){
-        //当一个功能被选中的时候调用这个回调
-        switch (position){
-            case 0:
-                //此处编写签到
-                this.absence();
-                break;
-        }
-    }
 
     absence(){
         var date = new Date();
@@ -133,7 +122,7 @@ const styles = StyleSheet.create({
     },
 
     avatar:{
-        borderRadius:75,
+        borderRadius:25,
         width:50,
         height:50,
         borderWidth:2,

@@ -2,7 +2,7 @@
  * Created by zues on 2016/8/26.
  */
 import React, { Component } from 'react';
-import { View, Text, StyleSheet, Image, Navigator, DeviceEventEmitter, AsyncStorage, ToastAndroid, BackAndroid } from 'react-native';
+import { View, Text, StyleSheet, Image, Navigator, TouchableOpacity, AsyncStorage, ToastAndroid, BackAndroid } from 'react-native';
 import TabNavigator from 'react-native-tab-navigator';
 import DrawerLayout from 'react-native-drawer-layout';
 
@@ -13,7 +13,6 @@ import EditUserInfo from './EditUserInfo';
 import Net from '../Tool';
 import DrawerView from './DrawerView';
 import JDGround from './JDGround';
-import DetailPage from './DetailPage';
 import GetClassInfo from './GetClassInfo';
 import NewsItem from '../NewsItem';
 import XiaoYouIntroduce from './XiaoYouIntroduce';
@@ -22,11 +21,6 @@ import NewsGround from './NewsGround';
 import EditMessage from './EditMessage';
 import GetStudentInfo from './GetStudentInfo';
 
-var toolbarActions = [
-    {title: 'Create', icon: require('./../img/write.png'), show: 'always'},
-    {title: 'Filter', icon: require('./../img/write.png'), show: 'never'},
-    {title: 'Settings', icon: require('./../img/fav.png'), show: 'never'},
-];
 const LOGIN = '/students/login';
 const INFO = '/students/getinfo';
 export default class BottomTap extends Component {
@@ -46,13 +40,9 @@ export default class BottomTap extends Component {
         this.autoLogin();
     }
 
-    componentWillUnmount(){
-        this.subscription.remove();
-    };
-
     render(){
         var navigationView = (
-            <View style={{ backgroundColor: '#eee'}}>
+            <View style={{ backgroundColor: '#eee',flex:1}}>
                 <DrawerView
                     quitLogin={this.quitLogin.bind(this)}
                     quitApp={this.quitApp.bind(this)}
@@ -77,14 +67,13 @@ export default class BottomTap extends Component {
                     renderIcon = {() => <Image source={require('./../img/home.png')} style={styles.iconStyle}/> }
                     renderSelectedIcon ={() => <Image source={require('./../img/home_selected.png')} style={styles.iconStyle}/> }
                     onPress={() => this.setState({selectTab:'home'})}>
-                    <Home homeClick={this.toLogin.bind(this)}
+                    <Home toLogin={this.toLogin.bind(this)}
                           title= "机电E家人"
-                          onActionSelected={this.onActionSelected.bind(this)}
-                          actions={toolbarActions}
                           toBriefNews={this.toBriefNews.bind(this)}
                           toJDGround={this.toJDGround.bind(this)}
                           toXiaoYouIntro={this.toXiaoYouIntro.bind(this)}
                           bannerClick={this.bannerClick.bind(this)}
+                          toShare={this.toShare.bind(this)}
                     />
                 </TabNavigator.Item>
 
@@ -107,7 +96,7 @@ export default class BottomTap extends Component {
                     renderIcon = {() => <Image source={require('./../img/me_normal.png')} style={styles.iconStyle}/> }
                     renderSelectedIcon ={() => <Image source={require('./../img/me_hight.png')} style={styles.iconStyle}/> }
                     onPress={() => this.setState({selectTab:'user'})}>
-                    <Users toEdit={this.toEdit.bind(this)} ref="user" userResponse={this.state.response}
+                    <Users toEdit={this.toEdit.bind(this)} userResponse={this.state.response}
                            avatar={this.state.avatar} username={this.state.username}/>
                 </TabNavigator.Item>
 
@@ -203,49 +192,29 @@ export default class BottomTap extends Component {
     }
 
     toEdit(){
+        // new Net().loadKey('loginState').then(r => {
+        //     if(r.username){
+        //         var params = {id:this.state.id,update:(ifRefresh) => this.reRenderData(ifRefresh)};
+        //         new Net().toOther(this.props,'EditUserInfo',EditUserInfo,params);
+        //     }
+        // }).catch(e => {
+        //     ToastAndroid.show('请先登录',ToastAndroid.SHORT);
+        //     console.log(e);
+        // });
+        var params = {id:this.state.id,update:(ifRefresh) => this.reRenderData(ifRefresh)};
+        new Net().toOther(this.props,'EditUserInfo',EditUserInfo,params);
+    }
+
+    toShare(){
         new Net().loadKey('loginState').then(r => {
             if(r.username){
                 var params = {id:this.state.id,update:(ifRefresh) => this.reRenderData(ifRefresh)};
-                new Net().toOther(this.props,'EditUserInfo',EditUserInfo,params);
+                new Net().toOther(this.props, 'EditMessage',EditMessage,params);
             }
         }).catch(e => {
             ToastAndroid.show('请先登录',ToastAndroid.SHORT);
             console.log(e);
         });
-        // var params = {id:this.state.id,update:(ifRefresh) => this.reRenderData(ifRefresh)};
-        // new Net().toOther(this.props,'EditUserInfo',EditUserInfo,params);
-    }
-
-    onActionSelected(position){
-        //当一个功能被选中的时候调用这个回调
-        switch (position){
-            case 0:
-                //此处编写消息发布
-                new Net().loadKey('loginState').then(r => {
-                    if(r.username){
-                        var params = {id:this.state.id,update:(ifRefresh) => this.reRenderData(ifRefresh)};
-                        new Net().toOther(this.props, 'EditMessage',EditMessage,params);
-                    }
-                }).catch(e => {
-                    ToastAndroid.show('请先登录',ToastAndroid.SHORT);
-                    console.log(e);
-                });
-
-                // new Net().toOther(this.props, 'EditMessage',EditMessage);
-                break;
-            case  1:
-                //此处留下来扩展功能
-                alert('this is the '+ (position+1));
-
-
-                break;
-            case  2:
-                //此处留下来扩展功能
-                alert('this is the '+ (position+1));
-
-
-                break;
-        }
     }
 
     getStudentInfo(id){
@@ -265,4 +234,37 @@ const styles = StyleSheet.create({
         width:26,
         height:26,
     },
+
+    navContainer: {
+        backgroundColor: '#81c04d',
+        paddingTop: 12,
+        paddingBottom: 8,
+    },
+    // 导航栏文字
+    headText: {
+        color: '#ffffff',
+        fontSize: 22
+    },
+    // 左面导航按钮
+    leftNavButtonText: {
+        color: '#ffffff',
+        fontSize: 18,
+        marginLeft: 13
+    },
+    // 右面导航按钮
+    rightNavButtonText: {
+        color: '#ffffff',
+        fontSize: 18,
+        marginRight: 13
+    },
+    // 标题
+    title: {
+        fontSize: 18,
+        color: '#fff',
+        textAlign: 'center',
+        alignItems: 'center',
+        justifyContent: 'center',
+        fontWeight: 'bold',
+        flex: 1                //Step 3
+    }
 });

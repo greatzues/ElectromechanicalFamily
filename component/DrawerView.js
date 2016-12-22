@@ -34,8 +34,8 @@ export default class DrawerView extends Component{
                               <Image style={styles.avatar} source={{uri:AVATAR+this.props.avatar}} />
                           }
                       </View>
-                      <Text style={{color:'white'}}>你好，{this.props.username===null?this.state.myResponse:this.props.username}</Text>
-                      {this.props.avatar === null?null:<Text style={{color:'gray'}}>您已登录</Text>}
+                      <Text style={{color:'white',backgroundColor: 'transparent'}}>你好，{this.props.username===null?this.state.myResponse:this.props.username}</Text>
+                      {this.props.avatar === null?null:<Text style={{color:'gray',backgroundColor: 'transparent'}}>您已登录</Text>}
                   </Image>
 
                       <TouchableOpacity
@@ -122,7 +122,7 @@ const styles = StyleSheet.create({
         backgroundColor: 'white',
     },
     avatar:{
-        borderRadius:75,
+        borderRadius:40,
         width:80,
         height:80,
         borderWidth:2,

@@ -3,7 +3,7 @@
  */
 import React,{ Component } from 'react';
 import { View, Image, Navigator, Dimensions, StyleSheet } from 'react-native';
-import NormalToolbar from './normalToolbar';
+import NormalToolbar from './NormalToolbar';
 
 var window = Dimensions.get('window');
 export default class PicDetail extends Component{

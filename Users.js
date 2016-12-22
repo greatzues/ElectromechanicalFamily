@@ -7,6 +7,8 @@ import Net from './Tool';
 import ScrollableTabView, { DefaultTabBar } from 'react-native-scrollable-tab-view';
 import BaseInfo from './component/BaseInfo';
 import myImagePicker from 'react-native-image-crop-picker';
+import NormalToolbar from './component/NormalToolbar';
+
 // import ImagePicker from 'react-native-image-picker';
 
 var BlurView = require('react-native-blur').BlurView;
@@ -52,7 +54,7 @@ export default class Users extends Component {
                                 <Image style={styles.avatar} source={{uri:AVATAR+this.props.avatar}} />
                             }
                         </View>
-                        <Text style={{color:'white'}}>你好，{this.props.username===null?this.state.myResponse:this.props.username}</Text>
+                        <Text style={{color:'white',backgroundColor: 'transparent'}}>你好，{this.props.username===null?this.state.myResponse:this.props.username}</Text>
                         <View style={{flexDirection: 'row',}}>
                             <TouchableOpacity
                                 style={styles.bottomAvatar}
@@ -138,7 +140,7 @@ const styles = StyleSheet.create({
         backgroundColor: '#F5FCFF',
     },
     avatar:{
-        borderRadius:75,
+        borderRadius:40,
         width:80,
         height:80,
         borderWidth:2,
@@ -169,6 +171,7 @@ const styles = StyleSheet.create({
     bottomAvatarText:{
         color:'white',
         marginRight:10,
-        marginLeft:10
+        marginLeft:10,
+        backgroundColor: 'transparent',
     },
 });

@@ -3,7 +3,7 @@
  */
 import React, { Component } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, Navigator, ListView, TextInput , ScrollView } from 'react-native';
-import Toolbar from './Toolbar';
+import NormalToolbar from './NormalToolbar';
 import Net from '../Tool';
 import Picker from 'react-native-picker';
 import { Kaede } from 'react-native-textinput-effects';
@@ -46,12 +46,7 @@ export default class DisplayUserInfo extends Component{
         var response = this.state;
         return(
             <View style={styles.container}>
-                <Toolbar
-                    click={this.back.bind(this)}
-                    title= "编辑资料"
-                    navIcon = {require('./../img/back.png')}
-                    onActionSelected={this.onActionSelected.bind(this)}
-                    actions={toolbarActions}/>
+                <NormalToolbar title='班级圈' leftImageSource={require('../img/back.png')} leftItemFunc={this.back.bind(this)}/>
                 <ScrollView>
                     <View style={styles.container}>
                         {this.myModel('姓名',   response.realname,(text)=>this.setState({realname:text}))}

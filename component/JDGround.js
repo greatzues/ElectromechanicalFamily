@@ -3,7 +3,7 @@
  */
 import React, { Component } from 'react';
 import {StyleSheet, Text, View ,  ListView, RefreshControl, TouchableOpacity, Navigator, Image, Dimensions} from 'react-native';
-import Toolbar from './Toolbar';
+import NormalToolbar from './NormalToolbar';
 import Net from '../Tool';
 import DetailPage from './DetailPage';
 
@@ -48,11 +48,10 @@ export default class SchoolNews extends Component {
     render() {
         return (
             <View style={styles.container}>
-                <Toolbar style={{position: 'absolute',top: 0, left: 0}}
-                         click = {this.back.bind(this)}
-                         title= "机电广场"
-                         navIcon = {require('../img/back.png')}
-                />
+                <NormalToolbar
+                    title='机电广场'
+                    leftImageSource={require('../img/back.png')}
+                    leftItemFunc={this.back.bind(this)} />
                 <ListView
                     dataSource={this.state.dataSource.cloneWithRows(this.state.news)}
                     renderRow={this.myRenderRow.bind(this)}

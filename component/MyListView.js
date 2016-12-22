@@ -11,7 +11,7 @@ import Collapsible from 'react-native-collapsible';
 import Accordion from 'react-native-collapsible/Accordion';
 
 /**
- * 实现下拉刷新列表，取知乎日报api做的测试
+ * 实现下拉刷新列表，取知乎日报api做的测试,剩下拉加载功能
  */
 const BACON_IPSUM = 'Bacon ipsum dolor amet chuck turducken landjaeger tongue spare ribs. Picanha beef prosciutto meatball turkey shoulder shank salami cupim doner jowl pork belly cow. Chicken shankle rump swine tail frankfurter meatloaf ground round flank ham hock tongue shank andouille boudin brisket. ';
 const deviceWidth = Dimensions.get('window').width;

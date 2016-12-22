@@ -4,6 +4,7 @@ import ParallaxScrollView from 'react-native-parallax-scroll-view';
 import ViewPager from 'react-native-viewpager';
 import Net from './Tool';
 import DetailPage from './component/DetailPage';
+import NormalToolbar from './component/NormalToolbar';
 
 const LATEST = 'http://news-at.zhihu.com/api/4/news/latest';
 const AVATAR_SIZE = 120;
@@ -82,12 +83,11 @@ export default class NewsItem extends Component {
                         )}
 
                         renderStickyHeader={() => (
-                            <View key="sticky-header" style={styles.stickySection} onPress={this.back.bind(this)}>
-                                <View style={{flexDirection:'row'}}>
-                                    <Image source={require('./img/back.png')}/>
-                                    <Text style={styles.stickySectionText} >机电简讯</Text>
-                                </View>
-                            </View>
+
+                            <NormalToolbar
+                            title='机电简讯'
+                            leftImageSource={require('./img/back.png')}
+                            leftItemFunc={this.back.bind(this)}/>
                         )}
 
                         renderFixedHeader={() => (
