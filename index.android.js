@@ -20,9 +20,6 @@ import {
 import StartPage from './component/StartPage';
 import BottomTap from './component/BottomTap';
 import Storage from 'react-native-storage';
-import EditMessage from './component/EditMessage';
-import Net from './Tool';
-import Login from './component/Login';
 
 var storage = new Storage({
     size: 1000,

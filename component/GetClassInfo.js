@@ -4,19 +4,15 @@
 import React, { Component } from 'react';
 import { WebView, View, Text, StyleSheet, ListView, Image, TouchableOpacity, Navigator, ToastAndroid, AsyncStorage } from 'react-native';
 import Net from '../Tool';
-import GetStudentInfo from './GetStudentInfo';
 import NormalToolbar from './NormalToolbar';
+import SignPage from './SignPage'
 
 const AVATAR = 'http://119.29.184.235:8080/jd/avatar/';
 const CLASS = '/students';
-const SIGN = '/students/sign';
 export default class GetClassInfo extends Component {
     // 构造
       constructor(props) {
-          var ds = new ListView.DataSource({
-              rowHasChanged: (r1, r2) => r1 !== r2,
-              sectionHeaderHasChanged: (s1, s2) => s1 !== s2
-          });
+        var ds = new ListView.DataSource({rowHasChanged: (r1, r2) => r1 !== r2});
         super(props);
         // 初始状态
         this.state = {
@@ -31,17 +27,15 @@ export default class GetClassInfo extends Component {
     render(){
         return (
             <View style={styles.container}>
-                <NormalToolbar title="我的班级" rightItemFunc={this.absence.bind(this)} rightItemTitle={this.state.absence}/>
+                <NormalToolbar title="我的班级" rightItemFunc={this.toSign.bind(this,this.props.classNumber)} rightItemTitle={this.state.absence}/>
                 <ListView
                     style={styles.container}
                     dataSource={this.state.dataSource.cloneWithRows(this.state.userData)}
                     renderRow={this.myRenderRow.bind(this)}
                     enableEmptySections={true}
-                >
-
-                </ListView>
+                />
             </View>
-        );
+        )
     }
 
     myRenderRow(rowData,sectionID,rowID){
@@ -59,28 +53,9 @@ export default class GetClassInfo extends Component {
         )
     }
 
-
-    absence(){
-        var date = new Date();
-        var day = date.getDate();
-        var month = date.getMonth();
-        if(day<10){
-            day = "0"+date.getDate();
-        }
-        if(month<10){
-            month = "0"+ date.getMonth();
-        }
-        var post = date.getFullYear()+''+month+''+day;
-        var postData = {date:post};
-        console.log(postData);
-        new Net().postMethod(SIGN,postData).then((responseData) => {
-            console.log(responseData.status);
-        }).catch(error => {
-            alert("网络出现错误");
-            console.error(error);
-        });
-        ToastAndroid.show("已签到",ToastAndroid.LONG);
-        return this.setState({absence : '已签到'});
+    toSign(classNumber){
+        var params = {classNumber:classNumber}
+        new Net().toOther(this.props.parent,'SignPage',SignPage, params);
     }
 
     componentDidMount() {
@@ -88,8 +63,8 @@ export default class GetClassInfo extends Component {
     }
     //拿到学生的id传过去
     fetchData(){
-        if(this.props.getClass !== null){
-            new Net().getMethod(CLASS+'?page=1&&classNumber'+this.props.getClass).then((responseData) => {
+        if(this.props.classNumber !== null){
+            new Net().getMethod(CLASS+'?page=1&&classNumber'+this.props.classNumber).then((responseData) => {
                 console.log(responseData.status);
                 let students = responseData.students;
                 this.setState({
@@ -99,11 +74,6 @@ export default class GetClassInfo extends Component {
         }
     }
 
-    Press(id){
-        var params = {id:id};
-        new Net().toOther(this.props, 'GetStudentInfo',GetStudentInfo,params);
-    }
-    //toLowerCase()方法可以把字符串中的大写字母转换为小写，toUpperCase()方法可以把字符串中的小写字母转换为大写。
 }
 
 const styles = StyleSheet.create({

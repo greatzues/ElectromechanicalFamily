@@ -3,13 +3,23 @@
  */
 import React, { Component } from 'react';
 import { View, Text, Image, StyleSheet, ListView, TextInput, TouchableOpacity,
-    Navigator, Dimensions, Alert, ToastAndroid, TouchableWithoutFeedback } from 'react-native';
+    Navigator, Dimensions, Alert, ToastAndroid, TouchableWithoutFeedback, Platform } from 'react-native';
 import NormalToolbar from './NormalToolbar';
 import Net from '../Tool';
 import PicDetail from './PicDetail';
 
 var window = Dimensions.get('window'); //这个参数可以全局使用
-
+const picKey = [
+    'messagePic1',
+    'messagePic2',
+    'messagePic3',
+    'messagePic4',
+    'messagePic5',
+    'messagePic6',
+    'messagePic7',
+    'messagePic8',
+    'messagePic9'
+];
 
 export default class EditMessage extends Component{
     // 构造
@@ -34,7 +44,7 @@ export default class EditMessage extends Component{
                     leftImageSource={require('../img/back.png')}
                     rightItemTitle='拍照'
                     rightTextColor='#3393F2'
-                    leftItemFunc={this.back.bind(this)}
+                    leftItemFunc={this.click.bind(this)}
                     rightItemFunc={this.pickCamera.bind(this)}/>
 
                     <TextInput
@@ -112,9 +122,16 @@ export default class EditMessage extends Component{
     }
     //文件上传
     fileUpload(){
-        if(this.state.message === ""){
-            ToastAndroid.show("亲，分享点文字吧！",ToastAndroid.SHORT);
-            return null;
+        if(Platform.OS === 'android'){
+            if(this.state.message === ""){
+                ToastAndroid.show("亲，分享点文字吧！",ToastAndroid.SHORT);
+                return null;
+            }
+
+            if(this.state.images.length >9){
+                ToastAndroid.show("限制9张长按图片进行删除！",ToastAndroid.SHORT);
+                return null;
+            }
         }
         var date = new Date();
         var day = date.getDate();
@@ -127,24 +144,30 @@ export default class EditMessage extends Component{
         }
         var post = date.getFullYear()+''+month+''+day;
         new Net().postMultiFile(this.getFile(this.state.images,post,this.state.message));
-        this.back();
+        //返回之后刷新页面
+        const { navigator } = this.props;
+        if(this.props.update){
+            this.props.update(true);
+        }
+        navigator.pop();
     }
-    //获取上传的formData对象
+
+    /**
+     * 获取上传的formData对象
+     * @param fileObject
+     * @param myDate
+     * @param myMassageText
+     * @returns {FormData}
+     */
     getFile(fileObject,myDate,myMassageText){
         let formData = new FormData();
         formData.append('date',myDate);
-        formData.append('massageText',myMassageText);
+        formData.append('messageText',myMassageText);
         formData.append('classNumber','0');
         //后期尝试用map来遍历
-        formData.append('messagePic1',fileObject[0]);
-        formData.append('messagePic2',fileObject[1]);
-        formData.append('messagePic3',fileObject[2]);
-        formData.append('messagePic4',fileObject[3]);
-        formData.append('messagePic5',fileObject[4]);
-        formData.append('messagePic6',fileObject[5]);
-        formData.append('messagePic7',fileObject[6]);
-        formData.append('messagePic8',fileObject[7]);
-        formData.append('messagePic9',fileObject[8]);
+        for(i=0;i<fileObject.length;i++){
+            formData.append(picKey[i],fileObject[i]);
+        }
         return formData;
     }
     //选择多图片上传，这里暂时还没解决先拍照然后再上传文件，图片增加的问题

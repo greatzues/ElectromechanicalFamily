@@ -4,6 +4,7 @@
 import React,{ Component } from 'react';
 import { View, Image, Navigator, Dimensions, StyleSheet } from 'react-native';
 import NormalToolbar from './NormalToolbar';
+import Net from '../Tool'
 
 var window = Dimensions.get('window');
 export default class PicDetail extends Component{
@@ -19,17 +20,14 @@ export default class PicDetail extends Component{
       render(){
           return(
               <View style={styles.container}>
-                  <NormalToolbar click={this.backToHome.bind(this)}/>
+                  <NormalToolbar leftItemFunc={this.back.bind(this)} title='图片详情' leftImageSource={require('../img/back.png')}/>
                   <Image source={{uri:this.props.uri}} style={styles.image} resizeMode='contain'/>
               </View>
           );
       }
 
-    backToHome(){
-        const { navigator } = this.props;
-        if (navigator){
-            navigator.pop();
-        }
+    back(){
+        new Net().back(this.props)
     }
 }
 

@@ -2,7 +2,7 @@
  * Created by zues on 2016/8/26.
  */
 import React, { Component } from 'react';
-import { View, Text, StyleSheet, Image, Navigator, TouchableOpacity, AsyncStorage, ToastAndroid, BackAndroid } from 'react-native';
+import { View, Text, StyleSheet, Image, Navigator, TouchableOpacity, AsyncStorage, ToastAndroid, BackAndroid, Platform } from 'react-native';
 import TabNavigator from 'react-native-tab-navigator';
 import DrawerLayout from 'react-native-drawer-layout';
 
@@ -12,14 +12,15 @@ import Login from './Login';
 import EditUserInfo from './EditUserInfo';
 import Net from '../Tool';
 import DrawerView from './DrawerView';
-import JDGround from './JDGround';
+import BriefNews from './BriefNews';
 import GetClassInfo from './GetClassInfo';
-import NewsItem from '../NewsItem';
-import XiaoYouIntroduce from './XiaoYouIntroduce';
+import Notifications from './Notifications';
+import Schoolmates from './Schoolmates';
 import BanerWebview from './BanerWebview';
-import NewsGround from './NewsGround';
 import EditMessage from './EditMessage';
 import GetStudentInfo from './GetStudentInfo';
+import LittleGround from './LittleGround';
+import ClassGround from './ClassGround'
 
 const LOGIN = '/students/login';
 const INFO = '/students/getinfo';
@@ -69,23 +70,36 @@ export default class BottomTap extends Component {
                     onPress={() => this.setState({selectTab:'home'})}>
                     <Home toLogin={this.toLogin.bind(this)}
                           title= "机电E家人"
-                          toBriefNews={this.toBriefNews.bind(this)}
-                          toJDGround={this.toJDGround.bind(this)}
-                          toXiaoYouIntro={this.toXiaoYouIntro.bind(this)}
+                          toXiaoYouIntro={this.toSchoolmates.bind(this)}
                           bannerClick={this.bannerClick.bind(this)}
+                          toBriefNews={this.toBriefNews.bind(this)}
+                          toJdInform={this.toJdInform.bind(this)}
                           toShare={this.toShare.bind(this)}
+                          toMyClass={this.toMyClass.bind(this,this.state.classNumber)}
+                          toJDGround={() => this.setState({selectTab:'new'})}
                     />
                 </TabNavigator.Item>
 
                 <TabNavigator.Item
-                    title = "新闻广场"
+                    title = "小广场"
                     selected = {this.state.selectTab === 'new'}
                     selectedTitleStyle = {styles.seletedTextStyle}
                     titleStyle ={styles.textStyle}
                     renderIcon = {() => <Image source={require('./../img/discover.png')} style={styles.iconStyle}/> }
                     renderSelectedIcon ={() => <Image source={require('./../img/discover_highlighted.png')} style={styles.iconStyle}/> }
                     onPress={() => this.setState({selectTab:'new'})}>
-                    <NewsGround id={this.state.id}/>
+                    <LittleGround id={this.state.id} parent={this.props}/>
+                </TabNavigator.Item>
+
+                <TabNavigator.Item
+                    title = "我的班级"
+                    selected = {this.state.selectTab === 'myClass'}
+                    selectedTitleStyle = {styles.seletedTextStyle}
+                    titleStyle ={styles.textStyle}
+                    renderIcon = {() => <Image source={require('./../img/myClass.png')} style={styles.iconStyle}/> }
+                    renderSelectedIcon ={() => <Image source={require('./../img/myClass_selected.png')} style={styles.iconStyle}/> }
+                    onPress={() => this.setState({selectTab:'myClass'})}>
+                    <GetClassInfo getStudentInfo={this.getStudentInfo.bind(this)} classNumber={this.state.classNumber} parent={this.props}/>
                 </TabNavigator.Item>
 
                 <TabNavigator.Item
@@ -99,17 +113,6 @@ export default class BottomTap extends Component {
                     <Users toEdit={this.toEdit.bind(this)} userResponse={this.state.response}
                            avatar={this.state.avatar} username={this.state.username}/>
                 </TabNavigator.Item>
-
-                <TabNavigator.Item
-                    title = "我的班级我的家"
-                    selected = {this.state.selectTab === 'myClass'}
-                    selectedTitleStyle = {styles.seletedTextStyle}
-                    titleStyle ={styles.textStyle}
-                    renderIcon = {() => <Image source={require('./../img/myClass.png')} style={styles.iconStyle}/> }
-                    renderSelectedIcon ={() => <Image source={require('./../img/myClass_selected.png')} style={styles.iconStyle}/> }
-                    onPress={() => this.setState({selectTab:'myClass'})}>
-                    <GetClassInfo getStudentInfo={this.getStudentInfo.bind(this)} getClass={this.state.classNumber}/>
-                </TabNavigator.Item>
             </TabNavigator>
             </DrawerLayout>
         );
@@ -121,12 +124,12 @@ export default class BottomTap extends Component {
         new Net().toOther(this.props,'BanerWebview',BanerWebview, params);
     }
 
-    toXiaoYouIntro(){
-        new Net().toOther(this.props,'XiaoYouIntroduce',XiaoYouIntroduce);
+    toSchoolmates(){
+        new Net().toOther(this.props,'Schoolmates',Schoolmates);
     }
 
-    toJDGround(){
-        new Net().toOther(this.props,'JDGround',JDGround);
+    toBriefNews(){
+        new Net().toOther(this.props,'BriefNews',BriefNews);
     }
 
     toLogin(){
@@ -142,7 +145,7 @@ export default class BottomTap extends Component {
     //重新渲染更新之后的getInfo数据和自动登录之后的getInfo数据
     reRenderData(ifRefresh){
         if(ifRefresh === true){
-            new Net().getMethod(INFO).then((r) => {
+           return new Net().getMethod(INFO).then((r) => {
                 this.setState({
                     username:r.response.realname,
                     avatar:r.response.avatar,
@@ -154,11 +157,10 @@ export default class BottomTap extends Component {
                 console.log(error);
             });
         }
-        return null;
     }
 
-    toBriefNews(){
-        new Net().toOther(this.props, 'NewsItem',NewsItem);
+    toJdInform(){
+        new Net().toOther(this.props, 'Notifications',Notifications);
     }
 
     quitApp(){
@@ -173,7 +175,8 @@ export default class BottomTap extends Component {
 
     quitLogin(){
         storage.remove({key: 'loginState'});
-        new Net().toOther(this.props,'Login',Login,null);
+        var params = {update:(ifRefresh) => this.reRenderData(ifRefresh)};
+        new Net().toOther(this.props,'Login',Login,params);
         this.refs.drawer.closeDrawer();
     }
 
@@ -192,17 +195,22 @@ export default class BottomTap extends Component {
     }
 
     toEdit(){
-        // new Net().loadKey('loginState').then(r => {
-        //     if(r.username){
-        //         var params = {id:this.state.id,update:(ifRefresh) => this.reRenderData(ifRefresh)};
-        //         new Net().toOther(this.props,'EditUserInfo',EditUserInfo,params);
-        //     }
-        // }).catch(e => {
-        //     ToastAndroid.show('请先登录',ToastAndroid.SHORT);
-        //     console.log(e);
-        // });
-        var params = {id:this.state.id,update:(ifRefresh) => this.reRenderData(ifRefresh)};
-        new Net().toOther(this.props,'EditUserInfo',EditUserInfo,params);
+        new Net().loadKey('loginState').then(r => {
+            if(r.username){
+                var params = {id:this.state.id,update:(ifRefresh) => this.reRenderData(ifRefresh)};
+                new Net().toOther(this.props,'EditUserInfo',EditUserInfo,params);
+            }
+        }).catch(e => {
+            if(Platform.OS === 'ios'){
+                alert('请先登录');
+            }
+            if(Platform.OS === 'android'){
+                ToastAndroid.show('请先登录',ToastAndroid.SHORT);
+            }
+            console.log(e);
+        });
+        // var params = {id:this.state.id,update:(ifRefresh) => this.reRenderData(ifRefresh)};
+        // new Net().toOther(this.props,'EditUserInfo',EditUserInfo,params);
     }
 
     toShare(){
@@ -212,7 +220,12 @@ export default class BottomTap extends Component {
                 new Net().toOther(this.props, 'EditMessage',EditMessage,params);
             }
         }).catch(e => {
-            ToastAndroid.show('请先登录',ToastAndroid.SHORT);
+            if(Platform.OS === 'ios'){
+                alert('请先登录');
+            }
+            if(Platform.OS === 'android'){
+                ToastAndroid.show('请先登录',ToastAndroid.SHORT);
+            }
             console.log(e);
         });
     }
@@ -220,6 +233,11 @@ export default class BottomTap extends Component {
     getStudentInfo(id){
         var params ={id:id};
         new Net().toOther(this.props,'GetStudentInfo', GetStudentInfo,params);
+    }
+
+    toMyClass(classNumber){
+        var params = {classNumber:classNumber,parent:this.props}
+        new Net().toOther(this.props,'ClassGround', ClassGround, params);
     }
 }
 

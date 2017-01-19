@@ -5,10 +5,10 @@ import React, { Component } from 'react';
 import {StyleSheet, Text, View ,  ListView, RefreshControl, TouchableOpacity, Navigator, Image, Dimensions} from 'react-native';
 import NormalToolbar from './NormalToolbar';
 import Net from '../Tool';
-import DetailPage from './DetailPage';
+import BriefNewsDetail from './BriefNewsDetail';
 
 const NEWS = '/news?page=';
-export default class SchoolNews extends Component {
+export default class BriefNews extends Component {
     constructor(props){
         super(props);
         var ds = new ListView.DataSource({
@@ -35,10 +35,10 @@ export default class SchoolNews extends Component {
         return (
             <TouchableOpacity  onPress={() => this.Press(rowData.id)}>
                 <View style={styles.itemBody}>
-                    <Text>{rowData.title}</Text>
+                    <Image source={require('../img/news.png')} style={styles.renderRowImg}/>
                     <View style={styles.renderRowItem}>
-                        <Text style={styles.itemTitle} ellipsizeMode="tail" numberOfLines={1}  >{rowData.summary}</Text>
-                        <Text style={styles.itemTime}>1小时前</Text>
+                        <Text style={styles.itemTitle} ellipsizeMode="tail" numberOfLines={1}  >{rowData.title}</Text>
+                        <Text style={styles.itemSummary}>{rowData.summary}</Text>
                     </View>
                 </View>
             </TouchableOpacity>
@@ -49,7 +49,7 @@ export default class SchoolNews extends Component {
         return (
             <View style={styles.container}>
                 <NormalToolbar
-                    title='机电广场'
+                    title='机电小广场'
                     leftImageSource={require('../img/back.png')}
                     leftItemFunc={this.back.bind(this)} />
                 <ListView
@@ -75,7 +75,7 @@ export default class SchoolNews extends Component {
 
     Press(id){
         var params = {id:id};
-        new Net().toOther(this.props,'DetailPage',DetailPage,params);
+        new Net().toOther(this.props,'BriefNewsDetail',BriefNewsDetail,params);
     }
 
     back(){
@@ -99,11 +99,10 @@ export default class SchoolNews extends Component {
         });
     }
 }
-//{this.state.hideToolbar?<View/>:<Toolbar/>}
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        flexDirection:'column'
+        backgroundColor: '#ffffff',
     },
     welcome: {
         fontSize: 20,
@@ -130,15 +129,15 @@ const styles = StyleSheet.create({
         fontWeight:'200',
         width:window.width-30
     },
-    itemTime:{
-        color:'#a6acb1',
-        fontSize:10
-    },
     itemBody:{
         flex: 1,
         flexDirection:'row',
         height:60,
         marginTop:3,
         alignItems:'center',
+        width:device.width,
+    },
+    itemSummary:{
+
     },
 });

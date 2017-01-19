@@ -6,8 +6,9 @@ import { AsyncStorage, Dimensions } from 'react-native';
 import ImagePicker from 'react-native-image-crop-picker';
 
 
-const baseurl = 'http://119.29.184.235:8080/jd';
-// const baseurl = 'http://10.10.68.113:8888';
+// const baseurl = 'http://192.168.0.106:8888';
+const baseurl = 'http://192.168.43.13:8888';
+// const baseurl = 'http://119.29.184.235:8080/jd';
 const WINDOW = Dimensions.get('window');
 global.BASEURL = baseurl;
 global.device = WINDOW;
@@ -28,13 +29,11 @@ export default class Net  {
                 method: 'get',
                 headers:myHeader,
             }).then(response =>{
-                console.log(response);
                 if(response.ok){
                     resolve(response.json());
                 }
             }).catch(error => {
-                alert('请检查网络连接');
-                console.error(error);
+                alert('网络开小差 请重试');
                 reject(error);
             });
         } )
@@ -55,7 +54,7 @@ export default class Net  {
                     resolve(response.json());
                 }
             }).catch(error => {
-                alert('请检查网络连接');
+                alert('网络开小差 请重试');
                 reject(error);
             });
         } )
@@ -73,13 +72,12 @@ export default class Net  {
                 body:JSON.stringify(postData),
             })
                 .then((response) => {
-                    console.log(response);
                     if(response.ok){
                         resolve(response.json());
                     }
                 })
                 .catch(error => {
-                    alert('请检查网络连接');
+                    alert('网络开小差 请重试');
                     reject(error);
                 })
         });
@@ -99,7 +97,7 @@ export default class Net  {
                     console.log(response);
                 })
                 .catch(error => {
-                    alert('请检查网络连接');
+                    alert('网络开小差 请重试');
                     reject(error);
                 })
         });
@@ -126,7 +124,7 @@ export default class Net  {
                     };
                 })
                 .catch(error => {
-                    alert('请检查网络连接');
+                    alert('网络开小差 请重试');
                     reject(error);
                 })
         });
@@ -134,14 +132,12 @@ export default class Net  {
     //上传单个文件
     postFile(url, imgUri){
         let formData = new FormData();
-        formData.append('avatar',{uri: imgUri, type: 'image/jpeg'});
+        formData.append('avatar',{uri: imgUri, type: 'application/octet-stream'});
 
         let options = {};
         options.body = formData;
-        options.method = 'post';
-        options.headers= {
-            'Content-Type': 'multipart/form-data',
-        };
+        options.method = 'put';
+
         return new Promise((resolve, reject) => {
             fetch(BASEURL+ url, options).then((response) => {
                 console.log(response);

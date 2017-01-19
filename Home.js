@@ -2,9 +2,15 @@
  * Created by zues on 2016/8/26.
  */
 import React, { Component } from 'react';
-import { View, Text, Image, StyleSheet, Dimensions, DrawerLayoutAndroid, TouchableOpacity, Navigator } from 'react-native';
+import { View, Text, Image, StyleSheet, Dimensions, DrawerLayoutAndroid, TouchableOpacity, Navigator, ScrollView } from 'react-native';
 import PicBanner from './component/PicBanner';
 import NormalToolbar from './component/NormalToolbar';
+import JDGround from './component/BriefNews';
+import NewsItem from './component/Notifications';
+import XiaoYouIntroduce from './component/Schoolmates';
+import BanerWebview from './component/BanerWebview';
+import EditMessage from './component/EditMessage';
+import Login from './component/Login';
 
 export default class Home extends Component {
     constructor(props){
@@ -17,7 +23,7 @@ export default class Home extends Component {
 
     render() {
         return (
-            <View>
+            <ScrollView>
                 <NormalToolbar
                     title='机电E家人'
                     leftImageSource={require('./img/login.png')}
@@ -28,27 +34,41 @@ export default class Home extends Component {
                 <View><PicBanner bannerClick={this.props.bannerClick}/></View>
                 <View style={styles.body}>
                     <TouchableOpacity onPress={this.props.toJDGround}>
-                        <View style = {[styles.textStyle,{backgroundColor:'#bcd3eb'}]}>
+                        <View style = {[styles.textStyle,{backgroundColor:'rgba(30,144,255,0.5)'}]}>
                             <Image source={require('./img/JDGround.png')} style={styles.itemImage}/>
-                            <Text style={styles.text}>机电广场</Text>
+                            <Text style={styles.text}>校友小广场</Text>
+                        </View>
+                    </TouchableOpacity>
+
+                    <TouchableOpacity onPress={this.props.toMyClass}>
+                        <View style = {[styles.textStyle,{backgroundColor:'rgba(0,139,69,0.5)'}]}>
+                            <Image source={require('./img/JDMyClass.png')} style={styles.itemImage}/>
+                            <Text style={styles.text}>我的班级，我的家</Text>
                         </View>
                     </TouchableOpacity>
 
                     <TouchableOpacity onPress={this.props.toBriefNews}>
-                        <View style = {[styles.textStyle,{backgroundColor:'#ebd3bc'}]}>
-                            <Image source={require('./img/JDJianXun.png')} style={styles.itemImage}/>
+                        <View style = {[styles.textStyle,{backgroundColor:'rgba(255,106,106,0.5)'}]}>
+                            <Image source={require('./img/JDBriefNews.png')} style={styles.itemImage}/>
                             <Text style={styles.text}>机电简讯</Text>
                         </View>
                     </TouchableOpacity>
 
-                     <TouchableOpacity onPress={this.props.toXiaoYouIntro}>
-                        <View style = {[styles.textStyle,{backgroundColor:'#ebeabc'}]}>
+                    <TouchableOpacity onPress={this.props.toJdInform}>
+                        <View style = {[styles.textStyle,{backgroundColor:'rgba(186,85,211,0.5)'}]}>
+                            <Image source={require('./img/JDInform.png')} style={styles.itemImage}/>
+                            <Text style={styles.text}>机电通知</Text>
+                        </View>
+                    </TouchableOpacity>
+
+                    <TouchableOpacity onPress={this.props.toXiaoYouIntro}>
+                        <View style = {[styles.textStyle,{backgroundColor:'rgba(205,102,0,0.5)'}]}>
                             <Image source={require('./img/JDXiaoYou.png')} style={styles.itemImage}/>
                             <Text style={styles.text}>校友风采</Text>
                         </View>
                     </TouchableOpacity>
                 </View>
-            </View>
+            </ScrollView>
         );
     }
 }
@@ -68,6 +88,7 @@ const styles = StyleSheet.create({
     text: {
         fontSize: 20,
         fontWeight:'200',
+        color:'white',
     },
 
     drawerTextStyle: {
@@ -87,7 +108,6 @@ const styles = StyleSheet.create({
         marginTop:5,
         borderColor:'#c1c1c1',
         borderWidth:1,
-
     },
 
     drawerLayoutAndroidText: {

@@ -178,7 +178,7 @@ class Test extends Component {
 
     //获取原始数据
     fetchData(){
-        var url = '/messages?page='+this.state.page;
+        var url = MESSAGE+'?page='+this.state.page;
         return new Net().getMethod(url).catch(error => {
             alert("error message:"+ error);
         });
@@ -247,19 +247,9 @@ const styles = StyleSheet.create({
         flex: 1,
         backgroundColor: '#e6e6e6',
     },
-    title: {
-        textAlign: 'center',
-        fontSize: 22,
-        fontWeight: '300',
-    },
     header: {
         backgroundColor: '#000',
         padding: 10,
-    },
-    headerText: {
-        textAlign: 'center',
-        fontSize: 16,
-        fontWeight: '500',
     },
     content: {
         flex: 1,
@@ -275,29 +265,6 @@ const styles = StyleSheet.create({
         backgroundColor: 'rgba(245,252,255,1)',
         borderBottomWidth:0.5,
         borderColor:'orange'
-    },
-    contentInactive:{
-        flex:1,
-        backgroundColor: 'rgba(245,252,255,1)',
-        borderBottomWidth:0.5,
-        borderColor:'orange'
-    },
-    selectors: {
-        marginBottom: 10,
-        flexDirection: 'row',
-        justifyContent: 'center',
-    },
-    selector: {
-        backgroundColor: '#F5FCFF',
-        padding: 10,
-    },
-    activeSelector: {
-        fontWeight: 'bold',
-    },
-    selectTitle: {
-        fontSize: 14,
-        fontWeight: '500',
-        padding: 10,
     },
     cardImage:{
         height:200,

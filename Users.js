@@ -7,7 +7,6 @@ import Net from './Tool';
 import ScrollableTabView, { DefaultTabBar } from 'react-native-scrollable-tab-view';
 import BaseInfo from './component/BaseInfo';
 import myImagePicker from 'react-native-image-crop-picker';
-import NormalToolbar from './component/NormalToolbar';
 
 // import ImagePicker from 'react-native-image-picker';
 
@@ -24,7 +23,8 @@ export default class Users extends Component {
             myResponse:'请登录',
             avatarSource: null,
             viewRef:0,
-            image:null,
+            image:this.props.avatar,
+            ifChange: false,
         }
     }
 
@@ -36,7 +36,9 @@ export default class Users extends Component {
         return (
             <View style={styles.container}>
                 <Image
-                    source={this.props.avatar === null?require('./img/UserBackground.jpg'):{uri:AVATAR+this.props.avatar}}
+                    source={this.props.avatar === null?require('./img/UserBackground.jpg'):
+                        this.state.ifChange?{uri:this.state.image}:
+                            {uri:AVATAR+this.props.avatar}}
                     style={styles.userBackground}
                     ref={'backgroundImage'}
                     onLoadEnd={this.imageLoaded.bind(this)}>
@@ -51,6 +53,7 @@ export default class Users extends Component {
                         <View>
                             { this.props.avatar === null ?
                                 <Image source={require('./img/UserDafault.png')} style={styles.avatar}></Image> :
+                            this.state.ifChange? <Image style={styles.avatar} source={{uri:this.state.image}} />:
                                 <Image style={styles.avatar} source={{uri:AVATAR+this.props.avatar}} />
                             }
                         </View>
@@ -114,8 +117,10 @@ export default class Users extends Component {
                 height: 400,
                 cropping: true
             }).then(image => {
+                console.log(image);
                 this.setState({
                     image:image.path,
+                    ifChange:true,
                 });
                 this.updateAvatar(image.path);
             }).catch(e => {
@@ -127,6 +132,7 @@ export default class Users extends Component {
     updateAvatar(url){
         new Net().postFile(UPLOAD,url)
             .then((data) => {
+                console.log(data);
                 this.fetchData();
             }).catch(error => {
             alert("error message:"+ error);

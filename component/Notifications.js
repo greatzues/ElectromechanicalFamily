@@ -2,22 +2,16 @@ import React, { Component } from 'react';
 import { View, Text, StyleSheet, ListView, Image, PixelRatio, Dimensions, TouchableOpacity } from 'react-native';
 import ParallaxScrollView from 'react-native-parallax-scroll-view';
 import ViewPager from 'react-native-viewpager';
-import Net from './Tool';
-import DetailPage from './component/DetailPage';
-import NormalToolbar from './component/NormalToolbar';
+import Net from '../Tool';
+import NotificationsDetail from './NotificationsDetail';
+import NormalToolbar from './NormalToolbar';
 
-const LATEST = 'http://news-at.zhihu.com/api/4/news/latest';
+const BRIEF = '/notifications';
 const AVATAR_SIZE = 120;
 const ROW_HEIGHT = 60;
 const PARALLAX_HEADER_HEIGHT = 200;
-const STICKY_HEADER_HEIGHT = 70;
-const BANNER_PIC = [
-    require('./img/1.jpg'),
-    require('./img/2.jpg'),
-    require('./img/3.jpg'),
-    require('./img/4.jpg')
-];
-export default class NewsItem extends Component {
+const STICKY_HEADER_HEIGHT = 38;
+export default class Notifications extends Component {
     // 构造
     constructor(props) {
         super(props);
@@ -31,7 +25,7 @@ export default class NewsItem extends Component {
             dataSource:ds,
             userData: [],
             id:'',
-            bannerDataSource : dataSource.cloneWithPages(BANNER_PIC)
+            page:1
         };
     }
 
@@ -47,7 +41,6 @@ export default class NewsItem extends Component {
                 renderScrollComponent={props => (
                     <ParallaxScrollView
                         onScroll={onScroll}
-
                         headerBackgroundColor="#e9eaed"
                         stickyHeaderHeight={ STICKY_HEADER_HEIGHT }
                         parallaxHeaderHeight={ PARALLAX_HEADER_HEIGHT }
@@ -55,17 +48,11 @@ export default class NewsItem extends Component {
 
                         renderBackground={() => (
                         <View key="background">
-                            <ViewPager
-                                style={{height:PARALLAX_HEADER_HEIGHT}}
-                                dataSource={ this.state.bannerDataSource }
-                                renderPage ={this.renderPage}
-                                isLoop = {true}
-                                autoPlay = {true}
-                            />
+                            <Image source={require('./../img/1.jpg')} style={styles.page}/>
                             <View style={{position: 'absolute',
                                 top: 0,
-                                width: window.width,
-                                backgroundColor: 'rgba(0,0,0,.4)',
+                                width: device.width,
+                                backgroundColor: 'rgba(0,0,0,0.3)',
                                 height: PARALLAX_HEADER_HEIGHT}}/>
                         </View>
 
@@ -76,28 +63,34 @@ export default class NewsItem extends Component {
                                 <Text style={ styles.sectionSpeakerText }>
                                     机电简讯
                                 </Text>
-                                <Text style={ styles.sectionTitleText }>
+                                <Text style={ styles.sectionTitleText}>
                                     生活不止眼前的苟且 还有诗和远方的田野
                                 </Text>
+                                <TouchableOpacity style={styles.foreBack} onPress={this.back.bind(this)}>
+                                    <Image source={require('../img/back.png')}/>
+                                </TouchableOpacity>
                             </View>
+
                         )}
 
                         renderStickyHeader={() => (
+                            <View>
+                                <NormalToolbar
+                                    title='机电简讯'
+                                    titleTextColor='white'
+                                    barBGColor='black'
+                                    leftImageSource={require('./../img/back.png')}
+                                    leftItemFunc={this.back.bind(this)}
+                                />
 
-                            <NormalToolbar
-                            title='机电简讯'
-                            leftImageSource={require('./img/back.png')}
-                            leftItemFunc={this.back.bind(this)}/>
-                        )}
-
-                        renderFixedHeader={() => (
-                            <View key="fixed-header" style={styles.fixedSection}>
-                                <Text style={styles.fixedSectionText}
-                                      onPress={() => this.refs.ListView.scrollTo({ x: 0, y: 0 })}>
-                                    Scroll to top
-                                </Text>
+                                <View key="fixed-header" style={styles.fixedSection}>
+                                    <TouchableOpacity onPress={() => this.refs.ListView.scrollTo({ x: 0, y: 0 })}>
+                                        <Image source={require('./../img/toTop.png')} style={{height:20,width:20,}}/>
+                                    </TouchableOpacity>
+                                </View>
                             </View>
-                        )}/>
+                        )}
+                    />
                 )}
             />
         );
@@ -111,9 +104,9 @@ export default class NewsItem extends Component {
         return (
             <TouchableOpacity  onPress={() => this.Press(rowData.id)}>
                 <View style={styles.itemBody}>
-                    <Image source={{uri:rowData.images[0]}} style={styles.renderRowImg}/>
+                    <Image source={require('../img/news.png')} style={styles.renderRowImg}/>
                     <View style={styles.renderRowItem}>
-                        <Text style={styles.itemTitle} ellipsizeMode="tail" numberOfLines={1}  >{rowData.title}</Text>
+                        <Text style={styles.itemTitle} ellipsizeMode="tail" numberOfLines={1}  >{rowData.titile}</Text>
                         <Text style={styles.itemTime}>1小时前</Text>
                     </View>
                 </View>
@@ -121,29 +114,22 @@ export default class NewsItem extends Component {
         )
     }
 
-    renderPage(data, pageID){
-        return(
-            <Image
-                source={data}
-                style={styles.page} />
-        );
-    }
-
     fetchData(){
-        return new Net().getZhiHuMethod(LATEST).catch(error => {
+        var url=BRIEF+'?page='+this.state.page;
+        return new Net().getMethod(url).catch(error => {
             alert("error message:"+ error);
         });
     }
 
     Press(id){
         var params = {id:id};
-        new Net().toOther(this.props, 'DetailPage',DetailPage,params);
+        new Net().toOther(this.props, 'NotificationsDetail',NotificationsDetail,params);
     }
 
     componentWillMount() {
         this.fetchData().then(r => {
             this.setState({
-                userData : r.stories,
+                userData : r.notificationList,
             });
         });
     }
@@ -184,7 +170,7 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         flex: 1,
         flexDirection: 'column',
-        paddingTop: 100
+        paddingTop: 60
     },
     avatar: {
         marginBottom: 10,
@@ -242,5 +228,16 @@ const styles = StyleSheet.create({
         width: window.width,
         height: PARALLAX_HEADER_HEIGHT,
         resizeMode: 'stretch',
+    },
+    toolbar: {
+        position: 'absolute',
+        top: 0,
+        left: 0
+    },
+
+    foreBack:{
+      position:'absolute',
+        top:20,
+        left:10,
     },
 });

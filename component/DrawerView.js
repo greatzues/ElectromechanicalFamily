@@ -5,10 +5,8 @@ import React, { Component } from 'react';
 import { View, Text, StyleSheet, Image, Navigator, Dimensions, TouchableOpacity, AsyncStorage, DeviceEventEmitter } from 'react-native';
 import Net from '../Tool';
 import ImagePicker from 'react-native-image-picker';
-import Login from './Login';
 
 const AVATAR = 'http://119.29.184.235:8080/jd/avatar/';
-const LISTENERKEY = 'reRender';
 export default class DrawerView extends Component{
     // 构造
       constructor(props) {

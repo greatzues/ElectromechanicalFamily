@@ -33,6 +33,7 @@ export default class Login extends Component{
                     resizeMode='cover'
                     style={{height:window.height,width:window.width,flex:1}}
                     ref={'backgroundImage'}
+                    blurRadius={1}
                     onLoadEnd={this.imageLoaded.bind(this)}>
                     <BlurView
                         blurType="dark"
@@ -42,11 +43,18 @@ export default class Login extends Component{
                         style={styles.blurView}
                         viewRef={this.state.viewRef}
                     />
-                    <NormalToolbar click={this.backToHome.bind(this)} color='white'/>
+                    <NormalToolbar
+                        leftImageSource={require('../img/back.png')}
+                        leftItemFunc={this.backToHome.bind(this)}
+                        barBGColor='transparent'
+                        leftItemTitle='返回'
+                        title='请登录'
+                        barBorderBottomWidth={0}
+                    />
                     <Text style={styles.logo}>机电E家人</Text>
                     <View style = {styles.container} >
                         {this.state.login ?
-                            <View >
+                            <View>
                                 <ActivityIndicator />
                                 <Text style={{backgroundColor: 'transparent'}}>正在登录...</Text>
                             </View> :
@@ -61,6 +69,7 @@ export default class Login extends Component{
                                 underlineColorAndroid='white'
                                 clearButtonMode={'while-editing'}
                                 editable = {this.state.editable}
+                                returnKeyType={'next'}
                                 onChangeText={(userName) => this.setState({username:userName})}/>
                         </View>
 
@@ -74,6 +83,7 @@ export default class Login extends Component{
                                 secureTextEntry = {true}
                                 clearButtonMode={'while-editing'}
                                 editable = {this.state.editable}
+                                returnKeyType={'done'}
                                 onChangeText={(passWord) => this.setState({password:passWord})}/>
                         </View>
                         <TouchableOpacity
@@ -86,13 +96,18 @@ export default class Login extends Component{
                         </TouchableOpacity>
                     </View>
                 </Image>
-
         );
     }
 
     //这个方法也可以全局
     backToHome(){
-        new Net().back(this.props);
+        const { navigator } = this.props;
+        if(this.props.update){
+            this.props.update(true);
+        }
+        if (navigator){
+            navigator.pop();
+        }
     }
 
     //登录
@@ -168,7 +183,6 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         flexDirection:'column',
         marginTop:80
-
     },
     textInput: {
         flex:1,

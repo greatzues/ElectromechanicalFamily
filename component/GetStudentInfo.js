@@ -30,7 +30,7 @@ export default class GetStudentInfo extends Component{
         return(
             <View style={styles.container}>
                 <Image
-                    source={{uri:AVATAR+this.state.avatarSource}}
+                    source={require('../img/UserBackground.jpg')}
                     style={styles.userBackground}
                     ref={'backgroundImage'}
                     onLoadEnd={this.imageLoaded.bind(this)}>
@@ -43,12 +43,12 @@ export default class GetStudentInfo extends Component{
                         viewRef={this.state.viewRef}
                     />
                         <View>
-                            <Image style={styles.avatar} source={{uri:AVATAR+this.state.avatarSource}} />
+                            <Image style={styles.avatar} source={require('../img/UserDafault.png')} />
                         </View>
                         <Text style={{color:'white',fontSize:20, backgroundColor: 'transparent',}}>{
                             this.state.appellation === '男'?
-                            this.state.response.realname+'先生'
-                            :this.state.response.realname+'小姐'}
+                            this.state.response.realname
+                            :this.state.response.realname}
                         </Text>
 
                 </Image>
