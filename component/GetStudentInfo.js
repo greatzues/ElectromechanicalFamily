@@ -10,13 +10,13 @@ import BaseInfo from '../component/BaseInfo';
 var BlurView = require('react-native-blur').BlurView;
 
 //http://10.10.68.101:8888/student/getsomeoneInfo/?studentID=58
-const AVATAR = 'http://119.29.184.235:8080/jd/avatar/';
+const AVATAR = '/avatar/';
 export default class GetStudentInfo extends Component{
     constructor(props){
         super(props);
         this.state ={
             response:{},
-            avatarSource:'',
+            avatarSource:null,
             appellation:'', //称谓
             viewRef:0,
         }

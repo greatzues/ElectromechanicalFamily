@@ -3,18 +3,19 @@
  */
 import React, { Component } from 'react';
 import { StyleSheet, Text, View, Dimensions, Image, TouchableOpacity, ScrollView, Navigator, findNodeHandle ,AsyncStorage, ToastAndroid } from 'react-native';
-import Net from './Tool';
+import Net from '../Tool';
 import ScrollableTabView, { DefaultTabBar } from 'react-native-scrollable-tab-view';
-import BaseInfo from './component/BaseInfo';
+import BaseInfo from './BaseInfo';
 import myImagePicker from 'react-native-image-crop-picker';
+import Toast from 'react-native-root-toast'
 
 // import ImagePicker from 'react-native-image-picker';
 
 var BlurView = require('react-native-blur').BlurView;
 
-const AVATAR = 'http://119.29.184.235:8080/jd/avatar/';
+const AVATAR = '/avatar/';
 const INFO = '/students/getinfo';
-const UPLOAD = '/students/upload';
+const UPLOAD = '/student/upload';
 export default class Users extends Component {
     constructor(props){
         super(props);
@@ -36,9 +37,8 @@ export default class Users extends Component {
         return (
             <View style={styles.container}>
                 <Image
-                    source={this.props.avatar === null?require('./img/UserBackground.jpg'):
-                        this.state.ifChange?{uri:this.state.image}:
-                            {uri:AVATAR+this.props.avatar}}
+                    source={this.props.avatar === null?require('./../img/UserBackground.jpg'):
+                            {uri:BASEURL+AVATAR+this.state.image}}
                     style={styles.userBackground}
                     ref={'backgroundImage'}
                     onLoadEnd={this.imageLoaded.bind(this)}>
@@ -52,9 +52,8 @@ export default class Users extends Component {
                         />
                         <View>
                             { this.props.avatar === null ?
-                                <Image source={require('./img/UserDafault.png')} style={styles.avatar}></Image> :
-                            this.state.ifChange? <Image style={styles.avatar} source={{uri:this.state.image}} />:
-                                <Image style={styles.avatar} source={{uri:AVATAR+this.props.avatar}} />
+                                <Image source={require('./../img/UserDafault.png')} style={styles.avatar}></Image> :
+                                <Image style={styles.avatar} source={{uri:BASEURL+AVATAR+this.state.image}} />
                             }
                         </View>
                         <Text style={{color:'white',backgroundColor: 'transparent'}}>你好，{this.props.username===null?this.state.myResponse:this.props.username}</Text>
@@ -97,7 +96,7 @@ export default class Users extends Component {
             console.log(response);
             return this.setState({
                 myResponse:response,
-                avatarSource:response.avatar,
+                image:response.avatar,
                 pleaseLogin:response.name,
             });
 
@@ -109,30 +108,31 @@ export default class Users extends Component {
     }
 
     pickSingle(){
-        if(this.props.avatar === null){
-            ToastAndroid.show('请先登录', ToastAndroid.SHORT)
-        }else {
-            myImagePicker.openPicker({
-                width: 300,
-                height: 400,
-                cropping: true
-            }).then(image => {
-                console.log(image);
-                this.setState({
-                    image:image.path,
-                    ifChange:true,
+        new Net().loadKey('loginState').then(r => {
+            if(r.username){
+                myImagePicker.openPicker({
+                    width: 300,
+                    height: 400,
+                    cropping: true
+                }).then(image => {
+                    console.log(image);
+                    this.setState({
+                        image:image.path,
+                        ifChange:true,
+                    });
+                    this.updateAvatar(image.path);
+                }).catch(e => {
+                    console.log('Error:'+e);
                 });
-                this.updateAvatar(image.path);
-            }).catch(e => {
-                console.log('Error:'+e);
-            });
-        }
+            }
+        }).catch(e => {
+            Toast.show('请先登录')
+        });
     }
 
-    updateAvatar(url){
-        new Net().postFile(UPLOAD,url)
+    updateAvatar(path){
+        new Net().postFile(UPLOAD,path)
             .then((data) => {
-                console.log(data);
                 this.fetchData();
             }).catch(error => {
             alert("error message:"+ error);

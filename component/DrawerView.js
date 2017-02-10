@@ -6,7 +6,7 @@ import { View, Text, StyleSheet, Image, Navigator, Dimensions, TouchableOpacity,
 import Net from '../Tool';
 import ImagePicker from 'react-native-image-picker';
 
-const AVATAR = 'http://119.29.184.235:8080/jd/avatar/';
+const AVATAR = '/avatar/';
 export default class DrawerView extends Component{
     // 构造
       constructor(props) {
@@ -29,7 +29,7 @@ export default class DrawerView extends Component{
                       <View>
                           { this.props.avatar === null ?
                               <Image source={require('../img/UserDafault.png')} style={styles.avatar}></Image> :
-                              <Image style={styles.avatar} source={{uri:AVATAR+this.props.avatar}} />
+                              <Image style={styles.avatar} source={{uri:BASEURL+AVATAR+this.props.avatar}} />
                           }
                       </View>
                       <Text style={{color:'white',backgroundColor: 'transparent'}}>你好，{this.props.username===null?this.state.myResponse:this.props.username}</Text>
@@ -76,7 +76,7 @@ export default class DrawerView extends Component{
             console.log('Response = ', response);
 
             this.setState({
-                imgUrl:response.uri,
+                imgUrl:response.path,
                 fileName:response.fileName,
             });
 
@@ -105,9 +105,9 @@ export default class DrawerView extends Component{
                     avatarSource: source
                 });
 
-                new Net().postFile('/students/upload',this.state.imgUrl,this.state.filename)
+                new Net().postFile('/students/upload',this.state.imgUrl)
                     .then((data) => {
-
+                        console.log(data);
                     });
             }
         });

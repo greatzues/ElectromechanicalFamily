@@ -17,14 +17,13 @@ import {
     RefreshStatus,
     LoadMoreStatus
 } from 'react-native-swRefresh'
-import NormalToolbar from './NormalToolbar';
 import Net from '../Tool';
 import commentDetail from './commentDetail';
 import PicDetail from './PicDetail'
 
 const MESSAGE = '/messages';
 export default class LittleGround extends Component{
-    _page=0
+    _page=1
     _dataSource = new ListView.DataSource({rowHasChanged:(row1,row2)=>row1 !== row2})
     // 构造
     constructor(props) {
@@ -88,10 +87,10 @@ export default class LittleGround extends Component{
      */
     _onListRefersh(end){
         let timer =  setTimeout(()=>{
-            clearTimeout(timer)
-            this.fetchData(this.state.page).then(r => {
+            clearTimeout(timer);
+            this.fetchData(this._page).then(r => {
                 this.setState({
-                    mesData:r.messages,
+                    mesData:r.messages
                 })
             }).catch(e => {});
             this.refs.listView.resetStatus() //重置上拉加载的状态
@@ -108,19 +107,18 @@ export default class LittleGround extends Component{
     _onLoadMore(end){
         let timer =  setTimeout(()=>{
             clearTimeout(timer)
-            let data = [];
-            this.fetchData(this.state.page+1).then(r => {
+            this._page++;
+            this.fetchData(this._page).then(r => {
                 for(x in r.messages){
                     this.state.mesData.push(r.messages[x]);
                 }
-                console.log(this.state.mesData.length);
                 this.setState({
-                    update:this.state.mesData,
-                    page:this.stage.page+1
+                   mesData:this.state.mesData
                 })
             }).catch(e =>{});
             //end(this._page > 2)//加载成功后需要调用end结束刷新 假设加载4页后数据全部加载完毕
-            this.refs.listView.endLoadMore(true) //为true的时候表示已经加载完全部数据，这里为了暂时给老师演示，先保存为true，后面再fix
+            this.refs.listView.resetStatus();
+            this.refs.listView.endLoadMore(this._page>2) //为true的时候表示已经加载完全部数据，这里为了暂时给老师演示，先保存为true，后面再fix
         },2000)
     }
 
@@ -128,7 +126,7 @@ export default class LittleGround extends Component{
         this.fetchData(this._page).then(r => {
             this.setState({
                 mesData:r.messages
-            });
+            })
         }).catch(e => {});
         this.refs.listView.beginRefresh() //刷新动画
     }

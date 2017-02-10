@@ -94,56 +94,6 @@ class ElectromechanicalFamily extends Component {
   }
 }
 
-var NavigationBarRouteMapper = {
-    LeftButton(route, navigator, index, navState) {
-        if (index > 0) {
-            return (
-                <View style={styles.navContainer}>
-                    <TouchableOpacity
-                        underlayColor='transparent'
-                        onPress={() => {if (index > 0) {navigator.pop()}}}>
-                        <Text style={styles.leftNavButtonText}>
-                            返回
-                        </Text>
-                    </TouchableOpacity>
-                </View>
-            );
-        } else {
-            return (
-                <View style={styles.navContainer}>
-                    <TouchableOpacity
-                        underlayColor='transparent'
-                        onPress={() => route.hhh}>
-                        <Image source={require('./img/login.png')} />
-                    </TouchableOpacity>
-                </View>
-            )
-        }
-    },
-    RightButton(route, navigator, index, navState) {
-        if (route.onPress)
-            return (
-                <View style={styles.navContainer}>
-                    <TouchableOpacity
-                        onPress={() => route.onPress()}>
-                        <Text style={styles.rightNavButtonText}>
-                            {route.rightText || '右键'}
-                        </Text>
-                    </TouchableOpacity>
-                </View>
-            );
-    },
-    Title(route, navigator, index, navState) {
-        return (
-            <View style={styles.navContainer}>
-                <Text style={styles.title}>
-                    {route.name}
-                </Text>
-            </View>
-        );
-    }
-};
-
 const styles = StyleSheet.create({
     navContainer: {
         backgroundColor: '#81c04d',

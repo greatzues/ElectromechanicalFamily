@@ -5,10 +5,7 @@ import React,{ Component } from 'react';
 import { AsyncStorage, Dimensions } from 'react-native';
 import ImagePicker from 'react-native-image-crop-picker';
 
-
-// const baseurl = 'http://192.168.0.106:8888';
-const baseurl = 'http://192.168.43.13:8888';
-// const baseurl = 'http://119.29.184.235:8080/jd';
+const baseurl = 'http://sinvarh.com';
 const WINDOW = Dimensions.get('window');
 global.BASEURL = baseurl;
 global.device = WINDOW;
@@ -130,14 +127,13 @@ export default class Net  {
         });
     }
     //上传单个文件
-    postFile(url, imgUri){
+    postFile(url, uri){
         let formData = new FormData();
-        formData.append('avatar',{uri: imgUri, type: 'application/octet-stream'});
+        formData.append('avatar',{uri: uri, type: 'application/octet-stream'});
 
         let options = {};
         options.body = formData;
-        options.method = 'put';
-
+        options.method = 'POST';
         return new Promise((resolve, reject) => {
             fetch(BASEURL+ url, options).then((response) => {
                 console.log(response);

@@ -6,8 +6,8 @@ import { View, Text, StyleSheet, Image, Navigator, TouchableOpacity, AsyncStorag
 import TabNavigator from 'react-native-tab-navigator';
 import DrawerLayout from 'react-native-drawer-layout';
 
-import Users from '../Users';
-import Home from '../Home';
+import Users from './Users';
+import Home from './Home';
 import Login from './Login';
 import EditUserInfo from './EditUserInfo';
 import Net from '../Tool';
@@ -209,8 +209,6 @@ export default class BottomTap extends Component {
             }
             console.log(e);
         });
-        // var params = {id:this.state.id,update:(ifRefresh) => this.reRenderData(ifRefresh)};
-        // new Net().toOther(this.props,'EditUserInfo',EditUserInfo,params);
     }
 
     toShare(){
