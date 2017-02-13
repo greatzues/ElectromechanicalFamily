@@ -7,7 +7,6 @@ import { StyleSheet, Text, View, TouchableHighlight, TouchableOpacity, Image,
 import Toast from 'react-native-root-toast';
 import Net from '../Tool';
 import NormalToolbar from './NormalToolbar';
-const MESSAGE = '/messages';
 const COMMENT = '/comments';
 export default class commentDetail extends Component{
     // 构造
@@ -22,7 +21,8 @@ export default class commentDetail extends Component{
               to:null,
               update:false,
               text:'',
-              toId:null
+              toId:null,
+              toName:null,
         };
       }
 
@@ -64,7 +64,7 @@ export default class commentDetail extends Component{
                           defaultValue ={this.state.text}
                           multiline={true}
                           numberOfLines={3}
-                          onEndEditing ={event => this.setState({commentInfo:event.nativeEvent.text.replace(/@(\w+)\s/,'')})}/>
+                          onEndEditing ={event => this.setState({commentInfo:event.nativeEvent.text.replace(/@(\W+) /g,'')})}/>
 
                       <TouchableOpacity onPress={this.postComment.bind(this)}>
                           <View style={styles.commentButton}>
@@ -110,20 +110,42 @@ export default class commentDetail extends Component{
             'to':this.state.toId===null?null:this.state.toId,
             'commentInfo':this.state.commentInfo
         };
-        new Net().postMethod(COMMENT,postData).then(r => {}).catch(e => console.log(e))
-        this.fetchComment(this.state.data.messageId);
+        new Net().postMethod(COMMENT,postData).then(r => {}).catch(e => console.log(e));
         this.refs.input.clear();
-        this.setState({commentInfo:''});
+        this.state.myComments.push({
+            id:null,
+            messageId:this.state.data.messageId,
+            from:this.props.id,
+            fromName:this.props.username,
+            to:this.state.toId===null?null:this.state.toId,
+            toName:this.state.toId===null?null:this.state.toName,
+            commentInfo:this.state.commentInfo}
+        );
         Toast.show('评论成功');
+        this.forceUpdate();
     }
 
-    renderCommentRow(rowData, sectionID, rowID){
+    /**
+     * @param rowData
+     * @returns {XML}
+     *
+     * 获取的comments具体含义
+     * id         是标记这条评论的id，保证评论是唯一的
+     * messageId  是这条分享的id，可以直接传入
+     * from       这条评论来自哪位用户的评论，可以是发这条分享的本身用户
+     * fromName   是来自哪位用户的名字
+     * to         这条评论对哪位用户说的，如果没传入，则表示对发送本条分享的用户
+     * toName     这条推送对那位用户，多对应他的名字
+     * commentInfo这条评论的内容
+     */
+    renderCommentRow(rowData){
         console.log(rowData);
         return(
-            <TouchableOpacity style={styles.renderCommentRow} onPress={this.toSomeone.bind(this,rowData.to)}>
+            <TouchableOpacity style={styles.renderCommentRow} onPress={this.toSomeone.bind(this,rowData.fromName,rowData.from)}>
                 <Image source={require('../img/UserDafault.png')} style={styles.avatar}/>
-                {rowData.to?<Text>{rowData.fromName}@{rowData.to} : {rowData.commentInfo}</Text>
-                    :<Text>{rowData.fromName} : {rowData.commentInfo}</Text>}
+                <Text>{rowData.fromName}</Text>
+                <Text>{rowData.toName?'@'+rowData.toName:''}</Text>
+                <Text>{' : '+rowData.commentInfo}</Text>
             </TouchableOpacity>
         );
     }
@@ -148,10 +170,11 @@ export default class commentDetail extends Component{
         return null
     }
     //万一@之后又删掉怎么办
-    toSomeone(toId){
+    toSomeone(toName,toId){
         this.setState({
-            text:'@'+toId+' ',
-            toId:toId
+            text:'@'+toName+' ',
+            toId:toId,
+            toName:toName
         });
     }
 }
