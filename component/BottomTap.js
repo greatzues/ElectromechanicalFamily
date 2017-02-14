@@ -22,6 +22,8 @@ import GetStudentInfo from './GetStudentInfo';
 import LittleGround from './LittleGround';
 import ClassGround from './ClassGround'
 
+import NewsGround from './NewsGround';
+
 const LOGIN = '/students/login';
 const INFO = '/students/getinfo';
 export default class BottomTap extends Component {
@@ -74,7 +76,8 @@ export default class BottomTap extends Component {
                           bannerClick={this.bannerClick.bind(this)}
                           toBriefNews={this.toBriefNews.bind(this)}
                           toJdInform={this.toJdInform.bind(this)}
-                          toShare={this.toShare.bind(this)}
+                          ShareToClass={this.toShare.bind(this,this.state.classNumber)}
+                          ShareToGround={this.toShare.bind(this,0)}
                           toMyClass={this.toMyClass.bind(this,this.state.classNumber)}
                           toJDGround={() => this.setState({selectTab:'new'})}
                     />
@@ -88,7 +91,7 @@ export default class BottomTap extends Component {
                     renderIcon = {() => <Image source={require('./../img/discover.png')} style={styles.iconStyle}/> }
                     renderSelectedIcon ={() => <Image source={require('./../img/discover_highlighted.png')} style={styles.iconStyle}/> }
                     onPress={() => this.setState({selectTab:'new'})}>
-                    <LittleGround id={this.state.id} parent={this.props}/>
+                    <LittleGround id={this.state.id} parent={this.props} username={this.state.username}/>
                 </TabNavigator.Item>
 
                 <TabNavigator.Item
@@ -110,7 +113,7 @@ export default class BottomTap extends Component {
                     renderIcon = {() => <Image source={require('./../img/me_normal.png')} style={styles.iconStyle}/> }
                     renderSelectedIcon ={() => <Image source={require('./../img/me_hight.png')} style={styles.iconStyle}/> }
                     onPress={() => this.setState({selectTab:'user'})}>
-                    <Users toEdit={this.toEdit.bind(this)} userResponse={this.state.response}
+                    <Users toEdit={this.toEdit.bind(this)} userResponse={this.state.response} parent={this.props}
                            avatar={this.state.avatar} username={this.state.username}/>
                 </TabNavigator.Item>
             </TabNavigator>
@@ -146,6 +149,7 @@ export default class BottomTap extends Component {
     reRenderData(ifRefresh){
         if(ifRefresh === true){
            return new Net().getMethod(INFO).then((r) => {
+               console.log(r)
                 this.setState({
                     username:r.response.realname,
                     avatar:r.response.avatar,
@@ -211,10 +215,10 @@ export default class BottomTap extends Component {
         });
     }
 
-    toShare(){
+    toShare(classNumber){
         new Net().loadKey('loginState').then(r => {
             if(r.username){
-                var params = {id:this.state.id,update:(ifRefresh) => this.reRenderData(ifRefresh)};
+                var params = {id:this.state.id,update:(ifRefresh) => this.reRenderData(ifRefresh),classNumber:classNumber};
                 new Net().toOther(this.props, 'EditMessage',EditMessage,params);
             }
         }).catch(e => {
