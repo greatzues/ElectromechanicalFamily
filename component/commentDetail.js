@@ -5,8 +5,10 @@ import React, { Component } from 'react';
 import { StyleSheet, Text, View, TouchableHighlight, TouchableOpacity, Image,
     Dimensions, ListView, TextInput, Navigator, ScrollView, ToastAndroid} from 'react-native';
 import Toast from 'react-native-root-toast';
-import Net from '../Tool';
 import NormalToolbar from './NormalToolbar';
+import Net from '../Tool';
+import PicDetail from './PicDetail'
+
 const COMMENT = '/comments';
 export default class commentDetail extends Component{
     // 构造
@@ -48,7 +50,9 @@ export default class commentDetail extends Component{
                               [this.state.data.messagePic1,this.state.data.messagePic2,this.state.data.messagePic3,
                                   this.state.data.messagePic4,this.state.data.messagePic5,this.state.data.messagePic6,
                                     this.state.data.messagePic7,this.state.data.messagePic8,this.state.data.messagePic9])}
-                          renderRow={this.picList.bind(this)}
+                          renderRow={this.picList.bind(this,[this.state.data.messagePic1,this.state.data.messagePic2,this.state.data.messagePic3,
+                              this.state.data.messagePic4,this.state.data.messagePic5,this.state.data.messagePic6,
+                                this.state.data.messagePic7,this.state.data.messagePic8,this.state.data.messagePic9])}
                           contentContainerStyle={styles.list}
                           enableEmptySections={true}
                       />
@@ -155,15 +159,19 @@ export default class commentDetail extends Component{
     }
 
     picList(rowData, sectionID, rowID){
-        var picUri = BASEURL+'/message/'+rowData;
-        if(rowData!==null){
+        if(sectionID!==null){
+            var picUri = BASEURL+'/message/'+sectionID;
+            let str = sectionID.substring(sectionID.length-1); //拿到最后一个字符，传出去作为图片预览的index
+            let index = parseInt(str); //解析一个字符串，并返回一个整数
             return (
-                <View style={styles.itemContainer}>
-                    <Image
-                        style={styles.imageItem}
-                        source={{uri:picUri}}
-                        resizeMode={'cover'}
-                    />
+                <View>
+                    <TouchableOpacity style={styles.itemContainer} onPress={this.toPicDetail.bind(this,rowData,index)}>
+                        <Image
+                            style={styles.imageItem}
+                            source={{uri:picUri}}
+                            resizeMode={'cover'}
+                        />
+                    </TouchableOpacity>
                 </View>
             );
         }
@@ -176,6 +184,11 @@ export default class commentDetail extends Component{
             toId:toId,
             toName:toName
         });
+    }
+
+    toPicDetail(uri,index){
+        var params = {uri:uri,index:index}
+        new Net().toOther(this.props,'PicDetail',PicDetail,params)
     }
 }
 
