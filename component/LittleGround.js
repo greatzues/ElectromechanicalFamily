@@ -23,10 +23,11 @@ import commentDetail from './commentDetail';
 import PicDetail from './PicDetail'
 
 const MESSAGE = '/messages';
-const { width, height } = Dimensions.get('window')
 export default class LittleGround extends Component{
     _page=1
     _dataSource = new ListView.DataSource({rowHasChanged:(row1,row2)=>row1 !== row2})
+    userName=[];
+    userAvatar=[];
     // 构造
     constructor(props) {
         super(props);
@@ -34,7 +35,6 @@ export default class LittleGround extends Component{
         this.state = {
             dataSource:this._dataSource,
             mesData:[],
-            page:1
         };
     }
 
@@ -43,6 +43,7 @@ export default class LittleGround extends Component{
     }
 
     _renderListView(){
+        console.log()
         return(
             <SwRefreshListView
                 dataSource={this.state.dataSource.cloneWithRows(this.state.mesData)}
@@ -53,13 +54,15 @@ export default class LittleGround extends Component{
             />
         )
     }
-    _renderRow(rowData) {
+    _renderRow(rowData, sectionId, rowId) {
         return(
             <View>
                 <View style={styles.cardTop}>
-                    <Image source={require('../img/UserDafault.png')}  style={styles.renderRowImg}/>
+                    {this.userAvatar[rowId] === null?<Image source={require('../img/UserDafault.png')}  style={styles.renderRowImg}/>:
+                        <Image source={{uri:BASEURL+'/avatar/'+this.userAvatar[rowId]}}  style={styles.renderRowImg}/>
+                    }
                     <View style={styles.avatarAndTime}>
-                        <Text style={styles.cardavatar}>{rowData.belong}</Text>
+                        <Text style={styles.cardavatar}>{this.userName[rowId]}</Text>
                         <Text style={styles.cardTime}>{rowData.date}</Text>
                     </View>
                     <TouchableWithoutFeedback onPress={this.toDetails.bind(this,rowData)}>
@@ -96,6 +99,7 @@ export default class LittleGround extends Component{
                 this.setState({
                     mesData:r.messages
                 })
+                this.getAvatarAndName(r.messages)
             }).catch(e => {});
             this.refs.listView.resetStatus() //重置上拉加载的状态
             end()//刷新成功后需要调用end结束刷新
@@ -131,6 +135,7 @@ export default class LittleGround extends Component{
             this.setState({
                 mesData:r.messages
             })
+            this.getAvatarAndName(r.messages)
         }).catch(e => {});
         this.refs.listView.beginRefresh() //刷新动画
     }
@@ -169,6 +174,15 @@ export default class LittleGround extends Component{
     fetchData(pages){
         var url = MESSAGE+'?page='+pages;
         return new Net().getMethod(url).catch(error => {});
+    }
+    //通过id来拿到student的所有基本信息
+    getAvatarAndName(messages){
+        for(x in messages){
+            new Net().getStudentInfoById(messages[x].belong).then(r => {
+                this.userName.push(r.realname);
+                this.userAvatar.push(r.avatar)
+            }).catch(e => {})
+        }
     }
 
 }
@@ -233,38 +247,4 @@ const styles=StyleSheet.create({
         flexWrap: 'wrap',
         alignItems: 'flex-start',
     },
-
-
-    wrapper: {
-        backgroundColor: '#000',
-        top: 0,
-        right: 0,
-        bottom: 0,
-        left: 0
-    },
-    slide: {
-        flex: 1,
-        justifyContent: 'center',
-        alignItems: 'center'
-    },
-    photo: {
-        width,
-        height,
-        flex: 1
-    },
-    text: {
-        color: '#fff',
-        fontSize: 30,
-        fontWeight: 'bold'
-    },
-    thumbWrap: {
-        marginTop: 100,
-        borderWidth: 5,
-        borderColor: '#000',
-        flexDirection: 'row'
-    },
-    thumb: {
-        width: 50,
-        height: 50
-    }
 });
