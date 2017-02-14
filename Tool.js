@@ -36,27 +36,6 @@ export default class Net  {
         } )
     }
 
-    //使用知乎来测试
-    getZhiHuMethod(url,postData){
-        var myHeader = new Headers();
-        myHeader.append('Accept', 'application/json');
-        myHeader.append('Content-Type', 'application/json');
-
-        return new Promise((resolve, reject) =>{
-            fetch(url,{
-                method: 'get',
-                headers:myHeader,
-            }).then(response =>{
-                if(response.ok){
-                    resolve(response.json());
-                }
-            }).catch(error => {
-                alert('网络开小差 请重试');
-                reject(error);
-            });
-        } )
-    }
-
     //注册
     postMethod(url,postData) {
         return new Promise((resolve, reject) => {
@@ -256,5 +235,25 @@ export default class Net  {
     dateToTime(myDate){
         var date = new Date(myDate.replace(/-/g, '/'));
         return date.getTime();
+    }
+
+    getStudentInfoById(id){
+        var myHeader = new Headers();
+        myHeader.append('Accept', 'application/json');
+        myHeader.append('Content-Type', 'application/json');
+
+        return new Promise((resolve, reject) =>{
+            fetch(BASEURL+'/students/'+id,{
+                method: 'get',
+                headers:myHeader,
+            }).then(response =>{
+                if(response.ok){
+                    resolve(response.json());
+                }
+            }).catch(error => {
+                alert('网络开小差 请重试');
+                reject(error);
+            });
+        } )
     }
 }
