@@ -8,12 +8,11 @@ import ViewPager from 'react-native-viewpager';
 
 //以后有api之后就可以把数据录进去了，这里只是模拟数据
 const BANNER_PIC = [
-    ['http://www.wyu.edu.cn/news/file/indexpic/20160427100422762276.jpg','http://www.wyu.edu.cn/'],
-    ['http://www.wyu.edu.cn/news/file/indexpic/2015100600112345.jpg','http://dept.wyu.edu.cn/kyc/kjc/'],
-    ['http://www.wyu.edu.cn/news/file/indexpic/20151120083072957295.jpg','http://dept.wyu.edu.cn/jidianxi/'],
-    ['http://www.wyu.edu.cn/news/file/indexpic/20160604212098269826.jpg','http://jwc.wyu.edu.cn/www/'],
+    ['http://www.wyu.edu.cn/news/file/indexpic/20160427100422762276.jpg','http://www.wyu.edu.cn/','五邑大学北门'],
+    ['http://www.wyu.edu.cn/news/file/indexpic/2015100600112345.jpg','http://dept.wyu.edu.cn/kyc/kjc/','五邑大学科技处'],
+    ['http://www.wyu.edu.cn/news/file/indexpic/20151120083072957295.jpg','http://dept.wyu.edu.cn/jidianxi/','五邑大学机电学院'],
+    ['http://www.wyu.edu.cn/news/file/indexpic/20160604212098269826.jpg','http://jwc.wyu.edu.cn/www/','五邑大学图书馆'],
 ];
-const deviceWidth = Dimensions.get('window').width;
 export default class PicBanner extends Component {
     constructor(props){
         super(props);
@@ -29,9 +28,11 @@ export default class PicBanner extends Component {
     renderPage(data, pageID){
         return(
             <TouchableOpacity onPress={() => this.props.bannerClick(data[1])}>
-            <Image
-                source={{uri:data[0]}}
-                style={styles.page} />
+            <Image source={{uri:data[0]}} style={styles.page} >
+                <View style={styles.pageContainer}>
+                    <Text style={styles.pageText}>{data[2]}</Text>
+                </View>
+            </Image>
             </TouchableOpacity>
         );
     }
@@ -51,8 +52,21 @@ export default class PicBanner extends Component {
 
 const styles = StyleSheet.create({
     page: {
-        width: deviceWidth,
+        width: device.width,
         height: 170,
         resizeMode: 'stretch',
+        justifyContent:'flex-end'
     },
+    pageContainer:{
+        justifyContent:'flex-start',
+        alignItems:'flex-start',
+        backgroundColor:'rgba(0,0,0,.3)',
+        height:35,
+        width:device.width
+    },
+    pageText:{
+        color:'white',
+        fontSize:18,
+        padding:5
+    }
 });
