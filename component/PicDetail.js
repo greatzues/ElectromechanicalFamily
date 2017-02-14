@@ -1,6 +1,6 @@
 /**
  * Created by zues on 2016/11/17.
- * 接受两个属性，分别是uri和图片所在数组的index
+ * 接受三个属性，分别是uri，图片所在数组的index和图片的uri path
  */
 import React,{ Component } from 'react';
 import { View, Image, Navigator, Dimensions, StyleSheet, TouchableWithoutFeedback, Text } from 'react-native';
@@ -44,7 +44,7 @@ export default class PicDetail extends Component{
                           source.map((item, i) => <View key={i} style={styles.slide}>
                               <TouchableWithoutFeedback>
                                   <PhotoView
-                                      source={{uri: BASEURL+'/message/'+item}}
+                                      source={{uri: this.props.path+item}}
                                       resizeMode='contain'
                                       minimumZoomScale={1}
                                       maximumZoomScale={5}
