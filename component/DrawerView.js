@@ -7,6 +7,7 @@ import Net from '../Tool';
 import ImagePicker from 'react-native-image-picker';
 
 const AVATAR = '/avatar/';
+const UPLOAD = '/student/upload';
 export default class DrawerView extends Component{
     // 构造
       constructor(props) {
@@ -73,8 +74,6 @@ export default class DrawerView extends Component{
         };
 
         ImagePicker.showImagePicker(options, (response) => {
-            console.log('Response = ', response);
-
             this.setState({
                 imgUrl:response.path,
                 fileName:response.fileName,
@@ -91,21 +90,12 @@ export default class DrawerView extends Component{
             }
             else {
                 var source;
-
-                // You can display the image using either:
                 source = {uri: 'data:image/jpeg;base64,' + response.data, isStatic: true};
-                // Or:
-                // if (Platform.OS === 'android') {
-                //   source = {uri: response.uri, isStatic: true};
-                // } else {
-                //   source = {uri: response.uri.replace('file://', ''), isStatic: true};
-                // }
-
                 this.setState({
                     avatarSource: source
                 });
 
-                new Net().postFile('/students/upload',this.state.imgUrl)
+                new Net().postFile(UPLOAD,this.state.imgUrl)
                     .then((data) => {
                         console.log(data);
                     });
