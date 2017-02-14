@@ -9,7 +9,8 @@ import {
     Image,
     TouchableWithoutFeedback,
     ScrollView,
-    TouchableOpacity
+    TouchableOpacity,
+    Navigator
 } from 'react-native';
 import {
     SwRefreshScrollView,
@@ -22,6 +23,7 @@ import commentDetail from './commentDetail';
 import PicDetail from './PicDetail'
 
 const MESSAGE = '/messages';
+const { width, height } = Dimensions.get('window')
 export default class LittleGround extends Component{
     _page=1
     _dataSource = new ListView.DataSource({rowHasChanged:(row1,row2)=>row1 !== row2})
@@ -71,7 +73,9 @@ export default class LittleGround extends Component{
                             [rowData.messagePic1,rowData.messagePic2,rowData.messagePic3,
                                 rowData.messagePic4,rowData.messagePic5,rowData.messagePic6,
                                 rowData.messagePic7,rowData.messagePic8,rowData.messagePic9])}
-                        renderRow={this.picList.bind(this)}
+                        renderRow={this.picList.bind(this,[rowData.messagePic1,rowData.messagePic2,rowData.messagePic3,
+                            rowData.messagePic4,rowData.messagePic5,rowData.messagePic6,
+                            rowData.messagePic7,rowData.messagePic8,rowData.messagePic9])}
                         contentContainerStyle={styles.list}
                         enableEmptySections={true}
                     />
@@ -113,7 +117,7 @@ export default class LittleGround extends Component{
                     this.state.mesData.push(r.messages[x]);
                 }
                 this.setState({
-                   mesData:this.state.mesData
+                    mesData:this.state.mesData
                 })
             }).catch(e =>{});
             //end(this._page > 2)//加载成功后需要调用end结束刷新 假设加载4页后数据全部加载完毕
@@ -131,13 +135,14 @@ export default class LittleGround extends Component{
         this.refs.listView.beginRefresh() //刷新动画
     }
 
-
     picList(rowData, sectionID, rowID){
-        var picUri = BASEURL+'/message/'+rowData;
-        if(rowData!==null){
+        if(sectionID!==null){
+            var picUri = BASEURL+'/message/'+sectionID;
+            let str = sectionID.substring(sectionID.length-1); //拿到最后一个字符，传出去作为图片预览的index
+            let index = parseInt(str); //解析一个字符串，并返回一个整数
             return (
                 <View>
-                    <TouchableOpacity style={styles.itemContainer} onPress={this.toPicDetail.bind(this,picUri)}>
+                    <TouchableOpacity style={styles.itemContainer} onPress={this.toPicDetail.bind(this,rowData,index)}>
                         <Image
                             style={styles.imageItem}
                             source={{uri:picUri}}
@@ -151,12 +156,12 @@ export default class LittleGround extends Component{
     }
 
     toDetails(data){
-        var params = {data:data,id:this.props.userId};
+        var params = {data:data,id:this.props.id,username:this.props.username};
         new Net().toOther(this.props.parent,'commentDetail',commentDetail,params)
     }
 
-    toPicDetail(uri){
-        var params = {uri:uri}
+    toPicDetail(uri,index){
+        var params = {uri:uri,index:index,path:BASEURL+'/message/'}
         new Net().toOther(this.props.parent,'PicDetail',PicDetail,params)
     }
 
@@ -171,63 +176,6 @@ const styles=StyleSheet.create({
     container: {
         flex: 1,
         backgroundColor: '#ffffff',
-    },
-    title: {
-        textAlign: 'center',
-        fontSize: 22,
-        fontWeight: '300',
-    },
-    header: {
-        backgroundColor: '#000',
-        padding: 10,
-    },
-    headerText: {
-        textAlign: 'center',
-        fontSize: 16,
-        fontWeight: '500',
-    },
-    content: {
-        flex: 1,
-        padding: 20,
-        backgroundColor: '#fff',
-    },
-    active: {
-        backgroundColor: 'rgba(255,255,255,1)',
-        borderBottomWidth:0.5,
-        borderColor:'orange'
-    },
-    inactive: {
-        backgroundColor: 'rgba(245,252,255,1)',
-        borderBottomWidth:0.5,
-        borderColor:'orange'
-    },
-    contentInactive:{
-        flex:1,
-        backgroundColor: 'rgba(245,252,255,1)',
-        borderBottomWidth:0.5,
-        borderColor:'orange'
-    },
-    selectors: {
-        marginBottom: 10,
-        flexDirection: 'row',
-        justifyContent: 'center',
-    },
-    selector: {
-        backgroundColor: '#F5FCFF',
-        padding: 10,
-    },
-    activeSelector: {
-        fontWeight: 'bold',
-    },
-    selectTitle: {
-        fontSize: 14,
-        fontWeight: '500',
-        padding: 10,
-    },
-    cardImage:{
-        height:200,
-        flex:1,
-        margin:10,
     },
     cardavatar:{
         color:'#f5811f',
@@ -285,4 +233,38 @@ const styles=StyleSheet.create({
         flexWrap: 'wrap',
         alignItems: 'flex-start',
     },
+
+
+    wrapper: {
+        backgroundColor: '#000',
+        top: 0,
+        right: 0,
+        bottom: 0,
+        left: 0
+    },
+    slide: {
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center'
+    },
+    photo: {
+        width,
+        height,
+        flex: 1
+    },
+    text: {
+        color: '#fff',
+        fontSize: 30,
+        fontWeight: 'bold'
+    },
+    thumbWrap: {
+        marginTop: 100,
+        borderWidth: 5,
+        borderColor: '#000',
+        flexDirection: 'row'
+    },
+    thumb: {
+        width: 50,
+        height: 50
+    }
 });
