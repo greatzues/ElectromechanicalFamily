@@ -163,8 +163,8 @@ export default class EditMessage extends Component{
         let formData = new FormData();
         formData.append('date',myDate);
         formData.append('messageText',myMassageText);
-        formData.append('classNumber','0');
-        //后期尝试用map来遍历
+        formData.append('classNumber',this.props.classNumber);
+        //遍历分享的图片
         for(i=0;i<fileObject.length;i++){
             formData.append(picKey[i],fileObject[i]);
         }

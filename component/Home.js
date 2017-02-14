@@ -2,7 +2,7 @@
  * Created by zues on 2016/8/26.
  */
 import React, { Component } from 'react';
-import { View, Text, Image, StyleSheet, Dimensions, DrawerLayoutAndroid, TouchableOpacity, Navigator, ScrollView } from 'react-native';
+import { View, Text, Image, StyleSheet, Dimensions, DrawerLayoutAndroid, TouchableOpacity, Navigator, ScrollView, Modal } from 'react-native';
 import PicBanner from './PicBanner';
 import NormalToolbar from './NormalToolbar';
 
@@ -12,6 +12,7 @@ export default class Home extends Component {
         this.state = {
             absence : '签到',
             buttonClick : null,
+            modalVisible: false,
         };
     }
 
@@ -24,7 +25,7 @@ export default class Home extends Component {
                     rightItemTitle='分享'
                     rightTextColor='#3393F2'
                     leftItemFunc={this.props.toLogin}
-                    rightItemFunc={this.props.toShare}/>
+                    rightItemFunc={this._setModalVisible.bind(this, true)}/>
                 <View><PicBanner bannerClick={this.props.bannerClick}/></View>
                 <View style={styles.body}>
                     <TouchableOpacity onPress={this.props.toJDGround}>
@@ -62,7 +63,73 @@ export default class Home extends Component {
                         </View>
                     </TouchableOpacity>
                 </View>
+
+                <Modal
+                    animationType={"fade"}
+                    transparent={true}
+                    visible={this.state.modalVisible}
+                    onRequestClose={() => {this._setModalVisible(false)}}
+                >
+                    <View style={[styles.modalContainer, {backgroundColor:'rgba(0, 0, 0, 0.5)'}]}>
+                        <View style={[styles.innerContainer, {backgroundColor: '#fff', padding: 20}]}>
+                            <TouchableOpacity style={styles.modalText} onPress={this.ShareToClass.bind(this)}><Text>分享到班级</Text></TouchableOpacity>
+                            <TouchableOpacity style={styles.modalText} onPress={this.ShareToGround.bind(this)}><Text>分享到广场</Text></TouchableOpacity>
+                            <Button
+                                onPress={this._setModalVisible.bind(this, false)}
+                                style={styles.modalButton}>
+                                Close
+                            </Button>
+                        </View>
+                    </View>
+                </Modal>
             </ScrollView>
+        );
+    }
+
+    _setModalVisible(visible) {
+        this.setState({modalVisible: visible});
+    }
+
+    ShareToClass(){
+        this._setModalVisible(false);
+        this.props.ShareToClass()
+    }
+
+    ShareToGround(){
+        this._setModalVisible(false);
+        this.props.ShareToGround()
+    }
+}
+
+class Button extends Component{
+    // 构造
+    constructor(props) {
+        super(props);
+        // 初始状态
+        this.state = {active: false};
+    }
+
+    _onHighlight() {
+        this.setState({active: true});
+    }
+
+    _onUnhighlight() {
+        this.setState({active: false});
+    }
+
+    render() {
+        var colorStyle = {
+            color: this.state.active ? '#fff' : '#000',
+        };
+        return (
+            <TouchableOpacity
+                onHideUnderlay={this._onUnhighlight.bind(this)}
+                onPress={this.props.onPress}
+                onShowUnderlay={this._onHighlight.bind(this)}
+                style={[styles.button, this.props.style]}
+                underlayColor="#a9d9d4">
+                <Text style={[styles.buttonText, colorStyle]}>{this.props.children}</Text>
+            </TouchableOpacity>
         );
     }
 }
@@ -124,5 +191,21 @@ const styles = StyleSheet.create({
         alignSelf:'flex-end',
         marginLeft:5,
         marginRight:20,
+    },
+
+    modalContainer: {
+        flex: 1,
+        justifyContent: 'center',
+        padding: 20,
+    },
+    innerContainer: {
+        borderRadius: 10,
+        alignItems: 'center',
+    },
+    modalButton: {
+        marginTop: 10,
+    },
+    modalText: {
+        paddingBottom:10
     },
 });
