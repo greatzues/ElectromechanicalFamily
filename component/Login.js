@@ -7,7 +7,6 @@ import { View, Text, Image, StyleSheet, TextInput, DeviceEventEmitter, ScrollVie
 import Net from '../Tool';
 import {Button} from 'react-native-elements'
 import NormalToolbar from './NormalToolbar';
-var BlurView = require('react-native-blur').BlurView;
 
 export default class Login extends Component{
     constructor(props){
@@ -18,13 +17,8 @@ export default class Login extends Component{
             editable: true,
             login: false,
             disabled:false,
-            viewRef:0,
             errorMes:''
         };
-    }
-
-    imageLoaded() {
-        this.setState({viewRef: findNodeHandle(this.refs.backgroundImage)})
     }
 
     render(){
@@ -33,8 +27,6 @@ export default class Login extends Component{
                     source={require('../img/loginbg.jpg')}
                     resizeMode='cover'
                     style={{height:device.height,width:device.width,flex:1}}
-                    ref={'backgroundImage'}
-                    blurRadius={1}
                     onLoadEnd={this.imageLoaded.bind(this)}>
                     <View style={{flex:1,backgroundColor:'rgba(0,0,0,.5)'}}>
                         <ScrollView>

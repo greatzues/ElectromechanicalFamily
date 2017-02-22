@@ -25,7 +25,7 @@ export default class EditInfo extends Component{
             motto:null,
             userInfo:[BASEURL+AVATAR+user.avatar,user.realname,user.studentId,user.major,user.teacher],
             workRightTitle:[user.presentIndustry, user.workPlace, user.dudy, user.professionalTitle, user.workPhone, user.workAddress],
-            baseRightTitle:[user.admissionDate, user.graduationDate, user.birthdate, user.isGraduated, user.phone, user.phoneFamily,
+            baseRightTitle:[user.admissionDate, user.graduationDate, user.birthdate, user.phone, user.phoneFamily,
                 user.qqNumber, user.wecharNumber, user.nationality, user.nativePlace, user.politicalStatus],
         };
       }

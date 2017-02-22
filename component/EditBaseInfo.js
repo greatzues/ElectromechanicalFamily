@@ -7,17 +7,13 @@ import NormalToolbar from './NormalToolbar';
 import Net from '../Tool';
 import EditDeatils from './EditDeatils';
 import { List, ListItem, Button } from 'react-native-elements'
+import DatePicker from 'react-native-datepicker'
 
-const BASE_INFO = ['入校时间','毕业时间','出生年月','是否毕业','手机号码','家庭电话','qq号码','微信账号','民族','籍贯','政治面貌'];
-const YEAR = [1970,1971,1972,1973,1974,1975,1976,1977,1978,1979,
-                1980,1981,1982,1983,1984,1985,1986,1987,1988,1989,
-                1990,1991,1992,1993,1994,1995,1996,1997,1998,1999,
-                2000,2001,2002,2003,2004,2005,2006,2007,2008,2009,
-                2010,2011,2012,2013,2014,2015,2016,2017,2018,2019,
-                2020,2021,2022,2023,2024,2025,2026,2027,2028,2029, 2030];
-const MONTH = [1,2,3,4,5,6,7,8,9,10,11,12];
-const POST_KEY = ['admissionDate', 'graduationDate', 'birthdate', 'isGraduated', 'phone', 'phoneFamily','qqNumber',
+
+const BASE_INFO = ['入校时间','毕业时间','出生年月','手机号码','家庭电话','qq号码','微信账号','民族','籍贯','政治面貌'];
+const POST_KEY = ['admissionDate', 'graduationDate', 'birthdate', 'phone', 'phoneFamily','qqNumber',
                   'wecharNumber','nationality','nativePlace','politicalStatus' ];
+const STUDENT_INFO = '/students/';
 export default class EditBaseInfo extends Component{
         // 构造
       constructor(props) {
@@ -25,6 +21,7 @@ export default class EditBaseInfo extends Component{
         this.state = {
             rightTitle:this.props.user,
             modalVisible: false,
+            placeholder:'',
         };
       }
 
@@ -37,15 +34,13 @@ export default class EditBaseInfo extends Component{
                           BASE_INFO.map((l, i) => (
                               <ListItem
                                   key={i}
-                                  title={l}
-                                  rightTitle={this.state.rightTitle[i]?this.state.rightTitle[i]:'未填写'}
+                                  title={i<3?this.dataPicker(l,i):l}
+                                  rightTitle={this.state.rightTitle[i]?i<3?new Net().timeToDate(this.state.rightTitle[i]):this.state.rightTitle[i]:'未填写'}
                                   onPress={this.otherPress.bind(this,i,l,this.state.rightTitle[i])}
                               />
                           ))
                       }
                   </List>
-
-                  {this.selectData()}
               </ScrollView>
           );
       }
@@ -53,14 +48,13 @@ export default class EditBaseInfo extends Component{
     otherPress(position, title, info){
         switch (position){
             case 0:
-                this.selectData();
-                this._setModalVisible(true);
+                this.refs.picker.onPressDate();
                 break;
             case 1:
+                this.refs.picker.onPressDate();
                 break;
             case 2:
-                break;
-            case 3:
+                this.refs.picker.onPressDate();
                 break;
             default:
                 var params = {title:title,info:info,id:this.props.id,k:POST_KEY[position],callBack:(msg) => {this.refresh(position, msg)}};
@@ -77,71 +71,70 @@ export default class EditBaseInfo extends Component{
         this.forceUpdate();
     }
 
-    selectData(){
-        return(
-            <Modal
-                animationType={"fade"}
-                transparent={true}
-                visible={this.state.modalVisible}
-                onRequestClose={() => {this._setModalVisible(false)}}>
-
-                <View style={[styles.modalContainer, {backgroundColor:'rgba(0, 0, 0, 0.5)'}]}>
-                    <View style={[styles.innerContainer, {backgroundColor: '#fff', padding: 20}]}>
-                        <Picker
-                            prompt="选择年份"
-                            selectedValue={1990}
-                            onValueChange={this.year.bind(this)}>
-                            {YEAR.map((l, i) => (
-                                <Picker.Item key={i} label={l+'年'} value={l} />
-                            ))}
-                        </Picker>
-                        <Picker
-                            prompt="选择月份"
-                            selectedValue={1}
-                            onValueChange={this.month.bind(this)}>
-                            {MONTH.map((l, i) => (
-                                <Picker.Item key={i} label={l+'年'} value={l} />
-                            ))}
-                        </Picker>
-                        <Picker
-                            prompt="选择日期"
-                            selectedValue={1}
-                            onValueChange={this.month.bind(this)}>
-                            {MONTH.map((l, i) => (
-                                <Picker.Item key={i} label={l+'年'} value={l} />
-                            ))}
-                        </Picker>
-                        <View style={styles.twoButton}>
-                            <Button
-                                title='取消'
-                                color="black"
-                                backgroundColor="transparent"
-                                onPress={this._setModalVisible.bind(this, false)}
-                                buttonStyle={styles.modalButton}/>
-
-                            <Button
-                                title='确定'
-                                color="black"
-                                backgroundColor="transparent"
-                                buttonStyle={styles.modalButton}/>
-                        </View>
-                    </View>
-                </View>
-            </Modal>
-        );
+    dataPicker(title, position){
+        return (
+            <DatePicker
+                ref="picker"
+                style={{width: 200}}
+                mode="date"
+                showIcon={false}
+                placeholder={title}
+                format="YYYY-MM-DD"
+                minDate="1970-01-01"
+                maxDate="2030-12-31"
+                confirmBtnText="Confirm"
+                cancelBtnText="Cancel"
+                customStyles={{
+                    dateInput: {
+                        marginLeft: 10,
+                        borderWidth:0,
+                        borderColor:'white',
+                        padding:0
+                    },
+                    placeholderText:{
+                        alignSelf:'flex-start',
+                        color:'black',
+                    },
+                    dateTouchBody:{
+                        padding:0,
+                        margin:0
+                    }
+                }}
+                onDateChange={this.onDateChange.bind(this,position)}
+            />
+        )
     }
 
-    _setModalVisible(visible) {
-        this.setState({modalVisible: visible});
+    onDateChange(position,date){
+        switch (position){
+            case 0:
+                this.state.rightTitle[position] = date;
+                this.forceUpdate();
+                let time = new Net().dateToTime(date);
+                let params = new Object();
+                params[POST_KEY[position]] = time;
+                let url = STUDENT_INFO+this.props.id;
+                new Net().putMethod(url,params).then((r) => {}).catch(e => {Toast.show("网络出现错误");});
+                break;
+            case 1:
+                this.postData(position, date);
+                break;
+            case 2:
+                this.postData(position, date);
+                break;
+        }
     }
 
-    year(day){
-        this.setState({year:day});
+    postData(position, date){
+        this.state.rightTitle[position] = date;
+        this.forceUpdate();
+        let time = new Net().dateToTime(date);
+        let params = new Object();
+        params[POST_KEY[position]] = time;
+        let url = STUDENT_INFO+this.props.id;
+        new Net().putMethod(url,params).then((r) => {}).catch(e => {Toast.show("网络出现错误");});
     }
 
-    month(day){
-        this.setState({month:day});
-    }
 }
 
 
