@@ -4,6 +4,7 @@
 import React,{ Component } from 'react';
 import { AsyncStorage, Dimensions } from 'react-native';
 import ImagePicker from 'react-native-image-crop-picker';
+import Toast from 'react-native-root-toast'
 
 const baseurl = 'http://sinvarh.com';
 const WINDOW = Dimensions.get('window');
@@ -30,7 +31,7 @@ export default class Net  {
                     resolve(response.json());
                 }
             }).catch(error => {
-                alert('网络开小差 请重试');
+                Toast.show('网络开小差 请重试');
                 reject(error);
             });
         } )
@@ -53,7 +54,7 @@ export default class Net  {
                     }
                 })
                 .catch(error => {
-                    alert('网络开小差 请重试');
+                    Toast.show('网络开小差 请重试');
                     reject(error);
                 })
         });
@@ -73,7 +74,7 @@ export default class Net  {
                     console.log(response);
                 })
                 .catch(error => {
-                    alert('网络开小差 请重试');
+                    Toast.show('网络开小差 请重试');
                     reject(error);
                 })
         });
@@ -100,7 +101,6 @@ export default class Net  {
                     };
                 })
                 .catch(error => {
-                    alert('网络开小差 请重试');
                     reject(error);
                 })
         });
@@ -119,7 +119,7 @@ export default class Net  {
                 resolve(response);
             })
                 .catch(error => {
-                    alert("上传失败");
+                    Toast.show("上传失败");
                     reject(error);
                 })
         })
@@ -165,7 +165,7 @@ export default class Net  {
         ImagePicker.openPicker({
             multiple: true,
             maxFiles: 9 //ios only
-        }).then(callback).catch(e => alert(e));
+        }).then(callback).catch(e => Toast.show('肯定是相册在偷懒！'));
     }
 
     pickCamera(callback){
@@ -173,7 +173,7 @@ export default class Net  {
             width: 300,
             height: 400,
             cropping: true
-        }).then(callback).catch(e => alert(e));
+        }).then(callback).catch(e => Toast.show('肯定是相机在偷懒！'));
     }
 
     pickSingle(callback){
@@ -181,9 +181,7 @@ export default class Net  {
             width: 300,
             height: 400,
             cropping: true
-        }).then(callback).catch(e => {
-            console.log('Error:'+e);
-        });
+        }).then(callback).catch(e => {});
     }
 
     saveKey(key, rowData){
@@ -251,7 +249,6 @@ export default class Net  {
                     resolve(response.json());
                 }
             }).catch(error => {
-                alert('网络开小差 请重试');
                 reject(error);
             });
         } )

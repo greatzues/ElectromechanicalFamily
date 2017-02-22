@@ -2,16 +2,14 @@
  * Created by zues on 2016/9/27.
  */
 import React,{ Component } from 'react';
-import {View, Text, StyleSheet, Navigator, ListView, Image, Dimensions, TouchableOpacity, WebView } from 'react-native';
+import {View, Text, StyleSheet, Navigator, ScrollView, Image, Dimensions, TouchableOpacity, WebView } from 'react-native';
 import Net from '../Tool';
 import NormalToolbar from './NormalToolbar'
 
-const AVATAR_SIZE = 120;
 const DETAIL = '/news/';
 export default class DetailPage extends Component{
       constructor(props) {
         super(props);
-        let ds = new ListView.DataSource({rowHasChanged: (r1, r2) => r1 !== r2});
         this.state = {
             title:'',
             summary:'',
@@ -23,7 +21,7 @@ export default class DetailPage extends Component{
 
     render(){
         return (
-            <View>
+            <ScrollView>
                 <NormalToolbar
                     title={this.state.title}
                     leftImageSource={require('../img/back.png')}
@@ -35,7 +33,7 @@ export default class DetailPage extends Component{
                     scalesPageToFit={this.state.scalesPageToFit}
                     startInLoadingState={this.state.startInLoadingState}
                 />
-            </View>
+            </ScrollView>
         );
     }
 

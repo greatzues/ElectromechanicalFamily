@@ -6,23 +6,19 @@ import { StyleSheet, Text, View, Dimensions, Image, TouchableOpacity, ScrollView
 import Net from '../Tool';
 import ScrollableTabView, { DefaultTabBar } from 'react-native-scrollable-tab-view';
 import BaseInfo from './BaseInfo';
-import myImagePicker from 'react-native-image-crop-picker';
-import Toast from 'react-native-root-toast'
+import PicDetail from './PicDetail'
+import { Icon } from 'react-native-elements';
 
-// import ImagePicker from 'react-native-image-picker';
 
 var BlurView = require('react-native-blur').BlurView;
 
 const AVATAR = '/avatar/';
-const INFO = '/students/getinfo';
-const UPLOAD = '/student/upload';
 export default class Users extends Component {
     constructor(props){
         super(props);
         this.state ={
             pleaseLogin: '',
             myResponse:'请登录',
-            avatarSource: null,
             viewRef:0,
             image:this.props.avatar,
             ifChange: false,
@@ -37,8 +33,7 @@ export default class Users extends Component {
         return (
             <View style={styles.container}>
                 <Image
-                    source={this.props.avatar === null?require('./../img/UserBackground.jpg'):
-                            {uri:BASEURL+AVATAR+this.state.image}}
+                    source={this.state.avatar === null?require('./../img/UserBackground.jpg'): {uri:BASEURL+AVATAR+this.state.image}}
                     style={styles.userBackground}
                     ref={'backgroundImage'}
                     onLoadEnd={this.imageLoaded.bind(this)}>
@@ -53,90 +48,48 @@ export default class Users extends Component {
                         <View>
                             { this.props.avatar === null ?
                                 <Image source={require('./../img/UserDafault.png')} style={styles.avatar}></Image> :
-                                <Image style={styles.avatar} source={{uri:BASEURL+AVATAR+this.state.image}} />
+                                <TouchableOpacity onPress={this.toPicDetail.bind(this,this.props.avatar)}>
+                                    <Image style={styles.avatar} source={{uri:BASEURL+AVATAR+this.state.image}} />
+                                </TouchableOpacity>
                             }
                         </View>
                         <Text style={{color:'white',backgroundColor: 'transparent'}}>你好，{this.props.username===null?this.state.myResponse:this.props.username}</Text>
-                        <View style={{flexDirection: 'row',}}>
-                            <TouchableOpacity
-                                style={styles.bottomAvatar}
-                                onPress={this.pickSingle.bind(this)}>
-                                <Text style={styles.bottomAvatarText}>头像上传</Text>
-                            </TouchableOpacity>
-                            <TouchableOpacity
-                                style={styles.bottomAvatar}
-                                onPress={this.props.toEdit}>
-                                <Text style={styles.bottomAvatarText}>编辑信息</Text>
-                            </TouchableOpacity>
+                        <View style={{marginTop:10}}>
+                            <Text style={{color:'white'}}>个性签名：{this.props.user.others === null?'我就是我，不一样的烟火':this.props.user.others}</Text>
                         </View>
+                    <TouchableOpacity style={styles.set} onPress={this.props.toEdit}>
+                        <Icon name='settings' color="white"/>
+                    </TouchableOpacity>
                 </Image>
 
                 <View style={styles.container}>
                     <ScrollableTabView
                         style={{height:50}}
                         renderTabBar={()=><DefaultTabBar backgroundColor='#eee' />}
-                        tabBarPosition='top'
-                    >
+                        tabBarPosition='top'>
                         <ScrollView tabLabel='基本信息'>
-                            <BaseInfo name = '基本信息' ref="baseInfo" baseResponse={this.props.userResponse}/>
+                            <BaseInfo name = '基本信息' ref="baseInfo" baseResponse={this.props.user}/>
                         </ScrollView>
                         <ScrollView tabLabel='工作信息'>
-                            <BaseInfo name = '工作信息' ref="baseInfo" baseResponse={this.props.userResponse}/>
+                            <BaseInfo name = '工作信息' ref="baseInfo" baseResponse={this.props.user}/>
                         </ScrollView>
                     </ScrollableTabView>
                 </View>
             </View>
         );
     }
-    //backgroundColor='rgba(255, 255, 255, 0.7)'这个是原来的tabBar,透明色，透明度为0.7。
-    fetchData(){
-        var response;
-        return new Net().getMethod(INFO).then((responseData) => {
-            response = responseData.response;
-            console.log(response);
-            return this.setState({
-                myResponse:response,
-                image:response.avatar,
-                pleaseLogin:response.name,
-            });
 
-        })
-            .catch(error => {
-            alert("网络出现错误");
-            console.error(error);
-        });
-    }
+    //放在首页去，然后一个地方数据更新之后其它的都修改过来
+    // toEdit(user){
+    //     let params = {user:user}
+    //     new Net().toOther(this.props.parent,'EditInfo',EditInfo,params);
+    // }
 
-    pickSingle(){
-        new Net().loadKey('loginState').then(r => {
-            if(r.username){
-                myImagePicker.openPicker({
-                    width: 300,
-                    height: 400,
-                    cropping: true
-                }).then(image => {
-                    console.log(image);
-                    this.setState({
-                        image:image.path,
-                        ifChange:true,
-                    });
-                    this.updateAvatar(image.path);
-                }).catch(e => {
-                    console.log('Error:'+e);
-                });
-            }
-        }).catch(e => {
-            Toast.show('请先登录')
-        });
-    }
-
-    updateAvatar(path){
-        new Net().postFile(UPLOAD,path)
-            .then((data) => {
-                this.fetchData();
-            }).catch(error => {
-            alert("error message:"+ error);
-        });
+    toPicDetail(uri){
+        let source = []
+        source.push(uri);
+        var params = {uri:source,index:1,path:BASEURL+'/avatar/'}
+        new Net().toOther(this.props.parent,'PicDetail',PicDetail,params)
     }
 }
 
@@ -166,6 +119,11 @@ const styles = StyleSheet.create({
         top: 0,
         bottom: 0,
         right: 0
+    },
+    set:{
+        position: "absolute",
+        top: 5,
+        right: 5
     },
     bottomAvatar:{
         borderRadius:10,

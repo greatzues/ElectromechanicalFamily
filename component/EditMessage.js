@@ -2,11 +2,13 @@
  * Created by zues on 2016/10/23.
  */
 import React, { Component } from 'react';
-import { View, Text, Image, StyleSheet, ListView, TextInput, TouchableOpacity,
+import { View, Text, Image, StyleSheet, ListView, TextInput, TouchableOpacity, ScrollView,
     Navigator, Dimensions, Alert, ToastAndroid, TouchableWithoutFeedback, Platform } from 'react-native';
 import NormalToolbar from './NormalToolbar';
 import Net from '../Tool';
 import PicDetail from './PicDetail';
+import {Button} from 'react-native-elements'
+
 
 var window = Dimensions.get('window'); //这个参数可以全局使用
 const picKey = [
@@ -38,7 +40,7 @@ export default class EditMessage extends Component{
 
     render(){
         return(
-            <View style={styles.container}>
+            <ScrollView style={styles.container}>
                 <NormalToolbar
                     title='班级圈'
                     leftImageSource={require('../img/back.png')}
@@ -66,15 +68,10 @@ export default class EditMessage extends Component{
                     enableEmptySections={true}
                 />
 
-                <TouchableWithoutFeedback
-                    onPress = {this.fileUpload.bind(this)}
-                    disabled = {this.state.disabled}>
-                    <View style={styles.shareButton}>
-                        <Text style={{margin: 30,color:'white', fontSize:20}}>分享</Text>
-                    </View>
-                </TouchableWithoutFeedback>
+                <Button backgroundColor="#337ab7" borderRadius={5}  buttonStyle={styles.shareButton} disabled = {this.state.disabled}
+                        icon={{name: 'share', size: 25}} title='分享' onPress={this.fileUpload.bind(this)}/>
 
-            </View>
+            </ScrollView>
         );
     }
     //长按显示delete按钮
@@ -225,13 +222,12 @@ const styles = StyleSheet.create({
         textAlignVertical: 'top', //这段代码可以让TextInput在多行的情况下，text位于最高，而不是居中。
     },
     shareButton:{
-        justifyContent:'center',
-        alignItems: 'center',
-        width: window.width - 20,
+        width: device.width - 10,
         height: 40,
-        backgroundColor: '#337ab7',
-        borderRadius:5,
-        margin:10,
+        marginLeft:5,
+        marginRight:5,
+        marginTop:20,
+        alignSelf:'flex-end'
     },
     imageItem:{
         width:window.width*0.3,

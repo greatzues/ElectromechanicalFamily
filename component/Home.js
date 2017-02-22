@@ -5,6 +5,8 @@ import React, { Component } from 'react';
 import { View, Text, Image, StyleSheet, Dimensions, DrawerLayoutAndroid, TouchableOpacity, Navigator, ScrollView, Modal } from 'react-native';
 import PicBanner from './PicBanner';
 import NormalToolbar from './NormalToolbar';
+import {Icon } from 'react-native-elements';
+
 
 export default class Home extends Component {
     constructor(props){
@@ -30,35 +32,35 @@ export default class Home extends Component {
                 <View style={styles.body}>
                     <TouchableOpacity onPress={this.props.toJDGround}>
                         <View style = {[styles.textStyle,{backgroundColor:'rgba(30,144,255,0.5)'}]}>
-                            <Image source={require('./../img/JDGround.png')} style={styles.itemImage}/>
+                            <Icon reverse name='social-instagram' type='simple-line-icon' color='transparent'/>
                             <Text style={styles.text}>校友小广场</Text>
                         </View>
                     </TouchableOpacity>
 
                     <TouchableOpacity onPress={this.props.toMyClass}>
                         <View style = {[styles.textStyle,{backgroundColor:'rgba(0,139,69,0.5)'}]}>
-                            <Image source={require('./../img/JDMyClass.png')} style={styles.itemImage}/>
+                            <Icon reverse name='home' type='simple-line-icon' color='transparent'/>
                             <Text style={styles.text}>我的班级，我的家</Text>
                         </View>
                     </TouchableOpacity>
 
                     <TouchableOpacity onPress={this.props.toBriefNews}>
                         <View style = {[styles.textStyle,{backgroundColor:'rgba(255,106,106,0.5)'}]}>
-                            <Image source={require('./../img/JDBriefNews.png')} style={styles.itemImage}/>
+                            <Icon reverse name='volume-2' type='simple-line-icon' color='transparent'/>
                             <Text style={styles.text}>机电简讯</Text>
                         </View>
                     </TouchableOpacity>
 
                     <TouchableOpacity onPress={this.props.toJdInform}>
                         <View style = {[styles.textStyle,{backgroundColor:'rgba(186,85,211,0.5)'}]}>
-                            <Image source={require('./../img/JDInform.png')} style={styles.itemImage}/>
+                            <Icon reverse name='bubble' type='simple-line-icon' color='transparent'/>
                             <Text style={styles.text}>机电通知</Text>
                         </View>
                     </TouchableOpacity>
 
                     <TouchableOpacity onPress={this.props.toXiaoYouIntro}>
                         <View style = {[styles.textStyle,{backgroundColor:'rgba(205,102,0,0.5)'}]}>
-                            <Image source={require('./../img/JDXiaoYou.png')} style={styles.itemImage}/>
+                            <Icon reverse name='trophy' type='simple-line-icon' color='transparent'/>
                             <Text style={styles.text}>校友风采</Text>
                         </View>
                     </TouchableOpacity>
@@ -74,11 +76,11 @@ export default class Home extends Component {
                         <View style={[styles.innerContainer, {backgroundColor: '#fff', padding: 20}]}>
                             <TouchableOpacity style={styles.modalText} onPress={this.ShareToClass.bind(this)}><Text>分享到班级</Text></TouchableOpacity>
                             <TouchableOpacity style={styles.modalText} onPress={this.ShareToGround.bind(this)}><Text>分享到广场</Text></TouchableOpacity>
-                            <Button
+                            <ModalButton
                                 onPress={this._setModalVisible.bind(this, false)}
                                 style={styles.modalButton}>
-                                Close
-                            </Button>
+                                关闭
+                            </ModalButton>
                         </View>
                     </View>
                 </Modal>
@@ -101,7 +103,7 @@ export default class Home extends Component {
     }
 }
 
-class Button extends Component{
+class ModalButton extends Component{
     // 构造
     constructor(props) {
         super(props);
@@ -139,7 +141,7 @@ const styles = StyleSheet.create({
         marginTop:5,
         borderRadius: 5,
         height: 65,
-        width: device.width,
+        width: device.width-5,
         backgroundColor: '#eee',
         alignItems: 'center',
         flexDirection:'row',

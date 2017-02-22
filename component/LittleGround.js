@@ -1,28 +1,15 @@
 import React, { Component } from 'react';
-import {
-    AppRegistry,
-    StyleSheet,
-    Text,
-    View,
-    Dimensions,
-    ListView,
-    Image,
-    TouchableWithoutFeedback,
-    ScrollView,
-    TouchableOpacity,
-    Navigator
-} from 'react-native';
-import {
-    SwRefreshScrollView,
-    SwRefreshListView,
-    RefreshStatus,
-    LoadMoreStatus
-} from 'react-native-swRefresh'
+import {AppRegistry, StyleSheet, Text, View, Dimensions, ListView, Image, TouchableWithoutFeedback, ScrollView, TouchableOpacity, Navigator} from 'react-native';
+import {SwRefreshScrollView, SwRefreshListView, RefreshStatus, LoadMoreStatus} from 'react-native-swRefresh';
+import { Card } from 'react-native-elements';
 import Net from '../Tool';
+import Toast from 'react-native-root-toast'
 import commentDetail from './commentDetail';
-import PicDetail from './PicDetail'
+import PicDetail from './PicDetail';
+import NormalToolbar from './NormalToolbar';
 
 const MESSAGE = '/messages';
+const IS_LOAD_MORE = 15;
 export default class LittleGround extends Component{
     _page=1
     _dataSource = new ListView.DataSource({rowHasChanged:(row1,row2)=>row1 !== row2})
@@ -35,28 +22,56 @@ export default class LittleGround extends Component{
         this.state = {
             dataSource:this._dataSource,
             mesData:[],
+            isLoadMore:0
         };
     }
 
     render(){
-        return this._renderListView() // ListView Demo
-    }
-
-    _renderListView(){
-        console.log()
         return(
-            <SwRefreshListView
-                dataSource={this.state.dataSource.cloneWithRows(this.state.mesData)}
-                ref="listView"
-                renderRow={this._renderRow.bind(this)}
-                onRefresh={this._onListRefersh.bind(this)}
-                onLoadMore={this._onLoadMore.bind(this)}
-            />
+            <View >
+                <ScrollView>
+                    <NormalToolbar title='小广场'/>
+                </ScrollView>
+                <SwRefreshListView
+                    dataSource={this.state.dataSource.cloneWithRows(this.state.mesData)}
+                    ref="listView"
+                    style={{marginBottom:45}}
+                    renderRow={this._renderRow.bind(this)}
+                    onRefresh={this._onListRefersh.bind(this)}
+                    onLoadMore={this._onLoadMore.bind(this)}
+                    customRefreshView={this.state.isLoadMore>IS_LOAD_MORE?null:this.renderRefreshView.bind(this)}
+                    pusuToLoadMoreTitle={this.state.isLoadMore>IS_LOAD_MORE?'上拉加载更多':''}
+                    noMoreDataTitle="无更多数据！"
+                />
+            </View>
         )
     }
+
+    /**
+     * 当item数目不满一个屏，不足一个page的数量时，自定义下拉刷新视图
+     * @param refreshStatus
+     * @param offsetY
+     * @returns {XML}
+     */
+    renderRefreshView(refreshStatus, offsetY){
+        switch (refreshStatus) {
+            case 0:
+                return(<View></View>);
+                break;
+            case 1:
+                return(<View></View>);
+                break;
+            case 2:
+                return(<View></View>);
+                break;
+            default:
+                break;
+        }
+    }
+
     _renderRow(rowData, sectionId, rowId) {
         return(
-            <View>
+            <Card>
                 <View style={styles.cardTop}>
                     {this.userAvatar[rowId] === null?<Image source={require('../img/UserDafault.png')}  style={styles.renderRowImg}/>:
                         <Image source={{uri:BASEURL+'/avatar/'+this.userAvatar[rowId]}}  style={styles.renderRowImg}/>
@@ -83,12 +98,11 @@ export default class LittleGround extends Component{
                         enableEmptySections={true}
                     />
                 </View>
-            </View>
+            </Card>
         );
     }
 
     /**
-     * 模拟刷新
      * @param end
      * @private
      */
@@ -108,7 +122,6 @@ export default class LittleGround extends Component{
     }
 
     /**
-     * 模拟加载更多
      * @param end
      * @private
      */
@@ -133,7 +146,8 @@ export default class LittleGround extends Component{
     componentDidMount() {
         this.fetchData(this._page).then(r => {
             this.setState({
-                mesData:r.messages
+                mesData:r.messages,
+                isLoadMore:r.messages.length
             })
             this.getAvatarAndName(r.messages)
         }).catch(e => {});
@@ -161,8 +175,14 @@ export default class LittleGround extends Component{
     }
 
     toDetails(data){
-        var params = {data:data,id:this.props.id,username:this.props.username};
-        new Net().toOther(this.props.parent,'commentDetail',commentDetail,params)
+        new Net().loadKey('loginState').then(r => {
+            if(r.username){
+                var params = {data:data,id:this.props.id,username:this.props.username};
+                new Net().toOther(this.props.parent,'commentDetail',commentDetail,params)
+            }
+        }).catch(e => {
+            Toast.show('请登录后评论');
+        });
     }
 
     toPicDetail(uri,index){
@@ -200,7 +220,7 @@ const styles=StyleSheet.create({
         fontSize:10
     },
     cardText:{
-        fontSize:20,
+        fontSize:16,
         fontWeight:'200'
     },
     comment:{
@@ -222,7 +242,7 @@ const styles=StyleSheet.create({
         alignSelf:'flex-start',
         alignItems:'center',
         margin:5,
-        width:device.width,
+        width:device.width-50,
     },
     cardContent: {
         marginTop:3,
@@ -236,8 +256,8 @@ const styles=StyleSheet.create({
     },
 
     imageItem:{
-        width:device.width*0.3,
-        height:80,
+        width:device.width*0.2,
+        height:60,
     },
     itemContainer:{
         padding:1,
@@ -246,5 +266,6 @@ const styles=StyleSheet.create({
         flexDirection: 'row',
         flexWrap: 'wrap',
         alignItems: 'flex-start',
+        marginTop:5
     },
 });

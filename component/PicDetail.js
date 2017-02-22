@@ -3,7 +3,7 @@
  * 接受三个属性，分别是uri，图片所在数组的index和图片的uri path
  */
 import React,{ Component } from 'react';
-import { View, Image, Navigator, Dimensions, StyleSheet, TouchableWithoutFeedback, Text } from 'react-native';
+import { View, Image, Navigator, Dimensions, StyleSheet, TouchableWithoutFeedback, Text, ScrollView } from 'react-native';
 import NormalToolbar from './NormalToolbar';
 import Net from '../Tool';
 import Swiper from 'react-native-swiper'
@@ -24,7 +24,7 @@ export default class PicDetail extends Component{
               this.state.testData[x]===null?null:source.push(this.state.testData[x]);
           }
           return(
-              <View style={styles.container}>
+              <ScrollView style={styles.container}>
                   <NormalToolbar
                       leftItemFunc={this.back.bind(this)}
                       leftItemTitle='返回'
@@ -54,7 +54,7 @@ export default class PicDetail extends Component{
                           </View>)
                       }
                   </Swiper>
-              </View>
+              </ScrollView>
           );
       }
 

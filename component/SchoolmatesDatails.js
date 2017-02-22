@@ -2,7 +2,7 @@
  * Created by zues on 2017/1/17.
  */
 import React,{ Component } from 'react';
-import {View, Text, StyleSheet, Navigator, ListView, Image, Dimensions, TouchableOpacity, WebView } from 'react-native';
+import {View, Text, StyleSheet, Navigator, ListView, Image, Dimensions, TouchableOpacity, WebView, ScrollView } from 'react-native';
 import Net from '../Tool';
 import NormalToolbar from './NormalToolbar'
 
@@ -22,7 +22,7 @@ export default class BriefNewsDetailPage extends Component{
 
     render(){
         return (
-            <View style={styles.container}>
+            <ScrollView style={styles.container}>
                 <NormalToolbar
                     title={this.state.title}
                     leftImageSource={require('../img/back.png')}
@@ -34,7 +34,7 @@ export default class BriefNewsDetailPage extends Component{
                     scalesPageToFit={this.state.scalesPageToFit}
                     startInLoadingState={this.state.startInLoadingState}
                 />
-            </View>
+            </ScrollView>
         );
     }
 

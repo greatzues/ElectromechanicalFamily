@@ -5,7 +5,7 @@ import React, { Component } from 'react';
 import { View, Text, StyleSheet, ListView, Image, TouchableOpacity, TextInput, ScrollView, Navigator } from 'react-native';
 import Net from '../Tool';
 import NormalToolbar from './NormalToolbar'
-
+import {Button, Card} from 'react-native-elements'
 
 const SIGN = '/sign';
 export default class SignDetail extends  Component{
@@ -24,25 +24,23 @@ export default class SignDetail extends  Component{
           return(
               <ScrollView style={styles.container}>
                   <NormalToolbar title='签到详情' leftImageSource={require('../img/back.png')} leftItemFunc={this.back.bind(this)}/>
-                  <Image source={require('../img/homeTop1.png')} style={styles.logo} resizeMode={'contain'}/>
-                  <Image source={require('../img/homeTop2.png')} style={styles.logo} resizeMode={'contain'}/>
-                  <Text style={styles.reason}>不签到原因：</Text>
-                  <TextInput
-                      multiline={true}
-                      underlineColorAndroid="transparent"
-                      placeholder="如果出现特殊情况，请在此处填写不签到原因"
-                      maxLength={255}
-                      numberOfLines={8}
-                      style={styles.input}
-                      onEndEditing ={event => this.setState({reason:event.nativeEvent.text})}
-                  />
+                  <Card title="不签到原因" titleStyle={styles.reason} wrapperStyle={{padding:1}}>
+                      <TextInput
+                          multiline={true}
+                          underlineColorAndroid="transparent"
+                          placeholder="如果出现特殊情况，请在此处填写不签到原因，点击不签到按钮，可再次回来签到详情修改签到状态"
+                          placeholderTextColor='white'
+                          maxLength={255}
+                          numberOfLines={8}
+                          style={styles.input}
+                          onEndEditing ={event => this.setState({reason:event.nativeEvent.text})}
+                      />
+                  </Card>
                   <View style={styles.body}>
-                      <TouchableOpacity style={styles.Sign} onPress={this.postSignInfo.bind(this,0)}>
-                          <Text style={{margin: 30,color:'white', fontSize:20}}>不签到</Text>
-                      </TouchableOpacity>
-                      <TouchableOpacity style={styles.Sign} onPress={this.postSignInfo.bind(this,1)}>
-                          <Text style={{margin: 30,color:'white', fontSize:20}}>签到</Text>
-                      </TouchableOpacity>
+                      <Button backgroundColor="#337ab7" borderRadius={5}  buttonStyle={styles.Sign}
+                              icon={{name: 'mood', size: 28}} title='签到' onPress={this.postSignInfo.bind(this,1)}/>
+                      <Button backgroundColor="#393e42" borderRadius={5}  buttonStyle={styles.Sign}
+                              icon={{name: 'sentiment-dissatisfied', size: 28}} title='不签到' onPress={this.postSignInfo.bind(this,0)}/>
                   </View>
               </ScrollView>
           );
@@ -79,19 +77,19 @@ export default class SignDetail extends  Component{
 const styles=StyleSheet.create({
     body:{
         backgroundColor:'#ffffff',
-        justifyContent:'center',
-        alignItems:'center'
+        justifyContent:'space-around',
+        alignItems:'flex-end',
+        flexDirection:'row',
     },
     Sign:{
         justifyContent:'center',
         alignItems: 'center',
-        width: device.width - 10,
         height: 40,
-        backgroundColor: '#337ab7',
-        borderRadius:5,
         marginLeft:5,
         marginRight:5,
         marginTop:20,
+        paddingLeft:40,
+        paddingRight:40,
     },
     container:{
       flex:1,
@@ -99,9 +97,10 @@ const styles=StyleSheet.create({
     },
     input:{
         textAlignVertical: 'top', //这段代码可以让TextInput在多行的情况下，text位于最高，而不是居中。
-        backgroundColor:'#f8f8f8',
+        backgroundColor:'#393e42',
         margin:10,
         borderRadius:15,
+        flex:1
     },
     logo:{
         width:device.width*0.8,
@@ -109,7 +108,7 @@ const styles=StyleSheet.create({
         height:device.height*0.1
     },
     reason:{
-      fontSize:15,
+      fontSize:18,
         marginLeft:10,
         marginTop:10,
     },

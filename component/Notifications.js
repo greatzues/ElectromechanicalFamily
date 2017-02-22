@@ -1,124 +1,190 @@
+/**
+ * Created by zues on 2016/8/26.
+ */
 import React, { Component } from 'react';
-import { View, Text, StyleSheet, ListView, Image, PixelRatio, Dimensions, TouchableOpacity } from 'react-native';
-import ParallaxScrollView from 'react-native-parallax-scroll-view';
-import ViewPager from 'react-native-viewpager';
+import {StyleSheet, Text, View ,  ListView, ScrollView, TouchableOpacity, Navigator, Image, Dimensions, ActivityIndicator} from 'react-native';
+import {SwRefreshScrollView, SwRefreshListView, RefreshStatus, LoadMoreStatus} from 'react-native-swRefresh';
 import Net from '../Tool';
-import NotificationsDetail from './NotificationsDetail';
 import NormalToolbar from './NormalToolbar';
+import NotificationsDetail from './NotificationsDetail';
+import { ListItem } from 'react-native-elements'
+import ParallaxScrollView from 'react-native-parallax-scroll-view';
 
 const BRIEF = '/notifications';
-const AVATAR_SIZE = 120;
-const ROW_HEIGHT = 60;
 const PARALLAX_HEADER_HEIGHT = 200;
 const STICKY_HEADER_HEIGHT = 38;
+const IS_LOAD_MORE = 15;
 export default class Notifications extends Component {
-    // 构造
+    _page=1
+    _dataSource = new ListView.DataSource({rowHasChanged:(row1,row2)=>row1 !== row2})
     constructor(props) {
         super(props);
-        var dataSource = new ViewPager.DataSource({
-            pageHasChange: (p1, p2) => p1 !== p2,
-        });
-        var ds = new ListView.DataSource({
-            rowHasChanged: (r1, r2) => r1 !== r2,
-        });
         this.state = {
-            dataSource:ds,
-            userData: [],
+            dataSource:this._dataSource,
+            notification: [],
             id:'',
-            page:1
+            isLoadMore:0
         };
     }
 
     render() {
-        const { onScroll = () => {} } = this.props;
         return (
-            <ListView
-                ref="ListView"
-                style={styles.container}
-                enableEmptySections={true}
-                dataSource={this.state.dataSource.cloneWithRows(this.state.userData)}
-                renderRow={this.myRenderRow.bind(this)}
-                renderScrollComponent={props => (
-                    <ParallaxScrollView
-                        onScroll={onScroll}
-                        headerBackgroundColor="#e9eaed"
-                        stickyHeaderHeight={ STICKY_HEADER_HEIGHT }
-                        parallaxHeaderHeight={ PARALLAX_HEADER_HEIGHT }
-                        backgroundSpeed={10}
+            <ParallaxScrollView
+                ref="myListView"
+                headerBackgroundColor="#e9eaed"
+                stickyHeaderHeight={ STICKY_HEADER_HEIGHT }
+                parallaxHeaderHeight={ PARALLAX_HEADER_HEIGHT }
+                backgroundSpeed={10}
+                renderBackground={() => (
+                    <View key="background">
+                        <Image source={require('./../img/3.jpg')} style={styles.page}/>
+                        <View style={{position: 'absolute',
+                            top: 0,
+                            width: device.width,
+                            backgroundColor: 'rgba(0,0,0,0.3)',
+                            height: PARALLAX_HEADER_HEIGHT}}/>
+                    </View>
 
-                        renderBackground={() => (
-                        <View key="background">
-                            <Image source={require('./../img/1.jpg')} style={styles.page}/>
-                            <View style={{position: 'absolute',
-                                top: 0,
-                                width: device.width,
-                                backgroundColor: 'rgba(0,0,0,0.3)',
-                                height: PARALLAX_HEADER_HEIGHT}}/>
-                        </View>
-
-                        )}
-
-                        renderForeground={() => (
-                            <View key="parallax-header" style={ styles.parallaxHeader }>
-                                <Text style={ styles.sectionSpeakerText }>
-                                    机电简讯
-                                </Text>
-                                <Text style={ styles.sectionTitleText}>
-                                    生活不止眼前的苟且 还有诗和远方的田野
-                                </Text>
-                                <TouchableOpacity style={styles.foreBack} onPress={this.back.bind(this)}>
-                                    <Image source={require('../img/back.png')}/>
-                                </TouchableOpacity>
-                            </View>
-
-                        )}
-
-                        renderStickyHeader={() => (
-                            <View>
-                                <NormalToolbar
-                                    title='机电简讯'
-                                    titleTextColor='white'
-                                    barBGColor='black'
-                                    leftImageSource={require('./../img/back.png')}
-                                    leftItemFunc={this.back.bind(this)}
-                                />
-
-                                <View key="fixed-header" style={styles.fixedSection}>
-                                    <TouchableOpacity onPress={() => this.refs.ListView.scrollTo({ x: 0, y: 0 })}>
-                                        <Image source={require('./../img/toTop.png')} style={{height:20,width:20,}}/>
-                                    </TouchableOpacity>
-                                </View>
-                            </View>
-                        )}
-                    />
                 )}
-            />
+
+                renderForeground={() => (
+                    <View key="parallax-header" style={ styles.parallaxHeader }>
+                        <Text style={ styles.sectionSpeakerText }>
+                            机电通知
+                        </Text>
+                        <Text style={ styles.sectionTitleText }>
+                            生活不止眼前的苟且 还有诗和远方的田野
+                        </Text>
+                        <TouchableOpacity style={styles.foreBack} onPress={this.back.bind(this)}>
+                            <Image source={require('../img/back.png')}/>
+                        </TouchableOpacity>
+                    </View>
+
+                )}
+
+                renderStickyHeader={() => (
+                    <ScrollView>
+                        <NormalToolbar
+                            title='机电通知'
+                            titleTextColor='white'
+                            barBGColor='black'
+                            leftItemTitle='返回'
+                            leftTextColor='white'
+                            leftItemFunc={this.back.bind(this)}
+                        />
+
+                        <View key="fixed-header" style={styles.fixedSection}>
+                            <TouchableOpacity onPress={() => this.refs.myListView.scrollTo({ x: 0, y: 0 })}>
+                                <Image source={require('./../img/toTop.png')} style={{height:20,width:20,}}/>
+                            </TouchableOpacity>
+                        </View>
+                    </ScrollView>
+                )}>
+                <SwRefreshListView
+                    dataSource={this.state.dataSource.cloneWithRows(this.state.notification)}
+                    ref="listView"
+                    renderRow={this._renderRow.bind(this)}
+                    onRefresh={this._onListRefresh.bind(this)}
+                    onLoadMore={this.state.isLoadMore>IS_LOAD_MORE?null:this._onLoadMore.bind(this)}
+                    customRefreshView={this.renderRefreshView.bind(this)}
+                    noMoreDataTitle="无更多数据！"
+                    pusuToLoadMoreTitle={this.state.isLoadMore>IS_LOAD_MORE?'上拉加载更多':''}
+                />
+            </ParallaxScrollView>
         );
     }
 
-    back(){
-        new Net().back(this.props);
-    };
-
-    myRenderRow(rowData,sectionID,rowID){
-        return (
-            <TouchableOpacity  onPress={() => this.Press(rowData.id)}>
-                <View style={styles.itemBody}>
-                    <Image source={require('../img/news.png')} style={styles.renderRowImg}/>
-                    <View style={styles.renderRowItem}>
-                        <Text style={styles.itemTitle} ellipsizeMode="tail" numberOfLines={1}  >{rowData.titile}</Text>
-                        <Text style={styles.itemTime}>1小时前</Text>
-                    </View>
-                </View>
-            </TouchableOpacity>
-        )
+    /**
+     * 自定义下拉刷新视图
+     * @param refreshStatus
+     * @param offsetY
+     * @returns {XML}
+     */
+    renderRefreshView(refreshStatus, offsetY){
+        switch (refreshStatus) {
+            case 0:
+                return(<View></View>);
+                break;
+            case 1:
+                return(<View></View>);
+                break;
+            case 2:
+                return(<View></View>);
+                break;
+            default:
+                break;
+        }
     }
 
-    fetchData(){
-        var url=BRIEF+'?page='+this.state.page;
-        return new Net().getMethod(url).catch(error => {
-            alert("error message:"+ error);
-        });
+    /**
+     * 模拟刷新
+     * @param end
+     * @private
+     */
+    _onListRefresh(end){
+        let timer =  setTimeout(()=>{
+            clearTimeout(timer);
+            this.fetchData(this._page).then(r => {
+                this.setState({
+                    notification:r.notificationList,
+                });
+
+            }).catch(e => {});
+            try {
+                this.refs.listView.resetStatus();
+                end();
+            }catch (e){};
+        },1500)
+    }
+
+    /**
+     * 模拟加载更多
+     * @param end
+     * @private
+     */
+    _onLoadMore(end){
+        let timer =  setTimeout(()=>{
+            clearTimeout(timer)
+            this._page++;
+            this.fetchData(this._page).then(r => {
+                for(x in r.notificationList){
+                    this.state.notification.push(r.notificationList[x]);
+                }
+                this.setState({
+                    notification : this.state.notification
+                })
+            }).catch(e =>{});
+            try {
+                this.refs.listView.resetStatus();
+                this.refs.listView.endLoadMore(this._page>2);
+            }catch (e){};
+        },2000)
+    }
+
+    componentDidMount() {
+        let timer = setTimeout(() => {
+            clearTimeout(timer);
+            this.fetchData(this._page).then(r => {
+                this.setState({
+                    notification : r.notificationList,
+                    isLoadMore:r.notificationList.length
+                });
+            });
+            try {this.refs.listView.beginRefresh()}catch (e){};
+        },400)
+    }
+
+    _renderRow(rowData,sectionID,rowID){
+        return (
+            <ListItem
+                roundAvatar
+                key={sectionID}
+                title={rowData.title}
+                subtitle={rowData.summary}
+                avatar={rowData.cover===null?require('../img/news.png'):{uri:BASEURL+'/upload/'+rowData.cover}}
+                onPress={() => this.Press(rowData.id)}
+            />
+        );
     }
 
     Press(id){
@@ -126,55 +192,32 @@ export default class Notifications extends Component {
         new Net().toOther(this.props, 'NotificationsDetail',NotificationsDetail,params);
     }
 
-    componentWillMount() {
-        this.fetchData().then(r => {
-            this.setState({
-                userData : r.notificationList,
-            });
-        });
+    back(){
+        new Net().back(this.props);
+    };
+
+    //获取原始数据
+    fetchData(pages){
+        var url = BRIEF+'?page='+pages;
+        return new Net().getMethod(url).catch(error => {});
     }
 }
-
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: 'black'
-    },
-    background: {
-        position: 'absolute',
-        top: 0,
-        left: 0,
-        width: window.width,
-        height: PARALLAX_HEADER_HEIGHT
-    },
-    stickySection: {
-        height: STICKY_HEADER_HEIGHT,
-        width: 300,
-        justifyContent: 'flex-end',
-    },
-    stickySectionText: {
-        color: 'white',
-        fontSize: 20,
-        margin: 10
+        backgroundColor: 'white',
+        marginBottom:100
     },
     fixedSection: {
         position: 'absolute',
         bottom: 10,
         right: 10
     },
-    fixedSectionText: {
-        color: '#999',
-        fontSize: 20
-    },
     parallaxHeader: {
         alignItems: 'center',
         flex: 1,
         flexDirection: 'column',
         paddingTop: 60
-    },
-    avatar: {
-        marginBottom: 10,
-        borderRadius: AVATAR_SIZE / 2
     },
     sectionSpeakerText: {
         color: 'white',
@@ -186,57 +229,13 @@ const styles = StyleSheet.create({
         fontSize: 18,
         paddingVertical: 5
     },
-    row: {
-        overflow: 'hidden',
-        paddingHorizontal: 10,
-        height: ROW_HEIGHT,
-        backgroundColor: 'white',
-        borderColor: '#ccc',
-        borderBottomWidth: 1,
-        justifyContent: 'center'
-    },
-    rowText: {
-        fontSize: 20
-    },
-    renderRowImg:{
-        borderRadius:15,
-        height:30,
-        width:30,
-        alignItems: 'center',
-    },
-    renderRowItem:{
-        flexDirection:'column',
-        marginLeft:10,
-    },
-    itemTitle:{
-        fontSize:20,
-        fontWeight:'200',
-        width:window.width-30
-    },
-    itemTime:{
-        color:'#a6acb1',
-        fontSize:10
-    },
-    itemBody:{
-        flex: 1,
-        flexDirection:'row',
-        height:60,
-        marginTop:3,
-        alignItems:'center',
-    },
     page: {
         width: window.width,
         height: PARALLAX_HEADER_HEIGHT,
         resizeMode: 'stretch',
     },
-    toolbar: {
-        position: 'absolute',
-        top: 0,
-        left: 0
-    },
-
     foreBack:{
-      position:'absolute',
+        position:'absolute',
         top:20,
         left:10,
     },

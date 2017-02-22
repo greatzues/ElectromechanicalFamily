@@ -2,14 +2,14 @@
  * Created by zues on 2016/8/26.
  */
 import React, { Component } from 'react';
-import { View, Text, StyleSheet, Image, Navigator, TouchableOpacity, AsyncStorage, ToastAndroid, BackAndroid, Platform } from 'react-native';
+import { View, Text, StyleSheet, Image, Navigator, TouchableOpacity, AsyncStorage, BackAndroid, Platform } from 'react-native';
 import TabNavigator from 'react-native-tab-navigator';
 import DrawerLayout from 'react-native-drawer-layout';
-
+import {Icon } from 'react-native-elements'
 import Users from './Users';
 import Home from './Home';
 import Login from './Login';
-import EditUserInfo from './EditUserInfo';
+import EditInfo from './EditInfo';
 import Net from '../Tool';
 import DrawerView from './DrawerView';
 import BriefNews from './BriefNews';
@@ -20,9 +20,8 @@ import BanerWebview from './BanerWebview';
 import EditMessage from './EditMessage';
 import GetStudentInfo from './GetStudentInfo';
 import LittleGround from './LittleGround';
-import ClassGround from './ClassGround'
-
-import NewsGround from './NewsGround';
+import ClassGround from './ClassGround';
+import Toast from 'react-native-root-toast'
 
 const LOGIN = '/students/login';
 const INFO = '/students/getinfo';
@@ -67,8 +66,8 @@ export default class BottomTap extends Component {
                     selected = {this.state.selectTab === 'home'}
                     selectedTitleStyle = {styles.seletedTextStyle}
                     titleStyle ={styles.textStyle}
-                    renderIcon = {() => <Image source={require('./../img/home.png')} style={styles.iconStyle}/> }
-                    renderSelectedIcon ={() => <Image source={require('./../img/home_selected.png')} style={styles.iconStyle}/> }
+                    renderIcon = {() => <Icon name='home' color="grey"/> }
+                    renderSelectedIcon ={() => <Icon name='home' color='#ff5606' /> }
                     onPress={() => this.setState({selectTab:'home'})}>
                     <Home toLogin={this.toLogin.bind(this)}
                           title= "机电E家人"
@@ -88,8 +87,8 @@ export default class BottomTap extends Component {
                     selected = {this.state.selectTab === 'new'}
                     selectedTitleStyle = {styles.seletedTextStyle}
                     titleStyle ={styles.textStyle}
-                    renderIcon = {() => <Image source={require('./../img/discover.png')} style={styles.iconStyle}/> }
-                    renderSelectedIcon ={() => <Image source={require('./../img/discover_highlighted.png')} style={styles.iconStyle}/> }
+                    renderIcon = {() => <Icon name='toys' color="grey"/> }
+                    renderSelectedIcon ={() => <Icon name='toys' color='#ff5606' /> }
                     onPress={() => this.setState({selectTab:'new'})}>
                     <LittleGround id={this.state.id} parent={this.props} username={this.state.username}/>
                 </TabNavigator.Item>
@@ -99,10 +98,11 @@ export default class BottomTap extends Component {
                     selected = {this.state.selectTab === 'myClass'}
                     selectedTitleStyle = {styles.seletedTextStyle}
                     titleStyle ={styles.textStyle}
-                    renderIcon = {() => <Image source={require('./../img/myClass.png')} style={styles.iconStyle}/> }
-                    renderSelectedIcon ={() => <Image source={require('./../img/myClass_selected.png')} style={styles.iconStyle}/> }
+                    renderIcon = {() => <Icon name='class' color="grey"/> }
+                    renderSelectedIcon ={() => <Icon name='class' color='#ff5606' /> }
                     onPress={() => this.setState({selectTab:'myClass'})}>
-                    <GetClassInfo getStudentInfo={this.getStudentInfo.bind(this)} classNumber={this.state.classNumber} parent={this.props}/>
+                    <GetClassInfo getStudentInfo={this.getStudentInfo.bind(this)} classNumber={this.state.classNumber}
+                                  parent={this.props} ifLogin={this.state.refresh}/>
                 </TabNavigator.Item>
 
                 <TabNavigator.Item
@@ -113,7 +113,7 @@ export default class BottomTap extends Component {
                     renderIcon = {() => <Image source={require('./../img/me_normal.png')} style={styles.iconStyle}/> }
                     renderSelectedIcon ={() => <Image source={require('./../img/me_hight.png')} style={styles.iconStyle}/> }
                     onPress={() => this.setState({selectTab:'user'})}>
-                    <Users toEdit={this.toEdit.bind(this)} userResponse={this.state.response} parent={this.props}
+                    <Users toEdit={this.toEdit.bind(this)} user={this.state.response} parent={this.props}
                            avatar={this.state.avatar} username={this.state.username}/>
                 </TabNavigator.Item>
             </TabNavigator>
@@ -173,7 +173,7 @@ export default class BottomTap extends Component {
             BackAndroid.exitApp();
         }
         this.lastBackPressed = Date.now();
-        ToastAndroid.show('再按一次确认退出应用',ToastAndroid.SHORT);
+        Toast.show('再按一次确认退出应用');
         return true;
     }
 
@@ -190,7 +190,7 @@ export default class BottomTap extends Component {
                 this.setState({refresh:true});
                 this.reRenderData(true);
             }).catch(error => {
-                alert("网络出现错误");
+                Toast.show("网络出现错误");
                 console.error(error);
             });
         }).catch(e => {
@@ -201,17 +201,11 @@ export default class BottomTap extends Component {
     toEdit(){
         new Net().loadKey('loginState').then(r => {
             if(r.username){
-                var params = {id:this.state.id,update:(ifRefresh) => this.reRenderData(ifRefresh)};
-                new Net().toOther(this.props,'EditUserInfo',EditUserInfo,params);
+                var params = {id:this.state.id,update:(ifRefresh) => this.reRenderData(ifRefresh),user:this.state.response};
+                new Net().toOther(this.props,'EditInfo',EditInfo,params);
             }
         }).catch(e => {
-            if(Platform.OS === 'ios'){
-                alert('请先登录');
-            }
-            if(Platform.OS === 'android'){
-                ToastAndroid.show('请先登录',ToastAndroid.SHORT);
-            }
-            console.log(e);
+            Toast.show('请先登录');
         });
     }
 
@@ -222,13 +216,7 @@ export default class BottomTap extends Component {
                 new Net().toOther(this.props, 'EditMessage',EditMessage,params);
             }
         }).catch(e => {
-            if(Platform.OS === 'ios'){
-                alert('请先登录');
-            }
-            if(Platform.OS === 'android'){
-                ToastAndroid.show('请先登录',ToastAndroid.SHORT);
-            }
-            console.log(e);
+            Toast.show('请先登录');
         });
     }
 

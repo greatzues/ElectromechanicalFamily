@@ -2,11 +2,12 @@
  * Created by zues on 2017/1/17.
  */
 import React, { Component } from 'react';
-import { View, Text, StyleSheet, ListView, Image, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, ListView, Image, TouchableOpacity, ScrollView } from 'react-native';
 import Toast from 'react-native-root-toast';
 import Net from '../Tool';
 import NormalToolbar from './NormalToolbar'
 import SignDetail from './SignDetail'
+import {ListItem , Icon} from 'react-native-elements'
 
 const TIME = '/signTable/student';
 export default class SignPage extends Component{
@@ -30,14 +31,14 @@ export default class SignPage extends Component{
     //暂时先模拟一下时间
       render(){
           return (
-              <View style={styles.container}>
+              <ScrollView style={styles.container}>
                   <NormalToolbar title='签到页面' leftImageSource={require('../img/back.png')} leftItemFunc={this.back.bind(this)}/>
                   <ListView
                       dataSource={this.state.dataSource.cloneWithRows(this.state.signTable)}
                       renderRow={this.renderRow.bind(this)}
                       enableEmptySections={true}
                   />
-              </View>
+              </ScrollView>
           )
       }
 
@@ -46,15 +47,16 @@ export default class SignPage extends Component{
         let endTime = new Net().timeToDate(rowData.endTime);
         let  signAble = this.ifSignAble(rowData.startTime,rowData.endTime,rowData.isOverdue);
         return(
-            <TouchableOpacity style={signAble?styles.canSign:styles.cantSign} onPress={signAble === true?this.toSignDetail.bind(this, rowData.id):this.cantSign.bind(this)}>
-                <Image source={signAble?require('../img/calendar_activity.png'):require('../img/calendar_overtime.png')}/>
-                <View style={{marginLeft:5}}>
-                    <Text style={signAble?styles.canSignText:styles.cantSignText}>签到时间：{startTime}~{endTime}</Text>
-                    {signAble?<Text style={styles.text}>可签到时间</Text>:<Text>不可签到</Text>}
-                    <View style={styles.BottomLine}/>
-                </View>
-                <Image source={signAble?require('../img/arrowRight.png'):require('../img/arrow_Right.png')} style={styles.rightArrow}/>
-            </TouchableOpacity>
+            <ListItem
+                roundAvatar
+                title={'签到时间：'+startTime+'~'+endTime}
+                titleStyle={signAble?{color:'#4a6ca6'}:{color:'#828282'}}
+                subtitle={signAble?'可签到时间':'不可签到'}
+                subtitleStyle={signAble?{color:'#4a6ca6'}:{color:'#828282'}}
+                leftIcon={signAble?{name:'flight-takeoff',color:'#4a6ca6'}:{name:'av-timer',color:'#828282'}}
+                rightIcon={signAble?{name:'chevron-right',color:'#4a6ca6'}:{name:'chevron-right',color:'#828282'}}
+                onPress={signAble === true?this.toSignDetail.bind(this, rowData.id):this.cantSign.bind(this)}
+            />
         );
     }
 
@@ -66,7 +68,6 @@ export default class SignPage extends Component{
       fetchData(){
           var url = TIME+'?page='+ this.state.page;
           new Net().getMethod(url).then(r => {
-              console.log(r);
               this.setState({
                   signTable:r.signTables
               })
@@ -80,6 +81,10 @@ export default class SignPage extends Component{
           }else {
               return false; //记得改回来false
           }
+      }
+
+      ifCanSign(B,canSign,cantSign){
+          return B?canSign:cantSign;
       }
 
     back(){
@@ -139,7 +144,7 @@ const styles=StyleSheet.create({
     },
     rightArrow:{
         position:'absolute',
-        right:15,
+        right:25,
         top:10
     }
 })

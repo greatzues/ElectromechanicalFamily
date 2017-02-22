@@ -2,9 +2,10 @@
  * Created by zues on 2016/8/27.
  */
 import React, { Component } from 'react';
-import { View, Text, Image, StyleSheet, TextInput, DeviceEventEmitter,
+import { View, Text, Image, StyleSheet, TextInput, DeviceEventEmitter, ScrollView,
     TouchableOpacity, ActivityIndicator,Navigator, Dimensions, BackAndroid, AsyncStorage, findNodeHandle } from 'react-native';
 import Net from '../Tool';
+import {Button} from 'react-native-elements'
 import NormalToolbar from './NormalToolbar';
 var BlurView = require('react-native-blur').BlurView;
 
@@ -18,6 +19,7 @@ export default class Login extends Component{
             login: false,
             disabled:false,
             viewRef:0,
+            errorMes:''
         };
     }
 
@@ -27,75 +29,68 @@ export default class Login extends Component{
 
     render(){
         return(
-
                 <Image
                     source={require('../img/loginbg.jpg')}
                     resizeMode='cover'
-                    style={{height:window.height,width:window.width,flex:1}}
+                    style={{height:device.height,width:device.width,flex:1}}
                     ref={'backgroundImage'}
                     blurRadius={1}
                     onLoadEnd={this.imageLoaded.bind(this)}>
-                    <BlurView
-                        blurType="dark"
-                        blurRadius={2}
-                        downsampleFactor={5}
-                        overlayColor={'rgba(0, 0, 0, 0.3)'}
-                        style={styles.blurView}
-                        viewRef={this.state.viewRef}
-                    />
-                    <NormalToolbar
-                        leftImageSource={require('../img/back.png')}
-                        leftItemFunc={this.backToHome.bind(this)}
-                        barBGColor='transparent'
-                        leftItemTitle='返回'
-                        title='请登录'
-                        barBorderBottomWidth={0}
-                    />
-                    <Text style={styles.logo}>机电E家人</Text>
-                    <View style = {styles.container} >
-                        {this.state.login ?
-                            <View>
-                                <ActivityIndicator />
-                                <Text style={{backgroundColor: 'transparent'}}>正在登录...</Text>
-                            </View> :
-                            null}
+                    <View style={{flex:1,backgroundColor:'rgba(0,0,0,.5)'}}>
+                        <ScrollView>
+                            <NormalToolbar
+                                leftImageSource={require('../img/back.png')}
+                                leftItemFunc={this.backToHome.bind(this)}
+                                barBGColor='transparent'
+                                leftItemTitle='返回'
+                                title='请登录'
+                                titleTextColor='#f89c3d'
+                                barBorderBottomWidth={0}
+                            />
+                            <Text style={styles.logo}>机电E家人</Text>
+                            <View style = {styles.container} >
+                                {this.state.login ?
+                                    <View>
+                                        <ActivityIndicator />
+                                        <Text style={{backgroundColor: 'transparent'}}>正在登录...</Text>
+                                    </View> :
+                                    null}
 
-                        <View style = {styles.input}>
-                            <Text style={{marginLeft:10,color:'white',backgroundColor: 'transparent'}}>账号:</Text>
-                            <TextInput
-                                style = {styles.textInput}
-                                placeholder="请输入学号"
-                                placeholderTextColor='white'
-                                underlineColorAndroid='white'
-                                clearButtonMode={'while-editing'}
-                                editable = {this.state.editable}
-                                returnKeyType={'next'}
-                                onChangeText={(userName) => this.setState({username:userName})}/>
-                        </View>
-
-                        <View style = {styles.input}>
-                            <Text style={{marginLeft:10,color:'white',backgroundColor: 'transparent'}}>密码:</Text>
-                            <TextInput
-                                style = {styles.textInput}
-                                placeholder="请输入密码"
-                                placeholderTextColor='white'
-                                underlineColorAndroid='white'
-                                secureTextEntry = {true}
-                                clearButtonMode={'while-editing'}
-                                editable = {this.state.editable}
-                                returnKeyType={'done'}
-                                onChangeText={(passWord) => this.setState({password:passWord})}/>
-                        </View>
-                        <TouchableOpacity
-                            onPress = {this.loginButton.bind(this)}
-                            disabled = {this.state.disabled}
-                            >
-                                <View style={styles.loginButton}>
-                                    <Text style={{margin: 30,color:'white', fontSize:20}}>登录</Text>
+                                <View style = {styles.input}>
+                                    <Text style={{marginLeft:10,color:'white',backgroundColor: 'transparent'}}>账号:</Text>
+                                    <TextInput
+                                        style = {styles.textInput}
+                                        placeholder="请输入学号"
+                                        placeholderTextColor='white'
+                                        underlineColorAndroid='white'
+                                        clearButtonMode={'while-editing'}
+                                        editable = {this.state.editable}
+                                        returnKeyType={'next'}
+                                        onChangeText={(userName) => this.setState({username:userName})}/>
                                 </View>
-                        </TouchableOpacity>
+
+                                <View style = {styles.input}>
+                                    <Text style={{marginLeft:10,color:'white',backgroundColor: 'transparent'}}>密码:</Text>
+                                    <TextInput
+                                        style = {styles.textInput}
+                                        placeholder="请输入密码"
+                                        placeholderTextColor='white'
+                                        underlineColorAndroid='white'
+                                        secureTextEntry = {true}
+                                        clearButtonMode={'while-editing'}
+                                        editable = {this.state.editable}
+                                        returnKeyType={'done'}
+                                        onChangeText={(passWord) => this.setState({password:passWord})}/>
+                                </View>
+
+                                <Button backgroundColor="#337ab7" borderRadius={5}  buttonStyle={styles.loginButton} disabled = {this.state.disabled}
+                                    icon={{name: 'account-circle', size: 30}} title='登录' onPress={this.loginButton.bind(this)}/>
+
+                            </View>
+                        </ScrollView>
                     </View>
                 </Image>
+
         );
     }
 
@@ -113,10 +108,12 @@ export default class Login extends Component{
     //登录
     loginButton(){
         if(this.state.username === '' ){
-            return alert("账号至少6位以上");
+            Toast.show("账号至少6位以上");
+            return ;
         }
         if(this.state.password === '' ){
-            return alert("密码至少6位以上");
+            Toast.show("密码至少6位以上");
+            return ;
         }
         //保存账号密码，用于自动登录
         new Net().saveKey('loginState',{username: this.state.username, password: this.state.password});
@@ -162,10 +159,10 @@ export default class Login extends Component{
                         disabled:false,
                     });
                 },1000);
-                alert("账号或密码错误");
+                Toast.show("账号或密码错误");
             }
         }).catch(error => {
-            alert("网络出现错误");
+            Toast.show("网络出现错误");
             console.error(error);
         });
     }
@@ -189,12 +186,8 @@ const styles = StyleSheet.create({
         color:'white',
     },
     loginButton:{
-        justifyContent:'center',
-        alignItems: 'center',
         width: device.width - 10,
         height: 40,
-        backgroundColor: '#337ab7',
-        borderRadius:5,
         marginLeft:5,
         marginRight:5,
         marginTop:20,

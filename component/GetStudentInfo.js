@@ -2,14 +2,13 @@
  * Created by zues on 2016/9/30.
  */
 import React, { Component } from 'react';
-import { WebView, View, Text, StyleSheet, ListView, Image, Dimensions, ScrollView, findNodeHandle } from 'react-native';
+import { WebView, View, Text, StyleSheet, ListView, Image, Dimensions, ScrollView, findNodeHandle, TouchableOpacity } from 'react-native';
 import ScrollableTabView, { DefaultTabBar } from 'react-native-scrollable-tab-view';
 import Net from '../Tool';
 import NormalToolbar from './NormalToolbar';
 import BaseInfo from '../component/BaseInfo';
 var BlurView = require('react-native-blur').BlurView;
 
-//http://10.10.68.101:8888/student/getsomeoneInfo/?studentID=58
 const AVATAR = '/avatar/';
 export default class GetStudentInfo extends Component{
     constructor(props){
@@ -30,7 +29,7 @@ export default class GetStudentInfo extends Component{
         return(
             <View style={styles.container}>
                 <Image
-                    source={require('../img/UserBackground.jpg')}
+                    source={this.state.avatarSource===null?require('../img/UserBackground.jpg'):{uri:BASEURL+AVATAR+this.state.avatarSource}}
                     style={styles.userBackground}
                     ref={'backgroundImage'}
                     onLoadEnd={this.imageLoaded.bind(this)}>
@@ -43,14 +42,18 @@ export default class GetStudentInfo extends Component{
                         viewRef={this.state.viewRef}
                     />
                         <View>
-                            <Image style={styles.avatar} source={require('../img/UserDafault.png')} />
+                            <Image style={styles.avatar}
+                                   source={this.state.avatarSource===null?require('../img/UserBackground.jpg'):{uri:BASEURL+AVATAR+this.state.avatarSource}}
+                            />
                         </View>
                         <Text style={{color:'white',fontSize:20, backgroundColor: 'transparent',}}>{
                             this.state.appellation === '男'?
                             this.state.response.realname
                             :this.state.response.realname}
                         </Text>
-
+                        <TouchableOpacity onPress={this.back.bind(this)}  style={styles.back}>
+                            <Image source={require('../img/back.png')}/>
+                        </TouchableOpacity>
                 </Image>
 
                 <View style={styles.container}>
@@ -77,11 +80,12 @@ export default class GetStudentInfo extends Component{
 
     fetchData(){
         var URL='/students/'+this.props.id;
-        new Net().getMethod(URL).then((response) => {
+        new Net().getMethod(URL).then((r) => {
+            console.log(r);
             this.setState({
-                response:response,
-                avatarSource:response.avatar,
-                appellation:response.sex,
+                response:r,
+                avatarSource:r.avatar,
+                appellation:r.sex,
             });
         })
     }
@@ -122,6 +126,13 @@ const styles = StyleSheet.create({
 
     blurView: {
         position: "absolute",
+        left: 0,
+        top: 0,
+        bottom: 0,
+        right: 0
+    },
+    back:{
+        position:'absolute',
         left: 0,
         top: 0,
         bottom: 0,

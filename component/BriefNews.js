@@ -2,116 +2,190 @@
  * Created by zues on 2016/8/26.
  */
 import React, { Component } from 'react';
-import {StyleSheet, Text, View ,  ListView, RefreshControl, TouchableOpacity, Navigator, Image, Dimensions} from 'react-native';
-import ParallaxScrollView from 'react-native-parallax-scroll-view';
-import NormalToolbar from './NormalToolbar';
+import {StyleSheet, Text, View ,  ListView, ScrollView, TouchableOpacity, Navigator, Image, Dimensions, ActivityIndicator} from 'react-native';
+import {SwRefreshScrollView, SwRefreshListView, RefreshStatus, LoadMoreStatus} from 'react-native-swRefresh';
 import Net from '../Tool';
+import NormalToolbar from './NormalToolbar';
 import BriefNewsDetail from './BriefNewsDetail';
+import { ListItem } from 'react-native-elements'
+import ParallaxScrollView from 'react-native-parallax-scroll-view';
 
-const NEWS = '/news?page=';
-const AVATAR_SIZE = 120;
-const ROW_HEIGHT = 60;
+const NEWS = '/news';
 const PARALLAX_HEADER_HEIGHT = 200;
 const STICKY_HEADER_HEIGHT = 38;
+const IS_LOAD_MORE = 15;
 export default class BriefNews extends Component {
+    _page=1
+    _dataSource = new ListView.DataSource({rowHasChanged:(row1,row2)=>row1 !== row2})
     constructor(props) {
         super(props);
-        var ds = new ListView.DataSource({
-            rowHasChanged: (r1, r2) => r1 !== r2,
-        });
         this.state = {
-            dataSource:ds,
+            dataSource:this._dataSource,
             news: [],
             id:'',
-            page:1
+            isLoadMore:0
         };
     }
 
     render() {
-        const { onScroll = () => {} } = this.props;
         return (
-            <ListView
-                ref="ListView"
-                style={styles.container}
-                enableEmptySections={true}
-                dataSource={this.state.dataSource.cloneWithRows(this.state.news)}
-                renderRow={this.myRenderRow.bind(this)}
-                renderScrollComponent={props => (
-                    <ParallaxScrollView
-                        onScroll={onScroll}
-                        headerBackgroundColor="#e9eaed"
-                        stickyHeaderHeight={ STICKY_HEADER_HEIGHT }
-                        parallaxHeaderHeight={ PARALLAX_HEADER_HEIGHT }
-                        backgroundSpeed={10}
-                        renderBackground={() => (
-                            <View key="background">
-                                <Image source={require('./../img/3.jpg')} style={styles.page}/>
-                                <View style={{position: 'absolute',
-                                    top: 0,
-                                    width: device.width,
-                                    backgroundColor: 'rgba(0,0,0,0.3)',
-                                    height: PARALLAX_HEADER_HEIGHT}}/>
-                            </View>
+            <ParallaxScrollView
+                ref="myListView"
+                headerBackgroundColor="#e9eaed"
+                stickyHeaderHeight={ STICKY_HEADER_HEIGHT }
+                parallaxHeaderHeight={ PARALLAX_HEADER_HEIGHT }
+                backgroundSpeed={10}
+                renderBackground={() => (
+                    <View key="background">
+                        <Image source={require('./../img/3.jpg')} style={styles.page}/>
+                        <View style={{position: 'absolute',
+                            top: 0,
+                            width: device.width,
+                            backgroundColor: 'rgba(0,0,0,0.3)',
+                            height: PARALLAX_HEADER_HEIGHT}}/>
+                    </View>
 
-                        )}
-
-                        renderForeground={() => (
-                            <View key="parallax-header" style={ styles.parallaxHeader }>
-                                <Text style={ styles.sectionSpeakerText }>
-                                    校友风采
-                                </Text>
-                                <Text style={ styles.sectionTitleText }>
-                                    拳拳赤子之心，涌泉相报之情
-                                </Text>
-                                <TouchableOpacity style={styles.foreBack} onPress={this.back.bind(this)}>
-                                    <Image source={require('../img/back.png')}/>
-                                </TouchableOpacity>
-                            </View>
-
-                        )}
-
-                        renderStickyHeader={() => (
-                            <View>
-                                <NormalToolbar
-                                    title='校友风采'
-                                    titleTextColor='white'
-                                    barBGColor='black'
-                                    leftImageSource={require('./../img/back.png')}
-                                    leftItemFunc={this.back.bind(this)}
-                                />
-
-                                <View key="fixed-header" style={styles.fixedSection}>
-                                    <TouchableOpacity onPress={() => this.refs.ListView.scrollTo({ x: 0, y: 0 })}>
-                                        <Image source={require('./../img/toTop.png')} style={{height:20,width:20,}}/>
-                                    </TouchableOpacity>
-                                </View>
-                            </View>
-                        )}
-                    />
                 )}
-            />
+
+                renderForeground={() => (
+                    <View key="parallax-header" style={ styles.parallaxHeader }>
+                        <Text style={ styles.sectionSpeakerText }>
+                            机电简讯
+                        </Text>
+                        <Text style={ styles.sectionTitleText }>
+                            汇集机电学院最新短资讯
+                        </Text>
+                        <TouchableOpacity style={styles.foreBack} onPress={this.back.bind(this)}>
+                            <Image source={require('../img/back.png')}/>
+                        </TouchableOpacity>
+                    </View>
+
+                )}
+
+                renderStickyHeader={() => (
+                    <ScrollView>
+                        <NormalToolbar
+                            title='机电简讯'
+                            titleTextColor='white'
+                            barBGColor='black'
+                            leftItemTitle='返回'
+                            leftTextColor='white'
+                            leftItemFunc={this.back.bind(this)}
+                        />
+
+                        <View key="fixed-header" style={styles.fixedSection}>
+                            <TouchableOpacity onPress={() => this.refs.myListView.scrollTo({ x: 0, y: 0 })}>
+                                <Image source={require('./../img/toTop.png')} style={{height:20,width:20,}}/>
+                            </TouchableOpacity>
+                        </View>
+                    </ScrollView>
+                )}>
+                <SwRefreshListView
+                    dataSource={this.state.dataSource.cloneWithRows(this.state.news)}
+                    ref="listView"
+                    renderRow={this._renderRow.bind(this)}
+                    onRefresh={this._onListRefresh.bind(this)}
+                    onLoadMore={this.state.isLoadMore>IS_LOAD_MORE?null:this._onLoadMore.bind(this)}
+                    customRefreshView={this.renderRefreshView.bind(this)}
+                    noMoreDataTitle="无更多数据！"
+                    pusuToLoadMoreTitle={this.state.isLoadMore>IS_LOAD_MORE?'上拉加载更多':''}
+                />
+            </ParallaxScrollView>
         );
     }
 
-    componentDidMount() {
-        this.fetchData().then(r => {
-            this.setState({
-                news : r.newsList,
-            });
-        });
+    /**
+     * 当item数目不满一个屏，不足一个page的数量时，自定义下拉刷新视图
+     * @param refreshStatus
+     * @param offsetY
+     * @returns {XML}
+     */
+    renderRefreshView(refreshStatus, offsetY){
+        switch (refreshStatus) {
+            case 0:
+                return(<View></View>);
+                break;
+            case 1:
+                return(<View></View>);
+                break;
+            case 2:
+                return(<View></View>);
+                break;
+            default:
+                break;
+        }
     }
 
-    myRenderRow(rowData,sectionID,rowID){
+    /**
+     * 模拟刷新
+     * @param end
+     * @private
+     */
+    _onListRefresh(end){
+        this.setState({isRefreshing: true});
+        let timer =  setTimeout(()=>{
+            clearTimeout(timer);
+            this.fetchData(this._page).then(r => {
+                this.setState({
+                    news:r.newsList,
+                    isRefreshing: false,
+                });
+
+            }).catch(e => {});
+            try {
+                this.refs.listView.resetStatus();
+                end();
+            }catch (e){};
+        },1500)
+    }
+
+    /**
+     * 模拟加载更多
+     * @param end
+     * @private
+     */
+    _onLoadMore(end){
+        let timer =  setTimeout(()=>{
+            clearTimeout(timer)
+            this._page++;
+            this.fetchData(this._page).then(r => {
+                for(x in r.newsList){
+                    this.state.news.push(r.newsList[x]);
+                }
+                this.setState({
+                    news : this.state.news
+                })
+            }).catch(e =>{});
+            try {
+                this.refs.listView.resetStatus();
+                this.refs.listView.endLoadMore(this._page>2);
+            }catch (e){};
+        },2000)
+    }
+
+    componentDidMount() {
+        let timer = setTimeout(() => {
+            clearTimeout(timer);
+            this.fetchData(this._page).then(r => {
+                this.setState({
+                    news : r.newsList,
+                    isLoadMore:r.newsList.length
+                });
+            });
+            try {this.refs.listView.beginRefresh()}catch (e){};
+        },400)
+    }
+
+    _renderRow(rowData,sectionID,rowID){
         return (
-            <TouchableOpacity  onPress={() => this.Press(rowData.id)}>
-                <View style={styles.itemBody}>
-                    <Image source={require('../img/news.png')} style={styles.renderRowImg}/>
-                    <View style={styles.renderRowItem}>
-                        <Text style={styles.itemTitle} ellipsizeMode="tail" numberOfLines={1}  >{rowData.title}</Text>
-                        <Text style={styles.itemSummary}>{rowData.summary}</Text>
-                    </View>
-                </View>
-            </TouchableOpacity>
+            <ListItem
+                roundAvatar
+                key={sectionID}
+                title={rowData.title}
+                subtitle={rowData.summary}
+                avatar={require('../img/news.png')}
+                onPress={() => this.Press(rowData.id)}
+            />
         );
     }
 
@@ -124,63 +198,28 @@ export default class BriefNews extends Component {
         new Net().back(this.props);
     };
 
-    fetchData(){
-        return new Net().getMethod(NEWS+'1').catch(e => {
-            console.log(e);
-        })
-    }
-
-//拿到接口之后修改一下story
-    onRefresh(){
-        this.setState({refreshing: true});
-        this.fetchData().then(r => {
-            this.setState({
-                news : r.newsList,
-                refreshing:false,
-            });
-        });
+    //获取原始数据
+    fetchData(pages){
+        var url = NEWS+'?page='+pages;
+        return new Net().getMethod(url).catch(error => {});
     }
 }
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: 'black'
-    },
-    background: {
-        position: 'absolute',
-        top: 0,
-        left: 0,
-        width: window.width,
-        height: PARALLAX_HEADER_HEIGHT
-    },
-    stickySection: {
-        height: STICKY_HEADER_HEIGHT,
-        width: 300,
-        justifyContent: 'flex-end',
-    },
-    stickySectionText: {
-        color: 'white',
-        fontSize: 20,
-        margin: 10
+        backgroundColor: 'white',
+        marginBottom:100
     },
     fixedSection: {
         position: 'absolute',
         bottom: 10,
         right: 10
     },
-    fixedSectionText: {
-        color: '#999',
-        fontSize: 20
-    },
     parallaxHeader: {
         alignItems: 'center',
         flex: 1,
         flexDirection: 'column',
         paddingTop: 60
-    },
-    avatar: {
-        marginBottom: 10,
-        borderRadius: AVATAR_SIZE / 2
     },
     sectionSpeakerText: {
         color: 'white',
@@ -192,53 +231,10 @@ const styles = StyleSheet.create({
         fontSize: 18,
         paddingVertical: 5
     },
-    row: {
-        overflow: 'hidden',
-        paddingHorizontal: 10,
-        height: ROW_HEIGHT,
-        backgroundColor: 'white',
-        borderColor: '#ccc',
-        borderBottomWidth: 1,
-        justifyContent: 'center'
-    },
-    rowText: {
-        fontSize: 20
-    },
-    renderRowImg:{
-        borderRadius:15,
-        height:30,
-        width:30,
-        alignItems: 'center',
-    },
-    renderRowItem:{
-        flexDirection:'column',
-        marginLeft:10,
-    },
-    itemTitle:{
-        fontSize:15,
-        fontWeight:'200',
-        width:window.width-30
-    },
-    itemTime:{
-        color:'#a6acb1',
-        fontSize:10
-    },
-    itemBody:{
-        flex: 1,
-        flexDirection:'row',
-        height:60,
-        marginTop:3,
-        alignItems:'center',
-    },
     page: {
         width: window.width,
         height: PARALLAX_HEADER_HEIGHT,
         resizeMode: 'stretch',
-    },
-    toolbar: {
-        position: 'absolute',
-        top: 0,
-        left: 0
     },
     foreBack:{
         position:'absolute',

@@ -1,22 +1,34 @@
+/*
+ * 暂时用来保留原来littleGround的代码
+ */
 import React, { Component } from 'react';
 import {
-    StyleSheet, Text, View, TouchableHighlight, ScrollView, RefreshControl,
-    TouchableOpacity, Image, Dimensions, ListView, TextInput, Navigator} from 'react-native';
-
-import * as Animatable from 'react-native-animatable';
-import Accordion from 'react-native-collapsible/Accordion';
+    AppRegistry,
+    StyleSheet,
+    Text,
+    View,
+    Dimensions,
+    ListView,
+    Image,
+    TouchableWithoutFeedback,
+    ScrollView,
+    TouchableOpacity,
+    Navigator
+} from 'react-native';
+import {
+    SwRefreshScrollView,
+    SwRefreshListView,
+    RefreshStatus,
+    LoadMoreStatus
+} from 'react-native-swRefresh'
 import Net from '../Tool';
-import NormalToolbar from './NormalToolbar';
+import commentDetail from './commentDetail';
+import PicDetail from './PicDetail'
 import Lightbox from 'react-native-lightbox';
 import  Carousel from 'react-native-looped-carousel';
 
-//下拉加载
-const deviceWidth = Dimensions.get('window').width;
 const MESSAGE = '/messages';
-const COMMENT = '/comments';
-
-//使用图片预览需要直接在页面内使用一个导航，于是有两个class
-export default class NewsGround extends Component{
+export default class LittleGround extends Component{
     renderScene(route, navigator) {
         var Component = route.component;
 
@@ -39,64 +51,135 @@ export default class NewsGround extends Component{
     }
 }
 
-
-class Test extends Component {
+class Test extends Component{
+    _page=1
+    _dataSource = new ListView.DataSource({rowHasChanged:(row1,row2)=>row1 !== row2})
     // 构造
-      constructor(props) {
+    constructor(props) {
         super(props);
         // 初始状态
-        var ds = new ListView.DataSource({rowHasChanged: (r1, r2) => r1 !== r2});
         this.state = {
-            activeSection: false,
-            collapsed: true,
-            userData: [],
-            refreshing: false,
-            dataSource:ds,
-            comment:[],
-            text:'',
-            disabled:true,
+            dataSource:this._dataSource,
+            mesData:[],
             page:1
-        }
-      }
-    //传入评论区的id
-    _setSection(section) {
-        this.setState({ activeSection: section });
-        if(section !== false){
-            this.fetchComment(this.state.userData[section].messageId);
-            this.setState({
-                messageId:this.state.userData[section].messageId,
-                from:this.state.userData[section].belong,
-            })
-        }
+        };
     }
 
-    _renderHeader(section, i, isActive) {
-        return (
-            <Animatable.View duration={400} style={[styles.header, isActive ? styles.active : styles.inactive]} transition="backgroundColor">
+    render(){
+        return this._renderListView() // ListView Demo
+    }
+
+    _renderListView(){
+        return(
+            <SwRefreshListView
+                dataSource={this.state.dataSource.cloneWithRows(this.state.mesData)}
+                ref="listView"
+                renderRow={this._renderRow.bind(this)}
+                onRefresh={this._onListRefersh.bind(this)}
+                onLoadMore={this._onLoadMore.bind(this)}
+            />
+        )
+    }
+    _renderRow(rowData) {
+        return(
+            <View>
                 <View style={styles.cardTop}>
                     <Image source={require('../img/UserDafault.png')}  style={styles.renderRowImg}/>
                     <View style={styles.avatarAndTime}>
-                        <Text style={styles.cardavatar}>{section.belong}</Text>
-                        <Text style={styles.cardTime}>{section.date}</Text>
+                        <Text style={styles.cardavatar}>{rowData.belong}</Text>
+                        <Text style={styles.cardTime}>{rowData.date}</Text>
                     </View>
-                    <Image source={require('../img/write.png')} style={styles.comment}/>
+                    <TouchableWithoutFeedback onPress={this.toDetails.bind(this,rowData)}>
+                        <Image source={require('../img/write.png')} style={styles.comment}/>
+                    </TouchableWithoutFeedback>
                 </View>
                 <View style={styles.cardContent}>
-                    <Text style={styles.cardText} >{section.messageText}</Text>
+                    <Text style={styles.cardText} >{rowData.messageText}</Text>
                     <ListView
                         dataSource={this.state.dataSource.cloneWithRows(
-                            [section.messagePic1,section.messagePic2,section.messagePic3,
-                                section.messagePic4,section.messagePic5,section.messagePic6,
-                                    section.messagePic7,section.messagePic8,section.messagePic9])}
-                        renderRow={this.renderRow.bind(this)}
+                            [rowData.messagePic1,rowData.messagePic2,rowData.messagePic3,
+                                rowData.messagePic4,rowData.messagePic5,rowData.messagePic6,
+                                rowData.messagePic7,rowData.messagePic8,rowData.messagePic9])}
+                        renderRow={this.picList.bind(this)}
                         contentContainerStyle={styles.list}
                         enableEmptySections={true}
-                        initialListSize={1}
                     />
                 </View>
-
-            </Animatable.View>
+            </View>
         );
+    }
+
+    /**
+     * 模拟刷新
+     * @param end
+     * @private
+     */
+    _onListRefersh(end){
+        let timer =  setTimeout(()=>{
+            clearTimeout(timer);
+            this.fetchData(this._page).then(r => {
+                this.setState({
+                    mesData:r.messages
+                })
+            }).catch(e => {});
+            this.refs.listView.resetStatus() //重置上拉加载的状态
+            end()//刷新成功后需要调用end结束刷新
+            // this.refs.listView.endRefresh() //建议使用end() 当然 这个可以在任何地方使用
+        },1500)
+    }
+
+    /**
+     * 模拟加载更多
+     * @param end
+     * @private
+     */
+    _onLoadMore(end){
+        let timer =  setTimeout(()=>{
+            clearTimeout(timer)
+            this._page++;
+            this.fetchData(this._page).then(r => {
+                for(x in r.messages){
+                    this.state.mesData.push(r.messages[x]);
+                }
+                this.setState({
+                    mesData:this.state.mesData
+                })
+            }).catch(e =>{});
+            //end(this._page > 2)//加载成功后需要调用end结束刷新 假设加载4页后数据全部加载完毕
+            this.refs.listView.resetStatus();
+            this.refs.listView.endLoadMore(this._page>2) //为true的时候表示已经加载完全部数据，这里为了暂时给老师演示，先保存为true，后面再fix
+        },2000)
+    }
+
+    componentDidMount() {
+        this.fetchData(this._page).then(r => {
+            this.setState({
+                mesData:r.messages
+            })
+        }).catch(e => {});
+        this.refs.listView.beginRefresh() //刷新动画
+    }
+
+
+    picList(rowData, sectionID, rowID){
+        var picUri = BASEURL+'/message/'+rowData;
+        if(rowData!==null){
+            return (
+                <View>
+                    <View style={styles.itemContainer}>
+                        {/*<TouchableOpacity style={styles.itemContainer} onPress={this.toPicDetail.bind(this,picUri)}>*/}
+                        <Lightbox renderContent={this.renderCarousel.bind(this,picUri)}>
+                            <Image
+                                style={styles.imageItem}
+                                source={{uri:picUri}}
+                                resizeMode='cover'
+                            />
+                        </Lightbox>
+                    </View>
+                </View>
+            );
+        }
+        return null
     }
 
     renderCarousel(uri) {
@@ -111,145 +194,41 @@ class Test extends Component {
         );
     }
 
-    //获取评论
-    fetchComment(id){
-        var url = COMMENT+"?filters={messageId:"+id+"}";
-        return new Net().getMethod(url)
-            .then(data => {
-                this.setState({comment:data.comments})
-            })
-            .catch(error => {
-            console.log(error);
-        });
-    }
-    //渲染每一个item的主体内容
-    _renderContent(section, i, isActive) {
-        return (
-            <Animatable.View duration={400}  style={[styles.content, isActive ? styles.active : styles.inactive]} transition="backgroundColor">
-
-                    <TextInput
-                        placeholder="疯狂的评论吧！"
-                        style={styles.contentTextInput}
-                        value={this.state.value}
-                        onChangeText={ t => this.setState({text:t})}
-                        underlineColorAndroid="transparent"
-                        onSubmitEditing={this.postComment.bind(this)}
-                    />
-                <ListView
-                    dataSource={this.state.dataSource.cloneWithRows(this.state.comment)}
-                    renderRow={this.myRenderRow.bind(this)}
-                    enableEmptySections={true}
-                />
-            </Animatable.View>
-        );
-    }
-    //提交评论
-    postComment(event){
-        var postData = {
-            'messageId':this.state.messageId,
-            'from':this.props.id,
-            'to':this.state.from,
-            'commentInfo':event.nativeEvent.text
-        };
-        new Net().postMethod(COMMENT,postData).then(r => {
-            console.log(r);
-        })
+    toDetails(data){
+        var params = {data:data,id:this.props.id,username:this.props.username};
+        new Net().toOther(this.props.parent,'commentDetail',commentDetail,params)
     }
 
-    //渲染评论的listview的每一条item的内容
-    myRenderRow(rowData,sectionID,rowID){
-        return (
-            <View style={{flexDirection:'row',alignItems:'center'}}>
-                <Image source={require('../img/UserDafault.png')} style={styles.avatar}/>
-                <Text>{rowData.fromName}@{rowData.toName}:{rowData.commentInfo}</Text>
-            </View>
-        );
-    }
-    //顶部下拉刷新
-    onRefresh(){
-        this.setState({refreshing: true});
-        this.fetchData().then(r => {
-            this.setState({
-                userData : r.messages,
-                refreshing:false,
-            });
-        });
+    toPicDetail(uri){
+        var params = {uri:uri}
+        new Net().toOther(this.props.parent,'PicDetail',PicDetail,params)
     }
 
     //获取原始数据
-    fetchData(){
-        var url = MESSAGE+'?page='+this.state.page;
-        return new Net().getMethod(url).catch(error => {
-            alert("error message:"+ error);
-        });
-    }
-    //在组件渲染完调用获取数据操作
-    componentDidMount() {
-        this.fetchData().then(r => {
-            this.setState({
-                userData : r.messages,
-            });
-        });
+    fetchData(pages){
+        var url = MESSAGE+'?page='+pages;
+        return new Net().getMethod(url).catch(error => {});
     }
 
-    renderRow(rowData, sectionID, rowID){
-        var picUri = BASEURL+'/message/'+rowData;
-        if(rowData!==null){
-            return (
-                <View>
-                    <View style={styles.itemContainer}>
-                        <Lightbox navigator={this.props.navigator} springConfig={{tension: 15, friction: 7}} swipeToDismiss={false} renderContent={this.renderCarousel.bind(this,picUri)}>
-                            <Image
-                                style={styles.imageItem}
-                                source={{uri:picUri}}
-                                resizeMode='contain'
-                            />
-                        </Lightbox>
-                    </View>
-                </View>
-            );
-        }
-        return null
-    }
-
-    render() {
-        return (
-            <ScrollView
-                refreshControl={
-                    <RefreshControl
-                        refreshing={this.state.refreshing}
-                        onRefresh={this.onRefresh.bind(this)}
-                        tintColor="#ff0000"
-                        title="Loading..."
-                        titleColor="#00ff00"
-                        colors={['#ff0000', '#00ff00', '#0000ff']}
-                        progressBackgroundColor='rgba(255, 255, 255, 0.7)'
-                    />
-                }>
-                <View style={styles.container}>
-                    <NormalToolbar title='新闻广场' rightItemFunc={this.props.toShare} />
-                    <Accordion
-                        activeSection={this.state.activeSection}
-                        sections={this.state.userData}
-                        renderHeader={this._renderHeader.bind(this)}
-                        renderContent={this._renderContent.bind(this)}
-                        duration={400}
-                        onChange={this._setSection.bind(this)}
-                    />
-                </View>
-            </ScrollView>
-        );
-    }
 }
-
-const styles = StyleSheet.create({
+const styles=StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: '#e6e6e6',
+        backgroundColor: '#ffffff',
+    },
+    title: {
+        textAlign: 'center',
+        fontSize: 22,
+        fontWeight: '300',
     },
     header: {
         backgroundColor: '#000',
         padding: 10,
+    },
+    headerText: {
+        textAlign: 'center',
+        fontSize: 16,
+        fontWeight: '500',
     },
     content: {
         flex: 1,
@@ -265,6 +244,29 @@ const styles = StyleSheet.create({
         backgroundColor: 'rgba(245,252,255,1)',
         borderBottomWidth:0.5,
         borderColor:'orange'
+    },
+    contentInactive:{
+        flex:1,
+        backgroundColor: 'rgba(245,252,255,1)',
+        borderBottomWidth:0.5,
+        borderColor:'orange'
+    },
+    selectors: {
+        marginBottom: 10,
+        flexDirection: 'row',
+        justifyContent: 'center',
+    },
+    selector: {
+        backgroundColor: '#F5FCFF',
+        padding: 10,
+    },
+    activeSelector: {
+        fontWeight: 'bold',
+    },
+    selectTitle: {
+        fontSize: 14,
+        fontWeight: '500',
+        padding: 10,
     },
     cardImage:{
         height:200,
@@ -302,7 +304,7 @@ const styles = StyleSheet.create({
         alignSelf:'flex-start',
         alignItems:'center',
         margin:5,
-        width:deviceWidth,
+        width:device.width,
     },
     cardContent: {
         marginTop:3,
@@ -310,33 +312,17 @@ const styles = StyleSheet.create({
         marginLeft:5,
         marginRight:5,
     },
-    avatar:{
-        borderRadius:75,
-        width:30,
-        height:30,
-        borderWidth:2,
-        borderColor:'white',
-    },
     avatarAndTime:{
         flexDirection: 'column',
         marginLeft:10,
     },
-    contentTextInput:{
-        height:40,
-    },
-    contentView:{
-        flex:1,
-        flexDirection:'row',
-    },
-    contentText:{
-        fontSize:10,
-    },
+
     imageItem:{
         width:device.width*0.3,
         height:80,
     },
     itemContainer:{
-        padding:3,
+        padding:1,
     },
     list:{
         flexDirection: 'row',
