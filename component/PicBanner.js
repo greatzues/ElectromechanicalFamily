@@ -2,7 +2,7 @@
  * Created by zues on 2016/8/26.
  */
 import React, { Component } from 'react';
-import { View, Text, Image, StyleSheet, Dimensions, TouchableOpacity, Navigator } from 'react-native';
+import { View, Text, Image, StyleSheet, Dimensions, TouchableWithoutFeedback, Navigator } from 'react-native';
 import ViewPager from 'react-native-viewpager';
 
 
@@ -27,13 +27,13 @@ export default class PicBanner extends Component {
 
     renderPage(data, pageID){
         return(
-            <TouchableOpacity onPress={() => this.props.bannerClick(data[1])}>
+            <TouchableWithoutFeedback onLongPress={() => this.props.bannerClick(data[1])}>
             <Image source={{uri:data[0]}} style={styles.page} >
                 <View style={styles.pageContainer}>
                     <Text style={styles.pageText}>{data[2]}</Text>
                 </View>
             </Image>
-            </TouchableOpacity>
+            </TouchableWithoutFeedback>
         );
     }
 

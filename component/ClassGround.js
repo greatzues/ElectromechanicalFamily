@@ -6,9 +6,11 @@ import Net from '../Tool';
 import commentDetail from './commentDetail';
 import PicDetail from './PicDetail';
 import NormalToolbar from './NormalToolbar';
+import Toast from 'react-native-root-toast'
 
 const MESSAGE = '/messages';
 const IS_LOAD_MORE = 15;
+const LENGTH = 30;
 export default class LittleGround extends Component{
     _page=1
     _dataSource = new ListView.DataSource({rowHasChanged:(row1,row2)=>row1 !== row2})
@@ -21,7 +23,8 @@ export default class LittleGround extends Component{
         this.state = {
             dataSource:this._dataSource,
             mesData:[],
-            isLoadMore:0
+            isLoadMore:0,
+            dataLength:0,
         };
     }
 
@@ -37,6 +40,7 @@ export default class LittleGround extends Component{
                 <SwRefreshListView
                     dataSource={this.state.dataSource.cloneWithRows(this.state.mesData)}
                     ref="listView"
+                    style={{marginBottom:45}}
                     renderRow={this._renderRow.bind(this)}
                     onRefresh={this._onListRefersh.bind(this)}
                     onLoadMore={this.state.isLoadMore>IS_LOAD_MORE?null:this._onLoadMore.bind(this)}
@@ -72,6 +76,7 @@ export default class LittleGround extends Component{
     }
 
     _renderRow(rowData, sectionId, rowId) {
+        // let d = new Net().dateToTime(rowData.date);
         return(
             <Card>
                 <View style={styles.cardTop}>
@@ -139,12 +144,13 @@ export default class LittleGround extends Component{
                     this.state.mesData.push(r.messages[x]);
                 }
                 this.setState({
-                    mesData:this.state.mesData
+                    mesData:this.state.mesData,
+                    dataLength:r.messages.length,
                 })
             }).catch(e =>{});
             try {
                 this.refs.listView.resetStatus();
-                this.refs.listView.endLoadMore(this._page>2);
+                this.refs.listView.endLoadMore(this.state.dataLength<LENGTH?true:false);
             }catch (e){}
         },2000)
     }
@@ -181,14 +187,8 @@ export default class LittleGround extends Component{
     }
 
     toDetails(data){
-        new Net().loadKey('loginState').then(r => {
-            if(r.username){
-                var params = {data:data,id:this.props.id,username:this.props.username};
-                new Net().toOther(this.props.parent,'commentDetail',commentDetail,params)
-            }
-        }).catch(e => {
-            Toast.show('请登录后评论');
-        });
+        var params = {data:data, id:this.props.id, username:this.props.username};
+        this.props.ifLogin === false?Toast.show('请登录后评论'):new Net().toOther(this.props.parent,'commentDetail',commentDetail,params);
     }
 
     toPicDetail(uri,index){
@@ -218,7 +218,6 @@ export default class LittleGround extends Component{
 }
 const styles=StyleSheet.create({
     container: {
-        flex: 1,
         backgroundColor: '#ffffff',
     },
     cardavatar:{

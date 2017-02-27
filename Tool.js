@@ -96,6 +96,7 @@ export default class Net  {
             })
                 .then((response) => {
                     console.log(response);
+                    console.log(response.headers.get('pragma'));
                     if(response.ok){
                         resolve(response.json());
                     };

@@ -10,6 +10,7 @@ import NormalToolbar from './NormalToolbar';
 
 const MESSAGE = '/messages';
 const IS_LOAD_MORE = 15;
+const LENGTH = 30;
 export default class LittleGround extends Component{
     _page=1
     _dataSource = new ListView.DataSource({rowHasChanged:(row1,row2)=>row1 !== row2})
@@ -22,7 +23,8 @@ export default class LittleGround extends Component{
         this.state = {
             dataSource:this._dataSource,
             mesData:[],
-            isLoadMore:0
+            isLoadMore:0,
+            dataLength:0,
         };
     }
 
@@ -70,6 +72,7 @@ export default class LittleGround extends Component{
     }
 
     _renderRow(rowData, sectionId, rowId) {
+        // let d = new Net().timeToDate(rowData.date);
         return(
             <Card>
                 <View style={styles.cardTop}>
@@ -134,12 +137,13 @@ export default class LittleGround extends Component{
                     this.state.mesData.push(r.messages[x]);
                 }
                 this.setState({
-                    mesData:this.state.mesData
+                    mesData:this.state.mesData,
+                    dataLength:r.messages.length,
                 })
             }).catch(e =>{});
             //end(this._page > 2)//加载成功后需要调用end结束刷新 假设加载4页后数据全部加载完毕
             this.refs.listView.resetStatus();
-            this.refs.listView.endLoadMore(this._page>2) //为true的时候表示已经加载完全部数据，这里为了暂时给老师演示，先保存为true，后面再fix
+            this.refs.listView.endLoadMore(this.state.dataLength<LENGTH?true:false) //为true的时候表示已经加载完全部数据，这里为了暂时给老师演示，先保存为true，后面再fix
         },2000)
     }
 

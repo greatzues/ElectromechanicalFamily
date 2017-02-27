@@ -14,6 +14,7 @@ const NEWS = '/news';
 const PARALLAX_HEADER_HEIGHT = 200;
 const STICKY_HEADER_HEIGHT = 38;
 const IS_LOAD_MORE = 15;
+const LENGTH = 30;
 export default class BriefNews extends Component {
     _page=1
     _dataSource = new ListView.DataSource({rowHasChanged:(row1,row2)=>row1 !== row2})
@@ -23,7 +24,8 @@ export default class BriefNews extends Component {
             dataSource:this._dataSource,
             news: [],
             id:'',
-            isLoadMore:0
+            isLoadMore:0,
+            dataLength:0,
         };
     }
 
@@ -85,7 +87,7 @@ export default class BriefNews extends Component {
                     ref="listView"
                     renderRow={this._renderRow.bind(this)}
                     onRefresh={this._onListRefresh.bind(this)}
-                    onLoadMore={this.state.isLoadMore>IS_LOAD_MORE?null:this._onLoadMore.bind(this)}
+                    onLoadMore={this.state.isLoadMore>IS_LOAD_MORE?this._onLoadMore.bind(this):null}
                     customRefreshView={this.renderRefreshView.bind(this)}
                     noMoreDataTitle="无更多数据！"
                     pusuToLoadMoreTitle={this.state.isLoadMore>IS_LOAD_MORE?'上拉加载更多':''}
@@ -122,7 +124,7 @@ export default class BriefNews extends Component {
      * @private
      */
     _onListRefresh(end){
-        this.setState({isRefreshing: true});
+        // this.setState({isRefreshing: true});
         let timer =  setTimeout(()=>{
             clearTimeout(timer);
             this.fetchData(this._page).then(r => {
@@ -153,12 +155,13 @@ export default class BriefNews extends Component {
                     this.state.news.push(r.newsList[x]);
                 }
                 this.setState({
-                    news : this.state.news
+                    news : this.state.news,
+                    dataLength:r.newsList.length
                 })
             }).catch(e =>{});
             try {
                 this.refs.listView.resetStatus();
-                this.refs.listView.endLoadMore(this._page>2);
+                this.refs.listView.endLoadMore(this.state.dataLength<LENGTH?true:false);
             }catch (e){};
         },2000)
     }

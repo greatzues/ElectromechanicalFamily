@@ -7,7 +7,8 @@ import {SwRefreshScrollView, SwRefreshListView, RefreshStatus, LoadMoreStatus} f
 import { Card, Button } from 'react-native-elements';
 
 const BRIEF = '/schoolmates';
-const IS_LOAD_MORE = 15;
+const IS_LOAD_MORE = 5;
+const LENGTH = 30;
 export default class NewsItem extends Component {
     // 构造
     _page=1
@@ -18,19 +19,20 @@ export default class NewsItem extends Component {
             dataSource:this._dataSource,
             userData: [],
             id:'',
-            isLoadMore:0
+            isLoadMore:0,
+            dataLength:0,
         };
     }
 
     render() {
         return (
-            <View>
+            <View style={{backgroundColor:'#eff0f3'}}>
                 <ScrollView>
                     <NormalToolbar title='校友风采' leftImageSource={require('../img/back.png')} leftItemFunc={this.back.bind(this)}/>
                 </ScrollView>
                 <SwRefreshListView
                     ref="listView"
-                    style={{margin:10}}
+                    style={{marginBottom:50,marginLeft:10,marginTop:10,marginRight:10}}
                     dataSource={this.state.dataSource.cloneWithRows(this.state.userData)}
                     renderRow={this.renderRow.bind(this)}
                     contentContainerStyle={styles.list}
@@ -40,6 +42,7 @@ export default class NewsItem extends Component {
                     customRefreshView={this.state.isLoadMore>IS_LOAD_MORE?null:this.renderRefreshView.bind(this)}
                     pusuToLoadMoreTitle={this.state.isLoadMore>IS_LOAD_MORE?'上拉加载更多':''}
                     noMoreDataTitle="无更多数据！"
+                    initialListSize={30}
                 />
             </View>
         );
@@ -94,12 +97,14 @@ export default class NewsItem extends Component {
                     this.state.userData.push(r.notificationList[x]);
                 }
                 this.setState({
-                    userData:this.state.userData
+                    userData:this.state.userData,
+                    dataLength:r.notificationList.length,
                 })
             }).catch(e =>{});
-            //end(this._page > 2)//加载成功后需要调用end结束刷新 假设加载4页后数据全部加载完毕
-            this.refs.listView.resetStatus();
-            this.refs.listView.endLoadMore(this._page>2) //为true的时候表示已经加载完全部数据，这里为了暂时给老师演示，先保存为true，后面再fix
+            try{
+                this.refs.listView.resetStatus();
+                this.refs.listView.endLoadMore(this.state.dataLength<LENGTH?true:false)
+            }catch (e){};
         },2000)
     }
 

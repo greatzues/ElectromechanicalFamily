@@ -26,8 +26,8 @@ export default class Login extends Component{
                 <Image
                     source={require('../img/loginbg.jpg')}
                     resizeMode='cover'
-                    style={{height:device.height,width:device.width,flex:1}}
-                    onLoadEnd={this.imageLoaded.bind(this)}>
+                    style={{height:device.height,width:device.width,flex:1}}>
+
                     <View style={{flex:1,backgroundColor:'rgba(0,0,0,.5)'}}>
                         <ScrollView>
                             <NormalToolbar
@@ -86,14 +86,11 @@ export default class Login extends Component{
         );
     }
 
-    //这个方法也可以全局
     backToHome(){
         const { navigator } = this.props;
-        if(this.props.update){
-            this.props.update(true);
-        }
         if (navigator){
-            navigator.pop();
+            this.props.update(false);
+            navigator.popToTop();
         }
     }
 

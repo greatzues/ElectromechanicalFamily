@@ -2,7 +2,8 @@
  * Created by zues on 2016/8/26.
  */
 import React, { Component } from 'react';
-import { View, Text, Image, StyleSheet, Dimensions, DrawerLayoutAndroid, TouchableOpacity, Navigator, ScrollView, Modal } from 'react-native';
+import { View, Text, Image, StyleSheet, Dimensions, DrawerLayoutAndroid, TouchableOpacity, Navigator, ScrollView, Modal,
+    TouchableWithoutFeedback } from 'react-native';
 import PicBanner from './PicBanner';
 import NormalToolbar from './NormalToolbar';
 import {Icon } from 'react-native-elements';
@@ -20,19 +21,19 @@ export default class Home extends Component {
 
     render() {
         return (
-            <ScrollView>
+            <ScrollView style={{backgroundColor:'#eff0f3'}}>
                 <NormalToolbar
                     title='机电E家人'
                     leftImageSource={require('./../img/login.png')}
                     rightItemTitle='分享'
-                    rightTextColor='#3393F2'
+                    rightTextColor='#fff'
                     leftItemFunc={this.props.toLogin}
                     rightItemFunc={this._setModalVisible.bind(this, true)}/>
                 <View><PicBanner bannerClick={this.props.bannerClick}/></View>
                 <View style={styles.body}>
                     <TouchableOpacity onPress={this.props.toJDGround}>
                         <View style = {[styles.textStyle,{backgroundColor:'rgba(30,144,255,0.5)'}]}>
-                            <Icon reverse name='social-instagram' type='simple-line-icon' color='transparent'/>
+                            <Icon reverse name='users' type='font-awesome' color='transparent'/>
                             <Text style={styles.text}>校友小广场</Text>
                         </View>
                     </TouchableOpacity>
@@ -46,14 +47,14 @@ export default class Home extends Component {
 
                     <TouchableOpacity onPress={this.props.toBriefNews}>
                         <View style = {[styles.textStyle,{backgroundColor:'rgba(255,106,106,0.5)'}]}>
-                            <Icon reverse name='volume-2' type='simple-line-icon' color='transparent'/>
+                            <Icon reverse name='cursor' type='simple-line-icon' color='transparent'/>
                             <Text style={styles.text}>机电简讯</Text>
                         </View>
                     </TouchableOpacity>
 
                     <TouchableOpacity onPress={this.props.toJdInform}>
                         <View style = {[styles.textStyle,{backgroundColor:'rgba(186,85,211,0.5)'}]}>
-                            <Icon reverse name='bubble' type='simple-line-icon' color='transparent'/>
+                            <Icon reverse name='volume-2' type='simple-line-icon' color='transparent'/>
                             <Text style={styles.text}>机电通知</Text>
                         </View>
                     </TouchableOpacity>
@@ -138,14 +139,15 @@ class ModalButton extends Component{
 
 const styles = StyleSheet.create({
     textStyle: {
-        marginTop:5,
+        marginTop:3,
         borderRadius: 5,
-        height: 65,
-        width: device.width-5,
+        height: 60,
+        width: device.width-6,
         backgroundColor: '#eee',
         alignItems: 'center',
         flexDirection:'row',
-        justifyContent:'center'
+        justifyContent:'center',
+        marginLeft:3
     },
 
     text: {

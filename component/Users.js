@@ -20,42 +20,27 @@ export default class Users extends Component {
             pleaseLogin: '',
             myResponse:'请登录',
             viewRef:0,
-            image:this.props.avatar,
-            ifChange: false,
         }
     }
 
-    imageLoaded() {
-        this.setState({viewRef: findNodeHandle(this.refs.backgroundImage)})
-    }
 
     render() {
         return (
             <View style={styles.container}>
                 <Image
-                    source={this.state.avatar === null?require('./../img/UserBackground.jpg'): {uri:BASEURL+AVATAR+this.state.image}}
-                    style={styles.userBackground}
-                    ref={'backgroundImage'}
-                    onLoadEnd={this.imageLoaded.bind(this)}>
-                        <BlurView
-                            blurType="dark"
-                            blurRadius={2}
-                            downsampleFactor={5}
-                            overlayColor={'rgba(0, 0, 0, 0.3)'}
-                            style={styles.blurView}
-                            viewRef={this.state.viewRef}
-                        />
+                    source={this.props.ifLogin === false?require('./../img/UserBackground.jpg'): {uri:BASEURL+AVATAR+this.props.avatar}}
+                    style={styles.userBackground}>
                         <View>
-                            { this.props.avatar === null ?
+                            { this.props.ifLogin === false ?
                                 <Image source={require('./../img/UserDafault.png')} style={styles.avatar}></Image> :
                                 <TouchableOpacity onPress={this.toPicDetail.bind(this,this.props.avatar)}>
-                                    <Image style={styles.avatar} source={{uri:BASEURL+AVATAR+this.state.image}} />
+                                    <Image style={styles.avatar} source={{uri:BASEURL+AVATAR+this.props.avatar}} />
                                 </TouchableOpacity>
                             }
                         </View>
                         <Text style={{color:'white',backgroundColor: 'transparent'}}>你好，{this.props.username===null?this.state.myResponse:this.props.username}</Text>
                         <View style={{marginTop:10}}>
-                            <Text style={{color:'white'}}>个性签名：{this.props.user.others === null?'我就是我，不一样的烟火':this.props.user.others}</Text>
+                            <Text style={{color:'white'}}>个性签名：{this.props.ifLogin === false?'请登录':this.props.user.others === null?'我就是我，不一样的烟火':this.props.user.others}</Text>
                         </View>
                     <TouchableOpacity style={styles.set} onPress={this.props.toEdit}>
                         <Icon name='settings' color="white"/>

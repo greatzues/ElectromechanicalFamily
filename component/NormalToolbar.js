@@ -8,9 +8,9 @@ const NAV_BAR_HEIGHT = 44;
 export default class NormalToolbar extends Component {
     static defaultProps = {
         title: 'title',
-        titleTextColor: '#383838',
+        titleTextColor: '#fff',
         titleViewFunc () {},
-        barBGColor: '#f8f8f8',
+        barBGColor: '#3771b1',
         barOpacity: 1,
         barStyle: 0,
         barBorderBottomColor: '#D4D4D4',

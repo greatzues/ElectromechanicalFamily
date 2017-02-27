@@ -110,11 +110,15 @@ export default class BottomTap extends Component {
                     selected = {this.state.selectTab === 'user'}
                     selectedTitleStyle = {styles.seletedTextStyle}
                     titleStyle ={styles.textStyle}
-                    renderIcon = {() => <Image source={require('./../img/me_normal.png')} style={styles.iconStyle}/> }
-                    renderSelectedIcon ={() => <Image source={require('./../img/me_hight.png')} style={styles.iconStyle}/> }
+                    renderIcon = {() => <Icon name='user-circle' color="grey" type='font-awesome'/> }
+                    renderSelectedIcon ={() => <Icon name='user-circle' color="#ff5606" type='font-awesome'/> }
                     onPress={() => this.setState({selectTab:'user'})}>
-                    <Users toEdit={this.toEdit.bind(this)} user={this.state.response} parent={this.props}
-                           avatar={this.state.avatar} username={this.state.username}/>
+                    <Users toEdit={this.toEdit.bind(this)}
+                           user={this.state.refresh===false?null:this.state.response}
+                           avatar={this.state.refresh===false?null:this.state.avatar}
+                           username={this.state.refresh===false?null:this.state.username}
+                           parent={this.props}
+                           ifLogin={this.state.refresh}/>
                 </TabNavigator.Item>
             </TabNavigator>
             </DrawerLayout>
@@ -155,11 +159,14 @@ export default class BottomTap extends Component {
                     avatar:r.response.avatar,
                     classNumber:r.response.classNumber,
                     id:r.response.id,
-                    response:r.response
+                    response:r.response,
+                    refresh:true
                 });
             }).catch(error => {
                 console.log(error);
             });
+        }else {
+            this.autoLogin();
         }
     }
 
@@ -186,38 +193,28 @@ export default class BottomTap extends Component {
 
     autoLogin(){
         new Net().loadKey('loginState').then(r => {
-            new Net().postLoginMethod(LOGIN,r.username,r.password).then((responseData) => {
-                this.setState({refresh:true});
-                this.reRenderData(true);
-            }).catch(error => {
-                Toast.show("网络出现错误");
-                console.error(error);
-            });
+            if(r.username){
+                new Net().postLoginMethod(LOGIN,r.username,r.password).then((responseData) => {
+                    this.setState({refresh:true});
+                    this.reRenderData(true);
+                }).catch(error => {
+                    Toast.show("网络出现错误");
+                });
+            }
         }).catch(e => {
-            console.log(e);
+            this.setState({refresh:false});
         })
     }
 
     toEdit(){
-        new Net().loadKey('loginState').then(r => {
-            if(r.username){
-                var params = {id:this.state.id,update:(ifRefresh) => this.reRenderData(ifRefresh),user:this.state.response};
-                new Net().toOther(this.props,'EditInfo',EditInfo,params);
-            }
-        }).catch(e => {
-            Toast.show('请先登录');
-        });
+        var params = {id:this.state.id,update:(ifRefresh) => this.reRenderData(ifRefresh),user:this.state.response};
+        return this.state.refresh === false?Toast.show('请先登录'):new Net().toOther(this.props,'EditInfo',EditInfo,params);
+
     }
 
     toShare(classNumber){
-        new Net().loadKey('loginState').then(r => {
-            if(r.username){
-                var params = {id:this.state.id,update:(ifRefresh) => this.reRenderData(ifRefresh),classNumber:classNumber};
-                new Net().toOther(this.props, 'EditMessage',EditMessage,params);
-            }
-        }).catch(e => {
-            Toast.show('请先登录');
-        });
+        var params = {id:this.state.id,update:(ifRefresh) => this.reRenderData(ifRefresh),classNumber:classNumber};
+        return this.state.refresh === false?Toast.show('请先登录'):new Net().toOther(this.props, 'EditMessage',EditMessage,params);
     }
 
     getStudentInfo(id){
@@ -226,8 +223,8 @@ export default class BottomTap extends Component {
     }
 
     toMyClass(classNumber){
-        var params = {classNumber:classNumber,parent:this.props}
-        new Net().toOther(this.props,'ClassGround', ClassGround, params);
+        var params = {classNumber:classNumber,parent:this.props, ifLogin:this.state.refresh, username:this.state.username};
+        return this.state.refresh === false?Toast.show('请先登录'):new Net().toOther(this.props,'ClassGround', ClassGround, params);
     }
 }
 

@@ -12,6 +12,7 @@ import {SwRefreshScrollView, SwRefreshListView, RefreshStatus, LoadMoreStatus} f
 
 const IS_LOAD_MORE = 15;
 const CLASS = '/students';
+const LENGTH = 30;
 export default class GetClassInfo extends Component {
     _page=1;
     _dataSource = new ListView.DataSource({rowHasChanged:(row1,row2)=>row1 !== row2});
@@ -22,12 +23,15 @@ export default class GetClassInfo extends Component {
         this.state = {
             dataSource:this._dataSource,
             userData: [],
-            absence:'请签到',
             isLoadMore:0,
             id:'',
+            dataLength:0,
         };
       }
 
+    componentWillMount() {
+        this.isLogin();
+    }
 
     render(){
         return this.props.ifLogin === false? this.isNotLogin():this.isLogin();
@@ -37,7 +41,7 @@ export default class GetClassInfo extends Component {
         return (
             <View >
                 <ScrollView>
-                    <NormalToolbar title="我的班级" rightItemFunc={this.toSign.bind(this,this.props.classNumber)} rightItemTitle={this.state.absence}/>
+                    <NormalToolbar title="我的班级" rightItemFunc={this.toSign.bind(this,this.props.classNumber)} rightItemTitle='请签到' rightTextColor='#fff'/>
                 </ScrollView>
                 <SwRefreshListView
                     dataSource={this.state.dataSource.cloneWithRows(this.state.userData)}
@@ -46,18 +50,17 @@ export default class GetClassInfo extends Component {
                     renderRow={this._renderRow.bind(this)}
                     onRefresh={this._onListRefersh.bind(this)}
                     onLoadMore={this._onLoadMore.bind(this)}
-                    customRefreshView={this.state.isLoadMore>IS_LOAD_MORE?null:this.renderRefreshView.bind(this)}
+                    customRefreshView={this.renderRefreshView.bind(this)}
                     pusuToLoadMoreTitle={this.state.isLoadMore>IS_LOAD_MORE?'上拉加载更多':''}
                     noMoreDataTitle="无更多数据！"
                 />
             </View>
-
         );
     }
 
     isNotLogin(){
         return(
-            <View style={{flex:1}}>
+            <View style={styles.container}>
                 <Tile
                     imageSrc={{uri:'http://pic1.win4000.com/mobile/3/53be3adb9585d.jpg'}}
                     title="欢迎来到我的班级!"
@@ -117,26 +120,29 @@ export default class GetClassInfo extends Component {
                     this.state.userData.push(r.students[x]);
                 }
                 this.setState({
-                    userData:this.state.userData
+                    userData:this.state.userData,
+                    dataLength:r.students.length,
                 })
             }).catch(e =>{});
-            //end(this._page > 2)//加载成功后需要调用end结束刷新 假设加载4页后数据全部加载完毕
             this.refs.listView.resetStatus();
-            this.refs.listView.endLoadMore(this._page>2) //为true的时候表示已经加载完全部数据，这里为了暂时给老师演示，先保存为true，后面再fix
+            this.refs.listView.endLoadMore(this.state.dataLength<LENGTH?true:false);
         },2000)
     }
 
     componentDidMount() {
-        this.fetchData(this._page).then(r => {
-            this.setState({
-                userData:r.students,
-                isLoadMore:r.students.length
-            })
-            this.getAvatar(r.students)
-        }).catch(e => {});
-        this.refs.listView.beginRefresh() //刷新动画
+        if(this.props.classNumber !== null){
+            this.fetchData(this._page).then(r => {
+                this.setState({
+                    userData:r.students,
+                    isLoadMore:r.students.length
+                })
+                this.getAvatar(r.students)
+            }).catch(e => {});
+            this.refs.listView.beginRefresh() //刷新动画
+        }
     }
-    //拿到学生的id传过去
+
+    //拿到学生的classNumber传过去
     fetchData(pages){
         if(this.props.classNumber !== null){
             let url = CLASS+'?page='+pages+'&&classNumber'+this.props.classNumber;
@@ -185,50 +191,5 @@ export default class GetClassInfo extends Component {
 const styles = StyleSheet.create({
     container:{
         flex:1
-    },
-
-    studentItem:{
-        flexDirection:'row',
-        alignItems:'center',
-        borderBottomWidth:1,
-        borderBottomColor:'#eee',
-        marginRight:10,
-        marginLeft:10,
-        position: 'relative'
-    },
-
-    avatar:{
-        borderRadius:25,
-        width:50,
-        height:50,
-        borderWidth:2,
-        borderColor:'white',
-    },
-
-    name:{
-        fontSize:20
-    },
-
-    class:{
-        alignSelf:'center'
-    },
-
-
-
-
-    welcome: {
-        fontSize: 20,
-        textAlign: 'center',
-        margin: 10,
-    },
-    instructions: {
-        textAlign: 'center',
-        color: '#333333',
-        marginBottom: 5,
-    },
-    notLogin:{
-        flex: 1,
-        justifyContent: 'center',
-        alignItems: 'center',
     },
 });

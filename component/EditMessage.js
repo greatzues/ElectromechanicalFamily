@@ -8,6 +8,7 @@ import NormalToolbar from './NormalToolbar';
 import Net from '../Tool';
 import PicDetail from './PicDetail';
 import {Button} from 'react-native-elements'
+import ImagePicker from 'react-native-image-crop-picker';
 
 
 var window = Dimensions.get('window'); //这个参数可以全局使用
@@ -45,7 +46,7 @@ export default class EditMessage extends Component{
                     title='班级圈'
                     leftImageSource={require('../img/back.png')}
                     rightItemTitle='拍照'
-                    rightTextColor='#3393F2'
+                    rightTextColor='#fff'
                     leftItemFunc={this.click.bind(this)}
                     rightItemFunc={this.pickCamera.bind(this)}/>
 
@@ -130,16 +131,17 @@ export default class EditMessage extends Component{
                 return null;
             }
         }
-        var date = new Date();
-        var day = date.getDate();
-        var month = date.getMonth();
-        if(day<10){
-            day = "0"+date.getDate();
-        }
-        if(month<10){
-            month = "0"+ date.getMonth();
-        }
-        var post = date.getFullYear()+''+month+''+day;
+        // var date = new Date();
+        // var day = date.getDate();
+        // var month = date.getMonth();
+        // if(day<10){
+        //     day = "0"+date.getDate();
+        // }
+        // if(month<10){
+        //     month = "0"+ date.getMonth();
+        // }
+        // var post = date.getFullYear()+''+month+''+day;
+        var post = Date.parse( new Date()); //获取当前时间戳
         new Net().postMultiFile(this.getFile(this.state.images,post,this.state.message));
         //返回之后刷新页面
         const { navigator } = this.props;

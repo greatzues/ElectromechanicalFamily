@@ -5,7 +5,7 @@
  * Created by zues on 2017/2/19.
  */
 import React, { Component } from 'react';
-import {Modal, StyleSheet, Switch, Text, TouchableOpacity, View, ScrollView, Picker} from 'react-native';
+import {Modal, StyleSheet, Switch, Text, TouchableOpacity, View, ScrollView, Picker, BackAndroid} from 'react-native';
 import NormalToolbar from './NormalToolbar';
 import Net from '../Tool';
 import EditDeatils from './EditDeatils';
@@ -21,6 +21,15 @@ export default class EditWorkInfo extends Component{
             rightTitle:this.props.user,
             modalVisible: false,
         };
+    }
+    //再安卓系统中，监听物理返回键的点击事件
+    componentDidMount() {
+        if(Platform.OS === 'android'){
+            BackAndroid.addEventListener('hardwareBackPress',() =>{
+                alert('hello');
+                return true;
+            })
+        }
     }
 
     render(){
@@ -57,7 +66,6 @@ export default class EditWorkInfo extends Component{
         this.state.rightTitle[p] = data;
         this.forceUpdate();
     }
-
 }
 
 

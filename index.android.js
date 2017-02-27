@@ -24,7 +24,7 @@ import Storage from 'react-native-storage';
 var storage = new Storage({
     size: 1000,
     storageBackend: AsyncStorage,
-    defaultExpires: 1000 * 3600 * 24,
+    defaultExpires: 1000 * 3600 * 24 * 365, //1000 * 3600 * 24表示一天的时间，这里默认保存1年
     enableCache: true,
 });
 global.storage = storage;
@@ -34,6 +34,7 @@ class ElectromechanicalFamily extends Component {
     super(props);
     this.state = {
       toStartPage : true,
+        first:true,
     };
   }
 
@@ -58,7 +59,12 @@ class ElectromechanicalFamily extends Component {
             toStartPage: false,
         });
     },3000);
-
+      //根据老师需求要更改为只有登陆之后才可以查看到app里面的内容，先将原来的代码push上去，为更改备份
+    // new Net().loadKey('loginState').then(r => {
+    //     if(r.username){
+    //         this.setState({first:false});
+    //     }
+    // }).catch(e => {});
     BackAndroid.addEventListener('hardwareBackPress', this.onBackAndroid);
 
   }
@@ -69,27 +75,28 @@ class ElectromechanicalFamily extends Component {
     }
 
   render() {
-      let defaultName = '机电E家人';
-      let defaultComponent = BottomTap;
+      // let defaultName = this.state.first?'Login':'BottomTap';
+      // let defaultComponent = this.state.first?Login:BottomTap;
       if(this.state.toStartPage){
           return(
               <StartPage />
           );
       }else {
-          var initialRoute = {name: defaultName, component: defaultComponent};
+          var initialRoute = {name: 'BottomTap', component: BottomTap};
 
-          return(
+          return (
               <Navigator
                   sceneStyle={styles.container}
                   initialRoute={initialRoute}
                   configureScene={(route) => Navigator.SceneConfigs.PushFromRight}
                   renderScene={(route, navigator) => {
                       Nav = navigator;
-                      let Component  = route.component;
+                      let Component = route.component;
                       return <Component {...route.params} navigator={navigator} route={route}/>
                   }}
               />
           );
+
       }
   }
 }

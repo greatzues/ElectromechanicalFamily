@@ -7,6 +7,7 @@ import { StyleSheet, Text, View, TouchableHighlight, TouchableOpacity, Image,
 import Toast from 'react-native-root-toast';
 import NormalToolbar from './NormalToolbar';
 import Net from '../Tool';
+import { Icon } from 'react-native-elements';
 import PicDetail from './PicDetail'
 
 const COMMENT = '/comments';
@@ -25,21 +26,28 @@ export default class commentDetail extends Component{
               text:'',
               toId:null,
               toName:null,
+
+              userName:'',
+              userAvatar:'',
         };
       }
 
     componentDidMount() {
         this.fetchComment(this.state.data.messageId);
+        this.fetchUser();
     }
 
       render(){
+          // let d = new Net().timeToDate(this.state.data.date);
           return(
               <ScrollView style={styles.container}>
                   <NormalToolbar title='详情' leftImageSource={require('../img/back.png')} leftItemFunc={this.back.bind(this)}/>
                   <View style={styles.cardTop}>
-                      <Image source={require('../img/UserDafault.png')}  style={styles.renderRowImg}/>
+                      {this.state.userAvatar === null?<Image source={require('../img/UserDafault.png')}  style={styles.renderRowImg}/>:
+                          <Image source={{uri:BASEURL+'/avatar/'+this.state.userAvatar}}  style={styles.renderRowImg}/>
+                      }
                       <View style={styles.avatarAndTime}>
-                          <Text style={styles.cardavatar}>{this.state.data.belong}</Text>
+                          <Text style={styles.cardavatar}>{this.state.userName}</Text>
                           <Text style={styles.cardTime}>{this.state.data.date}</Text>
                       </View>
                   </View>
@@ -125,6 +133,7 @@ export default class commentDetail extends Component{
             toName:this.state.toId===null?null:this.state.toName,
             commentInfo:this.state.commentInfo}
         );
+        this.setState({commentInfo:''});
         Toast.show('评论成功');
         this.forceUpdate();
     }
@@ -146,7 +155,7 @@ export default class commentDetail extends Component{
         console.log(rowData);
         return(
             <TouchableOpacity style={styles.renderCommentRow} onPress={this.toSomeone.bind(this,rowData.fromName,rowData.from)}>
-                <Image source={require('../img/UserDafault.png')} style={styles.avatar}/>
+                <Icon raised name='bubble' type='simple-line-icon' size={10}/>
                 <Text>{rowData.fromName}</Text>
                 <Text>{rowData.toName?'@'+rowData.toName:''}</Text>
                 <Text>{' : '+rowData.commentInfo}</Text>
@@ -187,8 +196,17 @@ export default class commentDetail extends Component{
     }
 
     toPicDetail(uri,index){
-        var params = {uri:uri,index:index}
+        var params = {uri:uri,index:index,path:BASEURL+'/message/'}
         new Net().toOther(this.props,'PicDetail',PicDetail,params)
+    }
+
+    fetchUser(){
+        new Net().getStudentInfoById(this.state.data.belong).then(r => {
+            this.setState({
+                userName:r.realname,
+                userAvatar:r.avatar
+            })
+        }).catch(e => {})
     }
 }
 
@@ -236,13 +254,6 @@ const styles = StyleSheet.create({
         marginBottom:3,
         marginLeft:5,
         marginRight:5,
-    },
-    avatar:{
-        borderRadius:75,
-        width:30,
-        height:30,
-        borderWidth:2,
-        borderColor:'white',
     },
     avatarAndTime:{
         flexDirection: 'column',
@@ -296,6 +307,7 @@ const styles = StyleSheet.create({
     renderCommentRow:{
         flexWrap: 'wrap',
         flexDirection:'row',
+        alignItems:'center',
     },
 
 });
