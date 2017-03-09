@@ -5,7 +5,7 @@
  * Created by zues on 2017/2/19.
  */
 import React, { Component } from 'react';
-import {Modal, StyleSheet, Switch, Text, TouchableOpacity, View, ScrollView, Picker, BackAndroid} from 'react-native';
+import {Modal, StyleSheet, Switch, Text, TouchableOpacity, View, ScrollView, Picker, BackAndroid, Platform} from 'react-native';
 import NormalToolbar from './NormalToolbar';
 import Net from '../Tool';
 import EditDeatils from './EditDeatils';
@@ -26,7 +26,8 @@ export default class EditWorkInfo extends Component{
     componentDidMount() {
         if(Platform.OS === 'android'){
             BackAndroid.addEventListener('hardwareBackPress',() =>{
-                alert('hello');
+                this.props.callBack(this.state.rightTitle);
+                new Net().back(this.props);
                 return true;
             })
         }

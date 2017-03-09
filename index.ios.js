@@ -43,7 +43,7 @@ class ElectromechanicalFamily extends Component {
   }
 
   //解除定时器
-  componentWillUnMount() {
+  componentWillUnount() {
     this.timer && clearTimeout(this.timer);
   }
 

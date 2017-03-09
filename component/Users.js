@@ -10,8 +10,6 @@ import PicDetail from './PicDetail'
 import { Icon } from 'react-native-elements';
 
 
-var BlurView = require('react-native-blur').BlurView;
-
 const AVATAR = '/avatar/';
 export default class Users extends Component {
     constructor(props){
@@ -39,7 +37,7 @@ export default class Users extends Component {
                             }
                         </View>
                         <Text style={{color:'white',backgroundColor: 'transparent'}}>你好，{this.props.username===null?this.state.myResponse:this.props.username}</Text>
-                        <View style={{marginTop:10}}>
+                        <View style={{marginTop:5,marginBottom:5,marginLeft:15,marginRight:15 }}>
                             <Text style={{color:'white'}}>个性签名：{this.props.ifLogin === false?'请登录':this.props.user.others === null?'我就是我，不一样的烟火':this.props.user.others}</Text>
                         </View>
                     <TouchableOpacity style={styles.set} onPress={this.props.toEdit}>
@@ -48,9 +46,8 @@ export default class Users extends Component {
                 </Image>
 
                 <View style={styles.container}>
-                    <ScrollableTabView
-                        style={{height:50}}
-                        renderTabBar={()=><DefaultTabBar backgroundColor='#eee' />}
+                    <ScrollableTabView tabBarActiveTextColor="#0072f6" tabBarUnderlineStyle={{backgroundColor:'#0072f6',height:3,marginLeft:5,marginRight:5}}
+                        tabBarInactiveTextColor="grey" renderTabBar={()=><DefaultTabBar backgroundColor='#eee' />}
                         tabBarPosition='top'>
                         <ScrollView tabLabel='基本信息'>
                             <BaseInfo name = '基本信息' ref="baseInfo" baseResponse={this.props.user}/>
@@ -64,11 +61,6 @@ export default class Users extends Component {
         );
     }
 
-    //放在首页去，然后一个地方数据更新之后其它的都修改过来
-    // toEdit(user){
-    //     let params = {user:user}
-    //     new Net().toOther(this.props.parent,'EditInfo',EditInfo,params);
-    // }
 
     toPicDetail(uri){
         let source = []

@@ -28,7 +28,6 @@ export default class SignPage extends Component{
         this.fetchData();
     }
 
-    //暂时先模拟一下时间
       render(){
           return (
               <ScrollView style={styles.container}>
@@ -68,6 +67,7 @@ export default class SignPage extends Component{
       fetchData(){
           var url = TIME+'?page='+ this.state.page;
           new Net().getMethod(url).then(r => {
+              console.log(r);
               this.setState({
                   signTable:r.signTables
               })
@@ -81,10 +81,6 @@ export default class SignPage extends Component{
           }else {
               return false; //记得改回来false
           }
-      }
-
-      ifCanSign(B,canSign,cantSign){
-          return B?canSign:cantSign;
       }
 
     back(){

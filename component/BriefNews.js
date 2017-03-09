@@ -148,7 +148,7 @@ export default class BriefNews extends Component {
      */
     _onLoadMore(end){
         let timer =  setTimeout(()=>{
-            clearTimeout(timer)
+            clearTimeout(timer);
             this._page++;
             this.fetchData(this._page).then(r => {
                 for(x in r.newsList){

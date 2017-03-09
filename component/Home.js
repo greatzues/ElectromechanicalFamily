@@ -3,19 +3,26 @@
  */
 import React, { Component } from 'react';
 import { View, Text, Image, StyleSheet, Dimensions, DrawerLayoutAndroid, TouchableOpacity, Navigator, ScrollView, Modal,
-    TouchableWithoutFeedback } from 'react-native';
+    ListView, TouchableWithoutFeedback } from 'react-native';
 import PicBanner from './PicBanner';
 import NormalToolbar from './NormalToolbar';
 import {Icon } from 'react-native-elements';
 
-
+const TITLE = [{title:'校友小广场',icon:'users',type:'font-awesome',bg:'rgba(30,144,255,0.5)'},
+                {title:'我的班级，我的家',icon:'home',type:'simple-line-icon',bg:'rgba(0,139,69,0.5)'},
+                    {title:'机电简讯',icon:'cursor',type:'simple-line-icon',bg:'rgba(255,106,106,0.5)'},
+                        {title:'机电通知',icon:'volume-2',type:'simple-line-icon',bg:'rgba(186,85,211,0.5)'},
+                            {title:'校友风采',icon:'trophy',type:'simple-line-icon',bg:'rgba(205,102,0,0.5)'},
+                                {title:'校友会',icon:'trophy',type:'simple-line-icon',bg:'rgba(205,102,0,0.5)'}]
 export default class Home extends Component {
     constructor(props){
         super(props);
+        var ds = new ListView.DataSource({rowHasChanged: (r1, r2) => r1 !== r2});
         this.state = {
             absence : '签到',
             buttonClick : null,
             modalVisible: false,
+            dataSource:ds,
         };
     }
 

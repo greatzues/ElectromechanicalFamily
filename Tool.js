@@ -174,7 +174,11 @@ export default class Net  {
             width: 300,
             height: 400,
             cropping: true
-        }).then(callback).catch(e => Toast.show('肯定是相机在偷懒！'));
+        }).then(callback).catch(e => {
+            Toast.show('我就纳闷了，怎么就出错了！');
+            console.log('----------------------->>>>>>>>>>>>>>>>>>>>>>')
+            console.log(e);
+        });
     }
 
     pickSingle(callback){

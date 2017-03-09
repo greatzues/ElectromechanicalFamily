@@ -131,16 +131,6 @@ export default class EditMessage extends Component{
                 return null;
             }
         }
-        // var date = new Date();
-        // var day = date.getDate();
-        // var month = date.getMonth();
-        // if(day<10){
-        //     day = "0"+date.getDate();
-        // }
-        // if(month<10){
-        //     month = "0"+ date.getMonth();
-        // }
-        // var post = date.getFullYear()+''+month+''+day;
         var post = Date.parse( new Date()); //获取当前时间戳
         new Net().postMultiFile(this.getFile(this.state.images,post,this.state.message));
         //返回之后刷新页面
@@ -169,14 +159,15 @@ export default class EditMessage extends Component{
         }
         return formData;
     }
-    //选择多图片上传，这里暂时还没解决先拍照然后再上传文件，图片增加的问题
+    //多图片上传
     pickMultiple() {
         new Net().pickMultiple(images => {
+            images.map(i => {
+                //console.log("filename",i.path.replace(/^.*[\\\/]/, '')); //正则匹配拿到filename
+                return this.state.images.push({uri: i.path, type: i.mime,name:i.path.replace(/^.*[\\\/]/, '')})
+            });
             this.setState({
-                images: images.map(i => {
-                    //console.log("filename",i.path.replace(/^.*[\\\/]/, '')); //正则匹配拿到filename
-                    return {uri: i.path, type: i.mime,name:i.path.replace(/^.*[\\\/]/, '')};
-                })
+                images:this.state.images
             });
         })
     }

@@ -20,10 +20,15 @@ import {
 import StartPage from './component/StartPage';
 import BottomTap from './component/BottomTap';
 import Storage from 'react-native-storage';
+import Toast from 'react-native-root-toast'
+import Net from './Tool';
+import Login from './component/Login';
+import StartLoopPage from './component/StartLoopPage';
 
 var storage = new Storage({
     size: 1000,
     storageBackend: AsyncStorage,
+    // 如果不指定过期时间，则会使用defaultExpires参数
     defaultExpires: 1000 * 3600 * 24 * 365, //1000 * 3600 * 24表示一天的时间，这里默认保存1年
     enableCache: true,
 });
@@ -35,6 +40,7 @@ class ElectromechanicalFamily extends Component {
     this.state = {
       toStartPage : true,
         first:true,
+        noLogin:true,
     };
   }
 
@@ -47,11 +53,28 @@ class ElectromechanicalFamily extends Component {
             return false;
         }
             this.lastBackPressed = Date.now();
-            ToastAndroid.show('再按一次退出应用',ToastAndroid.SHORT);
+            Toast.show('再按一次退出应用');
             return true;
         }
 
     };
+
+    componentWillMount() {
+        //根据老师需求要更改为只有登陆之后才可以查看到app里面的内容，先将原来的代码push上去，为更改备份
+        new Net().loadKey('firstOpen').then(r => {
+            if(r.first){
+                this.setState({
+                    first:false,
+                });
+            }
+        }).catch(e => {});
+
+        new Net().loadKey('loginState').then(r => {
+            if(r.username){
+                this.setState({noLogin:false});
+            }
+        }).catch(e => {});
+    }
 
   componentDidMount() {
     this.timer = setTimeout(() => {
@@ -59,36 +82,30 @@ class ElectromechanicalFamily extends Component {
             toStartPage: false,
         });
     },3000);
-      //根据老师需求要更改为只有登陆之后才可以查看到app里面的内容，先将原来的代码push上去，为更改备份
-    // new Net().loadKey('loginState').then(r => {
-    //     if(r.username){
-    //         this.setState({first:false});
-    //     }
-    // }).catch(e => {});
     BackAndroid.addEventListener('hardwareBackPress', this.onBackAndroid);
 
   }
     //解除定时器
-    componentWillUnMount() {
+    componentWillUnmount() {
         this.timer && clearTimeout(this.timer);
         BackAndroid.removeEventListener('hardwareBackPress', this.onBackAndroid);
     }
 
   render() {
-      // let defaultName = this.state.first?'Login':'BottomTap';
-      // let defaultComponent = this.state.first?Login:BottomTap;
+      let defaultName = this.state.noLogin?this.state.first?'StartLoopPage':'Login':'BottomTap';
+      let defaultComponent = this.state.noLogin?this.state.first?StartLoopPage:Login:BottomTap;
       if(this.state.toStartPage){
           return(
               <StartPage />
           );
       }else {
-          var initialRoute = {name: 'BottomTap', component: BottomTap};
+          var initialRoute = {name: defaultName, component: defaultComponent};
 
           return (
               <Navigator
                   sceneStyle={styles.container}
                   initialRoute={initialRoute}
-                  configureScene={(route) => Navigator.SceneConfigs.PushFromRight}
+                  configureScene={this.configureScene}
                   renderScene={(route, navigator) => {
                       Nav = navigator;
                       let Component = route.component;
@@ -99,6 +116,13 @@ class ElectromechanicalFamily extends Component {
 
       }
   }
+
+    configureScene(route, routeStack) {
+        if (route.name == 'Login') {
+            return Navigator.SceneConfigs.PushFromLeft;
+        }
+        return Navigator.SceneConfigs.PushFromRight;
+    }
 }
 
 const styles = StyleSheet.create({

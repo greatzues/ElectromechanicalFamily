@@ -47,7 +47,7 @@ export default class SignDetail extends  Component{
       }
 
       postSignInfo(isSign){
-          var url = SIGN+"?classNumber="+this.props.classNumber+"&idOfTable="+this.props.id;
+          var url = SIGN;
           var postData = {
               'classNumber':this.props.classNumber,
               'idOfTable':this.props.id,

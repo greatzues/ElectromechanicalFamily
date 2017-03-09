@@ -9,7 +9,7 @@ import NormalToolbar from './NormalToolbar';
 import Toast from 'react-native-root-toast'
 
 const MESSAGE = '/messages';
-const IS_LOAD_MORE = 15;
+const IS_LOAD_MORE = 5;
 const LENGTH = 30;
 export default class LittleGround extends Component{
     _page=1
@@ -76,7 +76,7 @@ export default class LittleGround extends Component{
     }
 
     _renderRow(rowData, sectionId, rowId) {
-        // let d = new Net().dateToTime(rowData.date);
+        let d = new Net().timeToDate(rowData.date);
         return(
             <Card>
                 <View style={styles.cardTop}>
@@ -85,7 +85,7 @@ export default class LittleGround extends Component{
                     }
                     <View style={styles.avatarAndTime}>
                         <Text style={styles.cardavatar}>{this.userName[rowId]}</Text>
-                        <Text style={styles.cardTime}>{rowData.date}</Text>
+                        <Text style={styles.cardTime}>{d}</Text>
                     </View>
                     <TouchableWithoutFeedback onPress={this.toDetails.bind(this,rowData)}>
                         <Image source={require('../img/write.png')} style={styles.comment}/>
@@ -188,7 +188,7 @@ export default class LittleGround extends Component{
 
     toDetails(data){
         var params = {data:data, id:this.props.id, username:this.props.username};
-        this.props.ifLogin === false?Toast.show('请登录后评论'):new Net().toOther(this.props.parent,'commentDetail',commentDetail,params);
+        new Net().toOther(this.props.parent,'commentDetail',commentDetail,params);
     }
 
     toPicDetail(uri,index){
@@ -203,10 +203,10 @@ export default class LittleGround extends Component{
     }
     //通过id来拿到student的所有基本信息
     getAvatarAndName(messages){
-        for(x in messages){
+        for(let x in messages){
             new Net().getStudentInfoById(messages[x].belong).then(r => {
-                this.userName.push(r.realname);
-                this.userAvatar.push(r.avatar)
+                this.userName[x] = r.realname;
+                this.userAvatar[x] = r.avatar;
             }).catch(e => {})
         }
     }

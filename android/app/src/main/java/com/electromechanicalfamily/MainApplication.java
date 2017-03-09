@@ -12,7 +12,6 @@ import com.facebook.react.ReactNativeHost;
 import com.facebook.react.ReactPackage;
 import com.facebook.react.shell.MainReactPackage;
 import com.imagepicker.ImagePickerPackage;
-import com.cmcewen.blurview.BlurViewPackage;
 import com.reactnative.photoview.PhotoViewPackage;
 import com.facebook.soloader.SoLoader;
 
@@ -35,7 +34,6 @@ public class MainApplication extends Application implements ReactApplication {
             new PickerViewPackage(),
             new PickerPackage(),
           new ImagePickerPackage(),
-          new BlurViewPackage(),
 		  new PhotoViewPackage()
       );
     }

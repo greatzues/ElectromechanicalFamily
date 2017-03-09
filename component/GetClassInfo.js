@@ -16,7 +16,7 @@ const LENGTH = 30;
 export default class GetClassInfo extends Component {
     _page=1;
     _dataSource = new ListView.DataSource({rowHasChanged:(row1,row2)=>row1 !== row2});
-    userAvatar=[];
+    userAvatar=new Array();
 
       constructor(props) {
         super(props);
@@ -152,9 +152,9 @@ export default class GetClassInfo extends Component {
 
     //通过id来拿到student的所有基本信息
     getAvatar(studentData){
-        for(x in studentData){
+        for(let x in studentData){
             new Net().getStudentInfoById(studentData[x].id).then(r => {
-                this.userAvatar.push(r.avatar)
+                this.userAvatar[x] = r.avatar;
             }).catch(e => {})
         }
     }

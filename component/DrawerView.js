@@ -4,7 +4,8 @@
 import React, { Component } from 'react';
 import { View, Text, StyleSheet, Image, Navigator, Dimensions, TouchableOpacity, AsyncStorage, DeviceEventEmitter } from 'react-native';
 import Net from '../Tool';
-import ImagePicker from 'react-native-image-picker';
+import {Icon } from 'react-native-elements';
+import myImagePicker from 'react-native-image-crop-picker';
 
 const AVATAR = '/avatar/';
 const UPLOAD = '/student/upload';
@@ -15,9 +16,6 @@ export default class DrawerView extends Component{
         // 初始状态
           this.state ={
               myResponse:'请登录',
-              avatarSource:null,
-              imgUrl: null,
-              filename: null,
           }
       }
 
@@ -30,7 +28,7 @@ export default class DrawerView extends Component{
                       <View>
                           { this.props.avatar === null ?
                               <Image source={require('../img/UserDafault.png')} style={styles.avatar}></Image> :
-                              <Image style={styles.avatar} source={{uri:BASEURL+AVATAR+this.props.avatar}} />
+                              <Image style={styles.avatar} source={{uri:this.props.avatar}} />
                           }
                       </View>
                       <Text style={{color:'white',backgroundColor: 'transparent'}}>你好，{this.props.username===null?this.state.myResponse:this.props.username}</Text>
@@ -39,67 +37,58 @@ export default class DrawerView extends Component{
 
                       <TouchableOpacity
                           style={styles.itemTouch}
-                          onPress={this.avatarUpload.bind(this)}>
-                          <Image source={require('../img/pic.png')} style={styles.itemImage}></Image>
+                          onPress={this.props.myShare}>
+                          <Icon name='share' type='simple-line-icon' color='#0072f6' size={20}/>
+                          <Text style={styles.itemText}>我的分享</Text>
+                      </TouchableOpacity>
+                      <TouchableOpacity
+                          style={styles.itemTouch}
+                          onPress={this.pickSingle.bind(this)}>
+                          <Icon name='camera' type='simple-line-icon' color='#0072f6' size={20}/>
                           <Text style={styles.itemText}>头像上传</Text>
                       </TouchableOpacity>
                       <TouchableOpacity
                           style={styles.itemTouch}
+                          onPress={this.props.changPassword}>
+                          <Icon name='settings' type='simple-line-icon' color='#0072f6' size={20}/>
+                          <Text style={styles.itemText}>修改密码</Text>
+                      </TouchableOpacity>
+                      <TouchableOpacity
+                          style={styles.itemTouch}
                           onPress={this.props.quitLogin}>
-                          <Image source={require('../img/me_hight.png')} style={styles.itemImage}></Image>
+                          <Icon name='user-unfollow' type='simple-line-icon' color='#0072f6' size={20}/>
                           <Text style={styles.itemText}>退出登录</Text>
                       </TouchableOpacity>
                       <TouchableOpacity
                           style={styles.itemTouch}
                           onPress={this.props.quitApp}>
-                          <Image source={require('../img/back.png')} style={styles.itemImage}></Image>
+                          <Icon name='logout' type='simple-line-icon' color='#0072f6' size={20}/>
                           <Text style={styles.itemText}>退出应用</Text>
                       </TouchableOpacity>
               </View>
           );
       }
 
-    avatarUpload(){
-        const options = {
-            quality: 1.0,
-            maxWidth: 500,
-            maxHeight: 500,
-            storageOptions: {
-                skipBackup: true
-            },
-            title:'选择图片',
-            chooseFromLibraryButtonTitle: '相册',
-            takePhotoButtonTitle:'拍照',
-            cancelButtonTitle:'取消',
-        };
+    pickSingle(){
+        myImagePicker.openPicker({
+            width: 300,
+            height: 400,
+            cropping: true
+        }).then(image => {
+            this.props.avatar = image.path;
+            this.forceUpdate();
+            this.updateAvatar(image.path);
+        }).catch(e => {
+            console.log('Error:'+e);
+        });
+    }
 
-        ImagePicker.showImagePicker(options, (response) => {
-            this.setState({
-                imgUrl:response.path,
-                fileName:response.fileName,
-            });
-
-            if (response.didCancel) {
-                console.log('User cancelled photo picker');
-            }
-            else if (response.error) {
-                console.log('ImagePicker Error: ', response.error);
-            }
-            else if (response.customButton) {
-                console.log('User tapped custom button: ', response.customButton);
-            }
-            else {
-                var source;
-                source = {uri: 'data:image/jpeg;base64,' + response.data, isStatic: true};
-                this.setState({
-                    avatarSource: source
-                });
-
-                new Net().postFile(UPLOAD,this.state.imgUrl)
-                    .then((data) => {
-                        console.log(data);
-                    });
-            }
+    updateAvatar(path){
+        new Net().postFile(UPLOAD,path)
+            .then((data) => {
+                this.props.refresh(true);
+            }).catch(error => {
+            Toast.show('网络出现小问题，请重试')
         });
     }
 }
@@ -135,8 +124,7 @@ const styles = StyleSheet.create({
     },
     itemText:{
         color:'gray',
-        marginRight:10,
-        marginLeft:10,
+        marginLeft:20,
     },
     itemImage:{
         height:30,

@@ -2,11 +2,13 @@
  * Created by zues on 2016/8/27.
  */
 import React, { Component } from 'react';
-import { View, Text, Image, StyleSheet, TextInput, DeviceEventEmitter, ScrollView,
+import { View, Text, Image, StyleSheet, TextInput, DeviceEventEmitter, ScrollView, Platform,
     TouchableOpacity, ActivityIndicator,Navigator, Dimensions, BackAndroid, AsyncStorage, findNodeHandle } from 'react-native';
 import Net from '../Tool';
 import {Button} from 'react-native-elements'
-import NormalToolbar from './NormalToolbar';
+import BottomTap from './BottomTap';
+import Toast from 'react-native-root-toast'
+
 
 export default class Login extends Component{
     constructor(props){
@@ -17,8 +19,14 @@ export default class Login extends Component{
             editable: true,
             login: false,
             disabled:false,
-            errorMes:''
+            errorMes:'',
         };
+    }
+
+    componentWillMount(){
+        if(Platform.OS === 'android'){
+            BackAndroid.addEventListener('hardwareBackPress', this.onBackAndroid);
+        }
     }
 
     render(){
@@ -28,17 +36,7 @@ export default class Login extends Component{
                     resizeMode='cover'
                     style={{height:device.height,width:device.width,flex:1}}>
 
-                    <View style={{flex:1,backgroundColor:'rgba(0,0,0,.5)'}}>
-                        <ScrollView>
-                            <NormalToolbar
-                                leftImageSource={require('../img/back.png')}
-                                leftItemFunc={this.backToHome.bind(this)}
-                                barBGColor='transparent'
-                                leftItemTitle='返回'
-                                title='请登录'
-                                titleTextColor='#f89c3d'
-                                barBorderBottomWidth={0}
-                            />
+                    <ScrollView style={{flex:1,backgroundColor:'rgba(0,0,0,.5)',paddingLeft:15,paddingRight:15}}>
                             <Text style={styles.logo}>机电E家人</Text>
                             <View style = {styles.container} >
                                 {this.state.login ?
@@ -79,20 +77,11 @@ export default class Login extends Component{
                                     icon={{name: 'account-circle', size: 30}} title='登录' onPress={this.loginButton.bind(this)}/>
 
                             </View>
-                        </ScrollView>
-                    </View>
+                    </ScrollView>
                 </Image>
-
         );
     }
 
-    backToHome(){
-        const { navigator } = this.props;
-        if (navigator){
-            this.props.update(false);
-            navigator.popToTop();
-        }
-    }
 
     //登录
     loginButton(){
@@ -121,14 +110,10 @@ export default class Login extends Component{
                     login:true,
                     disabled:true,
                 });
-                this.timer = setTimeout(() => {
+                let timer =  setTimeout(()=>{
+                    clearTimeout(timer)
                     const { navigator } = this.props;
-                    if(this.props.update){
-                        this.props.update(true);
-                    }
-                    if (navigator){
-                        navigator.pop();
-                    }
+                    navigator.resetTo({name: 'BottomTap', component: BottomTap});
                     this.setState({
                         editable: true,
                         login:false,
@@ -141,7 +126,8 @@ export default class Login extends Component{
                     login:true,
                     disabled:true,
                 });
-                this.timer = setTimeout(() => {
+                let timer =  setTimeout(()=>{
+                    clearTimeout(timer)
                     this.setState({
                         editable: true,
                         login:false,
@@ -152,13 +138,24 @@ export default class Login extends Component{
             }
         }).catch(error => {
             Toast.show("网络出现错误");
-            console.error(error);
         });
     }
 
+    onBackAndroid = () => {
+        if (this.lastBackPressed && this.lastBackPressed + 2000 >= Date.now()) {
+            //最近2秒内按过back键，可以退出应用。
+            BackAndroid.exitApp();
+        }
+        this.lastBackPressed = Date.now();
+        Toast.show('再按一次退出应用');
+        return true;
+    };
+
     //解除定时器
-    componentWillUnMount() {
-        this.timer && clearTimeout(this.timer);
+    componentWillUnmount() {
+        if(Platform.OS === 'android'){
+            BackAndroid.removeEventListener('hardwareBackPress', this.onBackAndroid);
+        }
     }
 }
 
@@ -175,7 +172,7 @@ const styles = StyleSheet.create({
         color:'white',
     },
     loginButton:{
-        width: device.width - 10,
+        width: device.width - 60,
         height: 40,
         marginLeft:5,
         marginRight:5,
@@ -183,7 +180,7 @@ const styles = StyleSheet.create({
     },
     input:{
         flexDirection: 'row',
-        width:device.width,
+        width:device.width-40,
         alignItems:'center',
         margin:10,
     },

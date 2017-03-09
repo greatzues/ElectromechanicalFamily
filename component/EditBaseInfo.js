@@ -48,13 +48,13 @@ export default class EditBaseInfo extends Component{
     otherPress(position, title, info){
         switch (position){
             case 0:
-                this.refs.picker.onPressDate();
+                //this.refs.picker.onPressDate(title,position);
                 break;
             case 1:
-                this.refs.picker.onPressDate();
+                //this.refs.picker.onPressDate(title,position);
                 break;
             case 2:
-                this.refs.picker.onPressDate();
+                //this.refs.picker.onPressDate(title,position);
                 break;
             default:
                 var params = {title:title,info:info,id:this.props.id,k:POST_KEY[position],callBack:(msg) => {this.refresh(position, msg)}};
@@ -108,13 +108,7 @@ export default class EditBaseInfo extends Component{
     onDateChange(position,date){
         switch (position){
             case 0:
-                this.state.rightTitle[position] = date;
-                this.forceUpdate();
-                let time = new Net().dateToTime(date);
-                let params = new Object();
-                params[POST_KEY[position]] = time;
-                let url = STUDENT_INFO+this.props.id;
-                new Net().putMethod(url,params).then((r) => {}).catch(e => {Toast.show("网络出现错误");});
+                this.postData(position, date);
                 break;
             case 1:
                 this.postData(position, date);

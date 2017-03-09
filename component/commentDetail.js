@@ -2,12 +2,12 @@
  * Created by zues on 2017/1/13.
  */
 import React, { Component } from 'react';
-import { StyleSheet, Text, View, TouchableHighlight, TouchableOpacity, Image,
+import { StyleSheet, Text, View, TouchableHighlight, TouchableOpacity, Image, Clipboard,
     Dimensions, ListView, TextInput, Navigator, ScrollView, ToastAndroid} from 'react-native';
 import Toast from 'react-native-root-toast';
 import NormalToolbar from './NormalToolbar';
 import Net from '../Tool';
-import { Icon } from 'react-native-elements';
+import { ListItem, Icon } from 'react-native-elements';
 import PicDetail from './PicDetail'
 
 const COMMENT = '/comments';
@@ -38,58 +38,60 @@ export default class commentDetail extends Component{
     }
 
       render(){
-          // let d = new Net().timeToDate(this.state.data.date);
+          let d = new Net().timeToDate(this.state.data.date);
           return(
-              <ScrollView style={styles.container}>
-                  <NormalToolbar title='详情' leftImageSource={require('../img/back.png')} leftItemFunc={this.back.bind(this)}/>
-                  <View style={styles.cardTop}>
-                      {this.state.userAvatar === null?<Image source={require('../img/UserDafault.png')}  style={styles.renderRowImg}/>:
-                          <Image source={{uri:BASEURL+'/avatar/'+this.state.userAvatar}}  style={styles.renderRowImg}/>
-                      }
-                      <View style={styles.avatarAndTime}>
-                          <Text style={styles.cardavatar}>{this.state.userName}</Text>
-                          <Text style={styles.cardTime}>{this.state.data.date}</Text>
-                      </View>
-                  </View>
-                  <View style={styles.cardContent}>
-                      <Text style={styles.cardText} >{this.state.data.messageText}</Text>
-                      <ListView
-                          dataSource={this.state.dataSource.cloneWithRows(
-                              [this.state.data.messagePic1,this.state.data.messagePic2,this.state.data.messagePic3,
-                                  this.state.data.messagePic4,this.state.data.messagePic5,this.state.data.messagePic6,
-                                    this.state.data.messagePic7,this.state.data.messagePic8,this.state.data.messagePic9])}
-                          renderRow={this.picList.bind(this,[this.state.data.messagePic1,this.state.data.messagePic2,this.state.data.messagePic3,
-                              this.state.data.messagePic4,this.state.data.messagePic5,this.state.data.messagePic6,
-                                this.state.data.messagePic7,this.state.data.messagePic8,this.state.data.messagePic9])}
-                          contentContainerStyle={styles.list}
-                          enableEmptySections={true}
-                      />
-                  </View>
-
-                  <View style={styles.cardTop}>
-                      <TextInput
-                          style={styles.commentTextInput}
-                          ref='input'
-                          placeholder='评论'
-                          placeholderTextColor='gray'
-                          underlineColorAndroid='gray'
-                          defaultValue ={this.state.text}
-                          multiline={true}
-                          numberOfLines={3}
-                          onEndEditing ={event => this.setState({commentInfo:event.nativeEvent.text.replace(/@(\W+) /g,'')})}/>
-
-                      <TouchableOpacity onPress={this.postComment.bind(this)}>
-                          <View style={styles.commentButton}>
-                              <Text style={styles.commentButtonText}>评论</Text>
+              <View style={styles.container}>
+                  <ScrollView><NormalToolbar title='详情' leftImageSource={require('../img/back.png')} leftItemFunc={this.back.bind(this)} style={{position:'absolute',left:0,top:0}}/></ScrollView>
+                      <ScrollView>
+                          <View style={styles.cardTop}>
+                              {this.state.userAvatar === null?<Image source={require('../img/UserDafault.png')}  style={styles.renderRowImg}/>:
+                                  <Image source={{uri:BASEURL+'/avatar/'+this.state.userAvatar}}  style={styles.renderRowImg}/>
+                              }
+                              <View style={styles.avatarAndTime}>
+                                  <Text style={styles.cardavatar} onPress={this.toSomeone.bind(this,this.state.userName,this.state.data.belong)}>{this.state.userName}</Text>
+                                  <Text style={styles.cardTime}>{d}</Text>
+                              </View>
                           </View>
-                      </TouchableOpacity>
-                  </View>
-                  <ListView
-                      renderRow={this.renderCommentRow.bind(this)}
-                      dataSource={this.state.dataSource.cloneWithRows(this.state.myComments)}
-                      enableEmptySections={true}
-                  />
-              </ScrollView>
+                          <View style={styles.cardContent}>
+                              <Text style={styles.cardText} selectable={true}>{this.state.data.messageText}</Text>
+                              <ListView
+                                  dataSource={this.state.dataSource.cloneWithRows(
+                                      [this.state.data.messagePic1,this.state.data.messagePic2,this.state.data.messagePic3,
+                                          this.state.data.messagePic4,this.state.data.messagePic5,this.state.data.messagePic6,
+                                          this.state.data.messagePic7,this.state.data.messagePic8,this.state.data.messagePic9])}
+                                  renderRow={this.picList.bind(this,[this.state.data.messagePic1,this.state.data.messagePic2,this.state.data.messagePic3,
+                                      this.state.data.messagePic4,this.state.data.messagePic5,this.state.data.messagePic6,
+                                      this.state.data.messagePic7,this.state.data.messagePic8,this.state.data.messagePic9])}
+                                  contentContainerStyle={styles.list}
+                                  enableEmptySections={true}
+                              />
+                          </View>
+
+                          <View style={styles.cardTop}>
+                              <TextInput
+                                  style={styles.commentTextInput}
+                                  ref='input'
+                                  placeholder='评论'
+                                  placeholderTextColor='gray'
+                                  underlineColorAndroid='gray'
+                                  defaultValue ={this.state.text}
+                                  multiline={true}
+                                  numberOfLines={3}
+                                  onEndEditing ={event => this.setState({commentInfo:event.nativeEvent.text.replace(/@(\W+) /g,'')})}/>
+
+                              <TouchableOpacity onPress={this.postComment.bind(this)}>
+                                  <View style={styles.commentButton}>
+                                      <Text style={styles.commentButtonText}>评论</Text>
+                                  </View>
+                              </TouchableOpacity>
+                          </View>
+                          <ListView
+                              renderRow={this.renderCommentRow.bind(this)}
+                              dataSource={this.state.dataSource.cloneWithRows(this.state.myComments)}
+                              enableEmptySections={true}
+                          />
+                      </ScrollView>
+              </View>
           );
       }
 
@@ -98,7 +100,7 @@ export default class commentDetail extends Component{
         var url = COMMENT+"?filters={messageId:"+id+"}";
         return new Net().getMethod(url)
             .then(data => {
-                this.setState({myComments:data.comments})
+                this.setState({myComments:data.comments});
             })
             .catch(error => {
                 console.log(error);
@@ -152,15 +154,23 @@ export default class commentDetail extends Component{
      * commentInfo这条评论的内容
      */
     renderCommentRow(rowData){
-        console.log(rowData);
+        let toName = rowData.toName?'@'+rowData.toName:'';
+        let title = rowData.fromName+toName;
         return(
-            <TouchableOpacity style={styles.renderCommentRow} onPress={this.toSomeone.bind(this,rowData.fromName,rowData.from)}>
-                <Icon raised name='bubble' type='simple-line-icon' size={10}/>
-                <Text>{rowData.fromName}</Text>
-                <Text>{rowData.toName?'@'+rowData.toName:''}</Text>
-                <Text>{' : '+rowData.commentInfo}</Text>
-            </TouchableOpacity>
+            <ListItem
+                title={title}
+                subtitle={rowData.commentInfo}
+                leftIcon={{name: 'forum'}}
+                hideChevron={true}
+                onPress={this.toSomeone.bind(this,rowData.fromName,rowData.from)}
+                onLongPress={this.copyText.bind(this,rowData.commentInfo)}
+            />
         );
+    }
+
+    copyText(text){
+        Toast.show('文本已复制到剪切板');
+        Clipboard.setString(text);
     }
 
     back(){
@@ -186,7 +196,7 @@ export default class commentDetail extends Component{
         }
         return null
     }
-    //万一@之后又删掉怎么办
+    // 接收一个需要@的名字和对应的id  万一@之后又删掉怎么办
     toSomeone(toName,toId){
         this.setState({
             text:'@'+toName+' ',
@@ -212,6 +222,7 @@ export default class commentDetail extends Component{
 
 const styles = StyleSheet.create({
     container: {
+        flex:1,
         backgroundColor: '#ffffff',
     },
     cardImage:{

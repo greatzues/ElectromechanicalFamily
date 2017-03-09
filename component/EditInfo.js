@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import {Modal, StyleSheet, Switch, Text, TouchableOpacity, View, ScrollView} from 'react-native';
+import {Modal, StyleSheet, Switch, Text, TouchableOpacity, View, ScrollView, BackAndroid, Platform} from 'react-native';
 import { List, ListItem, Button, FormLabel, FormInput } from 'react-native-elements';
 import Picker from 'react-native-picker';
 import NormalToolbar from './NormalToolbar';
@@ -32,6 +32,19 @@ export default class EditInfo extends Component{
 
     _setModalVisible(visible) {
         this.setState({modalVisible: visible});
+    }
+
+    componentDidMount() {
+        if(Platform.OS === 'android'){
+            BackAndroid.addEventListener('hardwareBackPress', this.onBackAndroid);
+        }
+    }
+
+    //解除定时器
+    componentWillUnmount() {
+        if(Platform.OS === 'android'){
+            BackAndroid.removeEventListener('hardwareBackPress', this.onBackAndroid);
+        }
     }
 
     render() {
@@ -116,6 +129,12 @@ export default class EditInfo extends Component{
         this.props.update(true);
         new Net().back(this.props);
     }
+    //修改安卓物理返回键的功能
+    onBackAndroid = () => {
+        this.props.update(true);
+        new Net().back(this.props);
+        return true;
+    };
 
     myModal(){
         return (
@@ -230,22 +249,16 @@ export default class EditInfo extends Component{
     }
 
     pickSingle(){
-        new Net().loadKey('loginState').then(r => {
-            if(r.username){
-                myImagePicker.openPicker({
-                    width: 300,
-                    height: 400,
-                    cropping: true
-                }).then(image => {
-                    this.state.userInfo[0] = image.path;
-                    this.forceUpdate();
-                    this.updateAvatar(image.path);
-                }).catch(e => {
-                    console.log('Error:'+e);
-                });
-            }
+        myImagePicker.openPicker({
+            width: 300,
+            height: 400,
+            cropping: true
+        }).then(image => {
+            this.state.userInfo[0] = image.path;
+            this.forceUpdate();
+            this.updateAvatar(image.path);
         }).catch(e => {
-            Toast.show('请先登录')
+            console.log('Error:'+e);
         });
     }
 

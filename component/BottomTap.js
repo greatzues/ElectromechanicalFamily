@@ -2,7 +2,7 @@
  * Created by zues on 2016/8/26.
  */
 import React, { Component } from 'react';
-import { View, Text, StyleSheet, Image, Navigator, TouchableOpacity, AsyncStorage, BackAndroid, Platform } from 'react-native';
+import { View, Text, StyleSheet, Image, Navigator, TouchableOpacity, AsyncStorage, BackAndroid, Platform, StatusBar } from 'react-native';
 import TabNavigator from 'react-native-tab-navigator';
 import DrawerLayout from 'react-native-drawer-layout';
 import {Icon } from 'react-native-elements'
@@ -21,10 +21,13 @@ import EditMessage from './EditMessage';
 import GetStudentInfo from './GetStudentInfo';
 import LittleGround from './LittleGround';
 import ClassGround from './ClassGround';
-import Toast from 'react-native-root-toast'
+import Toast from 'react-native-root-toast';
+import ChangePassword from './ChangePassword';
+import GetPersonalMessages from './GetPersonalMessages'
 
 const LOGIN = '/students/login';
 const INFO = '/students/getinfo';
+const AVATAR = '/avatar/';
 export default class BottomTap extends Component {
     constructor(props){
         super(props);
@@ -48,8 +51,11 @@ export default class BottomTap extends Component {
                 <DrawerView
                     quitLogin={this.quitLogin.bind(this)}
                     quitApp={this.quitApp.bind(this)}
-                    avatar={this.state.avatar}
+                    changPassword={this.changPassword.bind(this)}
+                    avatar={BASEURL+AVATAR+this.state.avatar}
                     username={this.state.username}
+                    refresh={this.reRenderData.bind(this)}
+                    myShare={this.myShare.bind(this)}
                 />
             </View>
         );
@@ -60,6 +66,10 @@ export default class BottomTap extends Component {
                 drawerWidth={250}
                 renderNavigationView={() => navigationView}
                 drawerLockMode={this.state.refresh===false?'locked-closed':'unlocked'}>
+                <StatusBar
+                    backgroundColor="#0072f6"
+                    barStyle="light-content"
+                />
             <TabNavigator>
                 <TabNavigator.Item
                     title = "主页"
@@ -67,7 +77,7 @@ export default class BottomTap extends Component {
                     selectedTitleStyle = {styles.seletedTextStyle}
                     titleStyle ={styles.textStyle}
                     renderIcon = {() => <Icon name='home' color="grey"/> }
-                    renderSelectedIcon ={() => <Icon name='home' color='#ff5606' /> }
+                    renderSelectedIcon ={() => <Icon name='home' color='#0072f6' /> }
                     onPress={() => this.setState({selectTab:'home'})}>
                     <Home toLogin={this.toLogin.bind(this)}
                           title= "机电E家人"
@@ -88,7 +98,7 @@ export default class BottomTap extends Component {
                     selectedTitleStyle = {styles.seletedTextStyle}
                     titleStyle ={styles.textStyle}
                     renderIcon = {() => <Icon name='toys' color="grey"/> }
-                    renderSelectedIcon ={() => <Icon name='toys' color='#ff5606' /> }
+                    renderSelectedIcon ={() => <Icon name='toys' color='#0072f6' /> }
                     onPress={() => this.setState({selectTab:'new'})}>
                     <LittleGround id={this.state.id} parent={this.props} username={this.state.username}/>
                 </TabNavigator.Item>
@@ -99,7 +109,7 @@ export default class BottomTap extends Component {
                     selectedTitleStyle = {styles.seletedTextStyle}
                     titleStyle ={styles.textStyle}
                     renderIcon = {() => <Icon name='class' color="grey"/> }
-                    renderSelectedIcon ={() => <Icon name='class' color='#ff5606' /> }
+                    renderSelectedIcon ={() => <Icon name='class' color='#0072f6' /> }
                     onPress={() => this.setState({selectTab:'myClass'})}>
                     <GetClassInfo getStudentInfo={this.getStudentInfo.bind(this)} classNumber={this.state.classNumber}
                                   parent={this.props} ifLogin={this.state.refresh}/>
@@ -111,7 +121,7 @@ export default class BottomTap extends Component {
                     selectedTitleStyle = {styles.seletedTextStyle}
                     titleStyle ={styles.textStyle}
                     renderIcon = {() => <Icon name='user-circle' color="grey" type='font-awesome'/> }
-                    renderSelectedIcon ={() => <Icon name='user-circle' color="#ff5606" type='font-awesome'/> }
+                    renderSelectedIcon ={() => <Icon name='user-circle' color="#0072f6" type='font-awesome'/> }
                     onPress={() => this.setState({selectTab:'user'})}>
                     <Users toEdit={this.toEdit.bind(this)}
                            user={this.state.refresh===false?null:this.state.response}
@@ -140,13 +150,7 @@ export default class BottomTap extends Component {
     }
 
     toLogin(){
-        storage.load({key:'loginState'}).then(r =>{
-            this.refs.drawer.openDrawer();
-        }).catch(e => {
-            var params = {update:(ifRefresh) => this.reRenderData(ifRefresh)};
-            new Net().toOther(this.props,'Login',Login,params);
-            console.log(e);
-        })
+        this.refs.drawer.openDrawer();
     }
 
     //重新渲染更新之后的getInfo数据和自动登录之后的getInfo数据
@@ -186,9 +190,12 @@ export default class BottomTap extends Component {
 
     quitLogin(){
         storage.remove({key: 'loginState'});
-        var params = {update:(ifRefresh) => this.reRenderData(ifRefresh)};
-        new Net().toOther(this.props,'Login',Login,params);
-        this.refs.drawer.closeDrawer();
+        // new Net().toOther(this.props,'Login',Login);
+        // new Net().toOther(this.props,'Login',Login);
+        // this.refs.drawer.closeDrawer();
+
+        const { navigator } = this.props;
+        navigator.resetTo({name:'Login',component:Login});
     }
 
     autoLogin(){
@@ -208,13 +215,13 @@ export default class BottomTap extends Component {
 
     toEdit(){
         var params = {id:this.state.id,update:(ifRefresh) => this.reRenderData(ifRefresh),user:this.state.response};
-        return this.state.refresh === false?Toast.show('请先登录'):new Net().toOther(this.props,'EditInfo',EditInfo,params);
+        new Net().toOther(this.props,'EditInfo',EditInfo,params);
 
     }
 
     toShare(classNumber){
         var params = {id:this.state.id,update:(ifRefresh) => this.reRenderData(ifRefresh),classNumber:classNumber};
-        return this.state.refresh === false?Toast.show('请先登录'):new Net().toOther(this.props, 'EditMessage',EditMessage,params);
+        new Net().toOther(this.props, 'EditMessage',EditMessage,params);
     }
 
     getStudentInfo(id){
@@ -224,13 +231,23 @@ export default class BottomTap extends Component {
 
     toMyClass(classNumber){
         var params = {classNumber:classNumber,parent:this.props, ifLogin:this.state.refresh, username:this.state.username};
-        return this.state.refresh === false?Toast.show('请先登录'):new Net().toOther(this.props,'ClassGround', ClassGround, params);
+        new Net().toOther(this.props,'ClassGround', ClassGround, params);
+    }
+
+    changPassword(){
+        var params = {update:(ifRefresh) => this.reRenderData(ifRefresh)};
+        new Net().toOther(this.props,'ChangePassword', ChangePassword, params);
+    }
+
+    myShare(){
+        new Net().toOther(this.props, 'GetPersonalMessages',GetPersonalMessages);
+        this.refs.drawer.closeDrawer();
     }
 }
 
 const styles = StyleSheet.create({
     seletedTextStyle:{
-        color: 'black',
+        color: '#0072f6',
     },
     textStyle: {
         color:'#999',

@@ -1,16 +1,19 @@
+/**
+ * Created by zues on 2017/3/9.
+ */
 import React, { Component } from 'react';
 import {AppRegistry, StyleSheet, Text, View, Dimensions, ListView, Image, TouchableWithoutFeedback, ScrollView, TouchableOpacity, Navigator} from 'react-native';
 import {SwRefreshScrollView, SwRefreshListView, RefreshStatus, LoadMoreStatus} from 'react-native-swRefresh';
-import { Card, Icon } from 'react-native-elements';
+import { Card } from 'react-native-elements';
 import Net from '../Tool';
 import commentDetail from './commentDetail';
 import PicDetail from './PicDetail';
 import NormalToolbar from './NormalToolbar';
 
-const MESSAGE = '/messages';
-const IS_LOAD_MORE = 15;
+const PERSON_MESSAGES = '/students/getPersonalMessages';
+const IS_LOAD_MORE = 5;
 const LENGTH = 30;
-export default class LittleGround extends Component{
+export default class GetPersonalMessages extends Component{
     _page=1
     _dataSource = new ListView.DataSource({rowHasChanged:(row1,row2)=>row1 !== row2})
     userName=[];
@@ -29,9 +32,12 @@ export default class LittleGround extends Component{
 
     render(){
         return(
-            <View >
+            <View style={styles.container}>
                 <ScrollView>
-                    <NormalToolbar title='小广场'/>
+                    <NormalToolbar
+                        title='班级圈'
+                        leftImageSource={require('./../img/back.png')}
+                        leftItemFunc={this.back.bind(this)} />
                 </ScrollView>
                 <SwRefreshListView
                     dataSource={this.state.dataSource.cloneWithRows(this.state.mesData)}
@@ -39,18 +45,18 @@ export default class LittleGround extends Component{
                     style={{marginBottom:45}}
                     renderRow={this._renderRow.bind(this)}
                     onRefresh={this._onListRefersh.bind(this)}
-                    onLoadMore={this._onLoadMore.bind(this)}
+                    onLoadMore={this.state.isLoadMore>IS_LOAD_MORE?null:this._onLoadMore.bind(this)}
                     customRefreshView={this.state.isLoadMore>IS_LOAD_MORE?null:this.renderRefreshView.bind(this)}
                     pusuToLoadMoreTitle={this.state.isLoadMore>IS_LOAD_MORE?'上拉加载更多':''}
                     noMoreDataTitle="无更多数据！"
-                    showsVerticalScrollIndicator={true}
-                    initialListSize={1} />
+                />
             </View>
         )
     }
 
     /**
-     * 当item数目不满一个屏，不足一个page的数量时，自定义下拉刷新视图
+     * 当item数目不满一个屏,该组件会出现下拉刷新头部不能自动隐藏
+     * 于是不足一个page的数量时，自定义下拉刷新视图
      * @param refreshStatus
      * @param offsetY
      * @returns {XML}
@@ -83,11 +89,12 @@ export default class LittleGround extends Component{
                         <Text style={styles.cardavatar}>{this.userName[rowId]}</Text>
                         <Text style={styles.cardTime}>{d}</Text>
                     </View>
-
-                    <Icon name='pencil-square-o' type='font-awesome' color='#f5811f' containerStyle={styles.comment} onPress={this.toDetails.bind(this,rowData)}/>
+                    <TouchableWithoutFeedback onPress={this.delete.bind(this,rowData)}>
+                        <View style={styles.comment}><Text style={{color:'#f5811f',fontSize:12}}>删除此分享</Text></View>
+                    </TouchableWithoutFeedback>
                 </View>
                 <View style={styles.cardContent}>
-                    <Text style={styles.cardText} selectable={true}>{rowData.messageText}</Text>
+                    <Text style={styles.cardText} >{rowData.messageText}</Text>
                     <ListView
                         dataSource={this.state.dataSource.cloneWithRows(
                             [rowData.messagePic1,rowData.messagePic2,rowData.messagePic3,
@@ -105,6 +112,7 @@ export default class LittleGround extends Component{
     }
 
     /**
+     * 模拟刷新
      * @param end
      * @private
      */
@@ -117,13 +125,15 @@ export default class LittleGround extends Component{
                 })
                 this.getAvatarAndName(r.messages)
             }).catch(e => {});
-            this.refs.listView.resetStatus() //重置上拉加载的状态
-            end()//刷新成功后需要调用end结束刷新
-            // this.refs.listView.endRefresh() //建议使用end() 当然 这个可以在任何地方使用
+            try {
+                this.refs.listView.resetStatus() //重置上拉加载的状态
+                end()//刷新成功后需要调用end结束刷新
+            }catch (e){};
         },1500)
     }
 
     /**
+     * 模拟加载更多
      * @param end
      * @private
      */
@@ -140,9 +150,10 @@ export default class LittleGround extends Component{
                     dataLength:r.messages.length,
                 })
             }).catch(e =>{});
-            //end(this._page > 2)//加载成功后需要调用end结束刷新 假设加载4页后数据全部加载完毕
-            this.refs.listView.resetStatus();
-            this.refs.listView.endLoadMore(this.state.dataLength<LENGTH?true:false) //为true的时候表示已经加载完全部数据，这里为了暂时给老师演示，先保存为true，后面再fix
+            try {
+                this.refs.listView.resetStatus();
+                this.refs.listView.endLoadMore(this.state.dataLength<LENGTH?true:false);
+            }catch (e){}
         },2000)
     }
 
@@ -176,10 +187,9 @@ export default class LittleGround extends Component{
         }
         return null
     }
+    //改成删除
+    delete(data){
 
-    toDetails(data){
-        var params = {data:data,id:this.props.id,username:this.props.username};
-        new Net().toOther(this.props.parent,'commentDetail',commentDetail,params)
     }
 
     toPicDetail(uri,index){
@@ -189,7 +199,7 @@ export default class LittleGround extends Component{
 
     //获取原始数据
     fetchData(pages){
-        var url = MESSAGE+'?page='+pages;
+        var url = PERSON_MESSAGES+'?page='+pages;
         return new Net().getMethod(url).catch(error => {});
     }
     //通过id来拿到student的所有基本信息
@@ -202,10 +212,13 @@ export default class LittleGround extends Component{
         }
     }
 
+    back(){
+        new Net().back(this.props);
+    }
+
 }
 const styles=StyleSheet.create({
     container: {
-        flex: 1,
         backgroundColor: '#ffffff',
     },
     cardavatar:{
@@ -222,10 +235,11 @@ const styles=StyleSheet.create({
     },
     comment:{
         height:25,
-        width:25,
+        width:60,
         position:'absolute',
         top:1,
         right:20,
+
     },
     renderRowImg:{
         borderRadius:15,
