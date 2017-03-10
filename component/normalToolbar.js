@@ -3,14 +3,14 @@ import {Image, Text, View, Platform, TouchableOpacity, StyleSheet} from 'react-n
 
 // 导航条和状态栏的高度
 const STATUS_BAR_HEIGHT = 20;
-const NAV_BAR_HEIGHT = 44;
+const NAV_BAR_HEIGHT = 40;
 
 export default class NormalToolbar extends Component {
     static defaultProps = {
         title: 'title',
-        titleTextColor: '#383838',
+        titleTextColor: '#fff',
         titleViewFunc () {},
-        barBGColor: '#f8f8f8',
+        barBGColor: '#0072f6',
         barOpacity: 1,
         barStyle: 0,
         barBorderBottomColor: '#D4D4D4',

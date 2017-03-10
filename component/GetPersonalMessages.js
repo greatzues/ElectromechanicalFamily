@@ -4,11 +4,12 @@
 import React, { Component } from 'react';
 import {AppRegistry, StyleSheet, Text, View, Dimensions, ListView, Image, TouchableWithoutFeedback, ScrollView, TouchableOpacity, Navigator} from 'react-native';
 import {SwRefreshScrollView, SwRefreshListView, RefreshStatus, LoadMoreStatus} from 'react-native-swRefresh';
-import { Card } from 'react-native-elements';
+import { Card, Icon } from 'react-native-elements';
 import Net from '../Tool';
-import commentDetail from './commentDetail';
 import PicDetail from './PicDetail';
 import NormalToolbar from './NormalToolbar';
+import commentDetail from './commentDetail';
+
 
 const PERSON_MESSAGES = '/students/getPersonalMessages';
 const IS_LOAD_MORE = 5;
@@ -45,7 +46,7 @@ export default class GetPersonalMessages extends Component{
                     style={{marginBottom:45}}
                     renderRow={this._renderRow.bind(this)}
                     onRefresh={this._onListRefersh.bind(this)}
-                    onLoadMore={this.state.isLoadMore>IS_LOAD_MORE?null:this._onLoadMore.bind(this)}
+                    onLoadMore={this.state.isLoadMore>IS_LOAD_MORE?this._onLoadMore.bind(this):null}
                     customRefreshView={this.state.isLoadMore>IS_LOAD_MORE?null:this.renderRefreshView.bind(this)}
                     pusuToLoadMoreTitle={this.state.isLoadMore>IS_LOAD_MORE?'上拉加载更多':''}
                     noMoreDataTitle="无更多数据！"
@@ -89,9 +90,7 @@ export default class GetPersonalMessages extends Component{
                         <Text style={styles.cardavatar}>{this.userName[rowId]}</Text>
                         <Text style={styles.cardTime}>{d}</Text>
                     </View>
-                    <TouchableWithoutFeedback onPress={this.delete.bind(this,rowData)}>
-                        <View style={styles.comment}><Text style={{color:'#f5811f',fontSize:12}}>删除此分享</Text></View>
-                    </TouchableWithoutFeedback>
+                    <Icon name='pencil-square-o' type='font-awesome' color='#f5811f' containerStyle={styles.comment} onPress={this.toDetails.bind(this,rowData)}/>
                 </View>
                 <View style={styles.cardContent}>
                     <Text style={styles.cardText} >{rowData.messageText}</Text>
@@ -152,7 +151,7 @@ export default class GetPersonalMessages extends Component{
             }).catch(e =>{});
             try {
                 this.refs.listView.resetStatus();
-                this.refs.listView.endLoadMore(this.state.dataLength<LENGTH?true:false);
+                this.refs.listView.endLoadMore(this.state.dataLength < LENGTH);
             }catch (e){}
         },2000)
     }
@@ -187,14 +186,15 @@ export default class GetPersonalMessages extends Component{
         }
         return null
     }
-    //改成删除
-    delete(data){
 
+    toDetails(data){
+        var params = {data:data, id:this.props.id, username:this.props.username, ifRefresh:(boo) => this.reRender(boo)};
+        new Net().toOther(this.props,'commentDetail',commentDetail,params);
     }
 
     toPicDetail(uri,index){
         var params = {uri:uri,index:index,path:BASEURL+'/message/'}
-        new Net().toOther(this.props.parent,'PicDetail',PicDetail,params)
+        new Net().toOther(this.props,'PicDetail',PicDetail,params)
     }
 
     //获取原始数据
@@ -214,6 +214,12 @@ export default class GetPersonalMessages extends Component{
 
     back(){
         new Net().back(this.props);
+    }
+
+    reRender(boo){
+        if(boo === true){
+            this.componentDidMount();
+        }
     }
 
 }

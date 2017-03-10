@@ -7,10 +7,11 @@ import { StyleSheet, Text, View, TouchableHighlight, TouchableOpacity, Image, Cl
 import Toast from 'react-native-root-toast';
 import NormalToolbar from './NormalToolbar';
 import Net from '../Tool';
-import { ListItem, Icon } from 'react-native-elements';
+import { ListItem } from 'react-native-elements';
 import PicDetail from './PicDetail'
 
 const COMMENT = '/comments';
+const DELETE_MESSAGES = '/students/deleteMessage';
 export default class commentDetail extends Component{
     // 构造
       constructor(props) {
@@ -41,7 +42,17 @@ export default class commentDetail extends Component{
           let d = new Net().timeToDate(this.state.data.date);
           return(
               <View style={styles.container}>
-                  <ScrollView><NormalToolbar title='详情' leftImageSource={require('../img/back.png')} leftItemFunc={this.back.bind(this)} style={{position:'absolute',left:0,top:0}}/></ScrollView>
+                  <ScrollView>
+                      <NormalToolbar
+                          title='详情'
+                          leftImageSource={require('../img/back.png')}
+                          leftItemFunc={this.back.bind(this)}
+                          rightItemTitle={this.props.ifRefresh?'删除':''}
+                          rightItemFunc={this.deleteMessages.bind(this,this.state.data.messageId)}
+                          rightTextColor='white'
+                      />
+
+                  </ScrollView>
                       <ScrollView>
                           <View style={styles.cardTop}>
                               {this.state.userAvatar === null?<Image source={require('../img/UserDafault.png')}  style={styles.renderRowImg}/>:
@@ -217,6 +228,19 @@ export default class commentDetail extends Component{
                 userAvatar:r.avatar
             })
         }).catch(e => {})
+    }
+
+    //这里不知道为什么会报错，虽然catch了，功能也正常，但是不科学啊！！
+    deleteMessages(messageId){
+        let params = {};
+        let url = DELETE_MESSAGES+'?messageId='+messageId;
+        new Net().postMethod(url,params).then(r => {
+
+        }).catch(e => {
+            this.props.ifRefresh(true);
+            new Net().back(this.props);
+            Toast.show('已删除此分享');
+        })
     }
 }
 

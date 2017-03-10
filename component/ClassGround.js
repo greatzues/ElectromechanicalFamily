@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import {AppRegistry, StyleSheet, Text, View, Dimensions, ListView, Image, TouchableWithoutFeedback, ScrollView, TouchableOpacity, Navigator} from 'react-native';
 import {SwRefreshScrollView, SwRefreshListView, RefreshStatus, LoadMoreStatus} from 'react-native-swRefresh';
-import { Card } from 'react-native-elements';
+import { Card, Icon } from 'react-native-elements';
 import Net from '../Tool';
 import commentDetail from './commentDetail';
 import PicDetail from './PicDetail';
@@ -43,7 +43,7 @@ export default class LittleGround extends Component{
                     style={{marginBottom:45}}
                     renderRow={this._renderRow.bind(this)}
                     onRefresh={this._onListRefersh.bind(this)}
-                    onLoadMore={this.state.isLoadMore>IS_LOAD_MORE?null:this._onLoadMore.bind(this)}
+                    onLoadMore={this.state.isLoadMore>IS_LOAD_MORE?this._onLoadMore.bind(this):null}
                     customRefreshView={this.state.isLoadMore>IS_LOAD_MORE?null:this.renderRefreshView.bind(this)}
                     pusuToLoadMoreTitle={this.state.isLoadMore>IS_LOAD_MORE?'上拉加载更多':''}
                     noMoreDataTitle="无更多数据！"
@@ -87,9 +87,7 @@ export default class LittleGround extends Component{
                         <Text style={styles.cardavatar}>{this.userName[rowId]}</Text>
                         <Text style={styles.cardTime}>{d}</Text>
                     </View>
-                    <TouchableWithoutFeedback onPress={this.toDetails.bind(this,rowData)}>
-                        <Image source={require('../img/write.png')} style={styles.comment}/>
-                    </TouchableWithoutFeedback>
+                    <Icon name='pencil-square-o' type='font-awesome' color='#f5811f' containerStyle={styles.comment} onPress={this.toDetails.bind(this,rowData)}/>
                 </View>
                 <View style={styles.cardContent}>
                     <Text style={styles.cardText} >{rowData.messageText}</Text>

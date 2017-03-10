@@ -11,7 +11,6 @@ import com.facebook.react.ReactInstanceManager;
 import com.facebook.react.ReactNativeHost;
 import com.facebook.react.ReactPackage;
 import com.facebook.react.shell.MainReactPackage;
-import com.imagepicker.ImagePickerPackage;
 import com.reactnative.photoview.PhotoViewPackage;
 import com.facebook.soloader.SoLoader;
 
@@ -33,7 +32,6 @@ public class MainApplication extends Application implements ReactApplication {
             new VectorIconsPackage(),
             new PickerViewPackage(),
             new PickerPackage(),
-          new ImagePickerPackage(),
 		  new PhotoViewPackage()
       );
     }
