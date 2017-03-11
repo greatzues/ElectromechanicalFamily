@@ -49,41 +49,43 @@ export default class EditInfo extends Component{
 
     render() {
         return (
-            <ScrollView style={styles.container}>
+            <View style={styles.container}>
                 <NormalToolbar title='个人编辑' leftItemFunc={this.back.bind(this)} leftImageSource={require('../img/back.png')}/>
-                <List containerStyle={{marginTop:15}}>
-                    {
-                        USER_INFO.map((l, i) => (
-                            <ListItem
-                                key={i}
-                                title={l.title}
-                                leftIcon={{name:l.icon}}
-                                avatar={i===0?this.state.userInfo[i]===null?require('../img/UserBackground.jpg'):{uri:this.state.userInfo[i]}:null}
-                                avatarStyle={{height:50,width:50,marginRight:5}}
-                                rightTitle={i===0?null:this.state.userInfo[i]}
-                                hideChevron={true}
-                                onPress={i===0? this.pickSingle.bind(this):() => Toast.show('如需修改请联系管理员！')}
-                            />
-                        ))
-                    }
-                </List>
+                <ScrollView>
+                    <List containerStyle={{marginTop:15}}>
+                        {
+                            USER_INFO.map((l, i) => (
+                                <ListItem
+                                    key={i}
+                                    title={l.title}
+                                    leftIcon={{name:l.icon}}
+                                    avatar={i===0?this.state.userInfo[i]===null?require('../img/UserBackground.jpg'):{uri:this.state.userInfo[i]}:null}
+                                    avatarStyle={{height:50,width:50,marginRight:5}}
+                                    rightTitle={i===0?null:this.state.userInfo[i]}
+                                    hideChevron={true}
+                                    onPress={i===0? this.pickSingle.bind(this):() => Toast.show('如需修改请联系管理员！')}
+                                />
+                            ))
+                        }
+                    </List>
 
-                <List containerStyle={{marginTop:20}}>
-                    {
-                        OTHER_INFO.map((l, i) => (
-                            <ListItem
-                                roundAvatar
-                                key={i}
-                                title={l.title}
-                                leftIcon={{name:l.icon}}
-                                onPress={this.otherPress.bind(this,i)}
-                            />
-                        ))
-                    }
-                </List>
+                    <List containerStyle={{marginTop:20}}>
+                        {
+                            OTHER_INFO.map((l, i) => (
+                                <ListItem
+                                    roundAvatar
+                                    key={i}
+                                    title={l.title}
+                                    leftIcon={{name:l.icon}}
+                                    onPress={this.otherPress.bind(this,i)}
+                                />
+                            ))
+                        }
+                    </List>
+                </ScrollView>
 
                 {this.myModal()}
-            </ScrollView>
+            </View>
         );
     }
 

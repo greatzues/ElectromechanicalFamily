@@ -6,11 +6,13 @@ import {StyleSheet, Text, View ,  ListView, ScrollView, TouchableOpacity, Naviga
 import {SwRefreshScrollView, SwRefreshListView, RefreshStatus, LoadMoreStatus} from 'react-native-swRefresh';
 import Net from '../Tool';
 import NormalToolbar from './NormalToolbar';
-import BriefNewsDetail from './BriefNewsDetail';
 import { ListItem } from 'react-native-elements'
 import ParallaxScrollView from 'react-native-parallax-scroll-view';
+import BriefNewsDetail from './NotificationsDetail';
+
 
 const NEWS = '/news';
+const DETAIL = '/news/';
 const PARALLAX_HEADER_HEIGHT = 200;
 const STICKY_HEADER_HEIGHT = 38;
 const IS_LOAD_MORE = 15;
@@ -65,7 +67,7 @@ export default class BriefNews extends Component {
                 )}
 
                 renderStickyHeader={() => (
-                    <ScrollView>
+                    <View>
                         <NormalToolbar
                             title='机电简讯'
                             titleTextColor='white'
@@ -80,7 +82,7 @@ export default class BriefNews extends Component {
                                 <Image source={require('./../img/toTop.png')} style={{height:20,width:20,}}/>
                             </TouchableOpacity>
                         </View>
-                    </ScrollView>
+                    </View>
                 )}>
                 <SwRefreshListView
                     dataSource={this.state.dataSource.cloneWithRows(this.state.news)}
@@ -191,9 +193,9 @@ export default class BriefNews extends Component {
             />
         );
     }
-
+    //这里的BriefNewsDetail是和Notifications共用一个NotificationsDetail的，详情看上面的import
     Press(id){
-        var params = {id:id};
+        var params = {url:DETAIL+id};
         new Net().toOther(this.props,'BriefNewsDetail',BriefNewsDetail,params);
     }
 

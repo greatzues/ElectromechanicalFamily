@@ -2,7 +2,10 @@
  * Created by zues on 2016/10/19.
  */
 import React, { Component } from 'react';
-import { View, Text, Image, StyleSheet, Dimensions, Navigator, TouchableOpacity, WebView, TextInput } from 'react-native';
+import { View, Text, Image, StyleSheet, Dimensions, Navigator, TouchableOpacity, WebView, TextInput, Linking } from 'react-native';
+import NormalToolbar from './NormalToolbar';
+import { Icon } from 'react-native-elements'
+import Net from '../Tool';
 
 var HEADER = '#e9eaed';
 var BGWASH = 'rgba(255,255,255,0.8)';
@@ -39,39 +42,7 @@ export default class BanerWebview extends Component{
     render() {
         return (
             <View style={styles.container}>
-                <View style={[styles.addressBarRow]}>
-                    <TouchableOpacity onPress={this.goBack.bind(this)}>
-                        <View style={this.state.backButtonEnabled ? styles.navButton : styles.disabledButton}>
-                            <Text>
-                                {'<'}
-                            </Text>
-                        </View>
-                    </TouchableOpacity>
-                    <TouchableOpacity onPress={this.goForward.bind(this)}>
-                        <View style={this.state.forwardButtonEnabled ? styles.navButton : styles.disabledButton}>
-                            <Text>
-                                {'>'}
-                            </Text>
-                        </View>
-                    </TouchableOpacity>
-                    <TextInput
-                        ref={TEXT_INPUT_REF}
-                        autoCapitalize="none"
-                        value={this.state.url}
-                        onSubmitEditing={this.onSubmitEditing.bind(this)}
-                        onChange={this.handleTextInputChange.bind(this)}
-                        clearButtonMode="while-editing"
-                        style={styles.addressBarTextInput}
-                        underlineColorAndroid="transparent"
-                    />
-                    <TouchableOpacity onPress={this.toHome.bind(this)}>
-                        <View style={styles.goButton}>
-                            <Text>
-                                返回
-                            </Text>
-                        </View>
-                    </TouchableOpacity>
-                </View>
+                <NormalToolbar title={this.state.status} leftImageSource={require('../img/back.png')} leftItemFunc={this.back.bind(this)}/>
 
                 <WebView
                     ref="webview"
@@ -83,8 +54,38 @@ export default class BanerWebview extends Component{
                     startInLoadingState={startInLoadingState}
                     scalesPageToFit={this.state.scalesPageToFit}
                 />
-                <View style={styles.statusBar}>
-                    <Text style={styles.statusBarText}>{this.state.status}</Text>
+                <View style={[styles.addressBarRow]}>
+                    <TouchableOpacity onPress={this.goBack.bind(this)}>
+                        <View style={this.state.backButtonEnabled ? styles.navButton : styles.disabledButton}>
+                            <Icon
+                                name='keyboard-arrow-left'
+                                color='white' />
+                        </View>
+                    </TouchableOpacity>
+
+                    <TouchableOpacity onPress={this.goForward.bind(this)}>
+                        <View style={this.state.forwardButtonEnabled ? styles.navButton : styles.disabledButton}>
+                            <Icon
+                                name='keyboard-arrow-right'
+                                color='white' />
+                        </View>
+                    </TouchableOpacity>
+
+                    <TouchableOpacity onPress={this.reload.bind(this)}>
+                        <View style={styles.refreshButton}>
+                            <Icon
+                                name='refresh'
+                                color='white' />
+                        </View>
+                    </TouchableOpacity>
+
+                    <TouchableOpacity onPress={this.openWithOther.bind(this,this.state.url)}>
+                        <View style={styles.refreshButton}>
+                            <Icon
+                                name='open-in-browser'
+                                color='white' />
+                        </View>
+                    </TouchableOpacity>
                 </View>
             </View>
         );
@@ -130,13 +131,19 @@ export default class BanerWebview extends Component{
         this.refs.TEXT_INPUT_REF.blur();
     }
 
-    toHome(){
-        const { navigator } = this.props;
-        if (navigator){
-            navigator.popToTop();
-        }
+    back(){
+        new Net().back(this.props);
     }
 
+    openWithOther(url){
+        Linking.canOpenURL(url).then(supported => {
+            if (!supported) {
+                console.log('Can\'t handle url: ' + url);
+            } else {
+                return Linking.openURL(url);
+            }
+        }).catch(err => console.error('An error occurred', err));
+    }
 }
 
 var styles = StyleSheet.create({
@@ -147,7 +154,10 @@ var styles = StyleSheet.create({
     addressBarRow: {
         flexDirection: 'row',
         padding: 5,
-        marginTop:10,
+        alignItems:'center',
+        backgroundColor:'#0072f6',
+        justifyContent:'space-between',
+        width:device.width,
     },
     webView: {
         backgroundColor: BGWASH,
@@ -166,17 +176,7 @@ var styles = StyleSheet.create({
         fontSize: 14,
     },
     navButton: {
-        width: 20,
-        padding: 3,
-        marginRight: 3,
-        alignItems: 'center',
-        justifyContent: 'center',
-        backgroundColor: BGWASH,
-        borderColor: 'transparent',
-        borderRadius: 3,
-    },
-    disabledButton: {
-        width: 20,
+        width: device.width*0.2,
         padding: 3,
         marginRight: 3,
         alignItems: 'center',
@@ -185,15 +185,25 @@ var styles = StyleSheet.create({
         borderColor: 'transparent',
         borderRadius: 3,
     },
-    goButton: {
-        height: 24,
+    disabledButton: {
+        width: device.width*0.2,
         padding: 3,
-        marginLeft: 8,
+        marginRight: 3,
         alignItems: 'center',
-        backgroundColor: BGWASH,
+        justifyContent: 'center',
+        backgroundColor: 'transparent',
         borderColor: 'transparent',
         borderRadius: 3,
-        alignSelf: 'stretch',
+    },
+    refreshButton: {
+        width: device.width*0.2,
+        padding: 3,
+        marginRight: 3,
+        alignItems: 'center',
+        justifyContent: 'center',
+        backgroundColor: 'transparent',
+        borderColor: 'transparent',
+        borderRadius: 3,
     },
     statusBar: {
         flexDirection: 'row',

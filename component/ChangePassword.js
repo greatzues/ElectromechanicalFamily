@@ -22,7 +22,7 @@ export  default class ChangePassword extends Component{
 
     render(){
         return (
-            <ScrollView style={styles.container}>
+            <View style={styles.container}>
                 <NormalToolbar title='密码修改' leftItemFunc={this.back.bind(this)} leftImageSource={require('../img/back.png')}/>
                 <FormLabel>修改密码</FormLabel>
                 <FormInput
@@ -32,7 +32,7 @@ export  default class ChangePassword extends Component{
                 />
 
                 <Button title="确定" backgroundColor="#337ab7" borderRadius={5} onPress={this.postData.bind(this)} />
-            </ScrollView>
+            </View>
         );
     }
 

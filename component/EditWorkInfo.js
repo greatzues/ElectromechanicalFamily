@@ -35,7 +35,7 @@ export default class EditWorkInfo extends Component{
 
     render(){
         return(
-            <ScrollView style={styles.container}>
+            <View style={styles.container}>
                 <NormalToolbar title='工作信息' leftItemFunc={this.back.bind(this)} leftImageSource={require('../img/back.png')}/>
                 <List containerStyle={{marginTop:15}}>
                     {
@@ -49,7 +49,7 @@ export default class EditWorkInfo extends Component{
                         ))
                     }
                 </List>
-            </ScrollView>
+            </View>
         );
     }
 

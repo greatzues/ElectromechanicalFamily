@@ -42,17 +42,14 @@ export default class commentDetail extends Component{
           let d = new Net().timeToDate(this.state.data.date);
           return(
               <View style={styles.container}>
-                  <ScrollView>
-                      <NormalToolbar
-                          title='详情'
-                          leftImageSource={require('../img/back.png')}
-                          leftItemFunc={this.back.bind(this)}
-                          rightItemTitle={this.props.ifRefresh?'删除':''}
-                          rightItemFunc={this.deleteMessages.bind(this,this.state.data.messageId)}
-                          rightTextColor='white'
-                      />
-
-                  </ScrollView>
+                  <NormalToolbar
+                      title='详情'
+                      leftImageSource={require('../img/back.png')}
+                      leftItemFunc={this.back.bind(this)}
+                      rightItemTitle={this.props.ifRefresh?'删除':''}
+                      rightItemFunc={this.deleteMessages.bind(this,this.state.data.messageId)}
+                      rightTextColor='white'
+                  />
                       <ScrollView>
                           <View style={styles.cardTop}>
                               {this.state.userAvatar === null?<Image source={require('../img/UserDafault.png')}  style={styles.renderRowImg}/>:
@@ -248,6 +245,7 @@ const styles = StyleSheet.create({
     container: {
         flex:1,
         backgroundColor: '#ffffff',
+        justifyContent:'flex-start'
     },
     cardImage:{
         height:200,

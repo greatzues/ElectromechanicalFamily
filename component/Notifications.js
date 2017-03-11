@@ -11,6 +11,7 @@ import { ListItem } from 'react-native-elements'
 import ParallaxScrollView from 'react-native-parallax-scroll-view';
 
 const BRIEF = '/notifications';
+const DETAIL = '/notifications/';
 const PARALLAX_HEADER_HEIGHT = 200;
 const STICKY_HEADER_HEIGHT = 38;
 const IS_LOAD_MORE = 15;
@@ -191,7 +192,7 @@ export default class Notifications extends Component {
     }
 
     Press(id){
-        var params = {id:id};
+        var params = {url:DETAIL+id};
         new Net().toOther(this.props, 'NotificationsDetail',NotificationsDetail,params);
     }
 

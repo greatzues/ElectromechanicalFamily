@@ -4,6 +4,7 @@
 import React,{ Component } from 'react';
 import {View, Text, StyleSheet, ScrollView, ListView, Image, Dimensions, TouchableOpacity, WebView } from 'react-native';
 import Net from '../Tool';
+import Toast from 'react-native-root-toast';
 import NormalToolbar from './NormalToolbar'
 
 const DETAIL = '/notifications/';
@@ -22,7 +23,7 @@ export default class BriefNewsDetailPage extends Component{
 
     render(){
         return (
-            <ScrollView>
+            <View style={{flex:1}}>
                 <NormalToolbar
                     title={this.state.title}
                     leftImageSource={require('../img/back.png')}
@@ -34,20 +35,19 @@ export default class BriefNewsDetailPage extends Component{
                     scalesPageToFit={this.state.scalesPageToFit}
                     startInLoadingState={this.state.startInLoadingState}
                 />
-            </ScrollView>
+            </View>
         );
     }
 
     fetchData(){
-        new Net().getMethod(DETAIL+this.props.id).then(r => {
+        new Net().getMethod(this.props.url).then(r => {
             this.setState({
                 title:r.title,
                 cover:r.cover,
                 detail:r.detail,
             })
         }).catch(error =>{
-            alert('error is :'+error);
-            console.error(error);
+            Toast.show('网络出现异常');
         });
     }
 

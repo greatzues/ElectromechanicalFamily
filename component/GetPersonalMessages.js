@@ -34,12 +34,10 @@ export default class GetPersonalMessages extends Component{
     render(){
         return(
             <View style={styles.container}>
-                <ScrollView>
-                    <NormalToolbar
-                        title='班级圈'
-                        leftImageSource={require('./../img/back.png')}
-                        leftItemFunc={this.back.bind(this)} />
-                </ScrollView>
+                <NormalToolbar
+                    title='班级圈'
+                    leftImageSource={require('./../img/back.png')}
+                    leftItemFunc={this.back.bind(this)} />
                 <SwRefreshListView
                     dataSource={this.state.dataSource.cloneWithRows(this.state.mesData)}
                     ref="listView"

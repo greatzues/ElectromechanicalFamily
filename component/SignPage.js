@@ -30,14 +30,14 @@ export default class SignPage extends Component{
 
       render(){
           return (
-              <ScrollView style={styles.container}>
+              <View style={styles.container}>
                   <NormalToolbar title='签到页面' leftImageSource={require('../img/back.png')} leftItemFunc={this.back.bind(this)}/>
                   <ListView
                       dataSource={this.state.dataSource.cloneWithRows(this.state.signTable)}
                       renderRow={this.renderRow.bind(this)}
                       enableEmptySections={true}
                   />
-              </ScrollView>
+              </View>
           )
       }
 

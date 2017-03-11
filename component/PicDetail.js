@@ -24,7 +24,7 @@ export default class PicDetail extends Component{
               this.state.testData[x]===null?null:source.push(this.state.testData[x]);
           }
           return(
-              <ScrollView style={styles.container}>
+              <View style={styles.container}>
                   <StatusBar
                       backgroundColor="#000"
                       barStyle="light-content"
@@ -58,7 +58,7 @@ export default class PicDetail extends Component{
                           </View>)
                       }
                   </Swiper>
-              </ScrollView>
+              </View>
           );
       }
 
@@ -86,6 +86,7 @@ const renderPagination = (index, total, context) => {
 
 const styles = StyleSheet.create({
     container: {
+        flex:1,
         backgroundColor: 'black',
     },
     image:{

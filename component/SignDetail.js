@@ -22,7 +22,7 @@ export default class SignDetail extends  Component{
 
       render(){
           return(
-              <ScrollView style={styles.container}>
+              <View style={styles.container}>
                   <NormalToolbar title='签到详情' leftImageSource={require('../img/back.png')} leftItemFunc={this.back.bind(this)}/>
                   <Card title="不签到原因" titleStyle={styles.reason} wrapperStyle={{padding:1}}>
                       <TextInput
@@ -42,7 +42,7 @@ export default class SignDetail extends  Component{
                       <Button backgroundColor="#393e42" borderRadius={5}  buttonStyle={styles.Sign}
                               icon={{name: 'sentiment-dissatisfied', size: 28}} title='不签到' onPress={this.postSignInfo.bind(this,0)}/>
                   </View>
-              </ScrollView>
+              </View>
           );
       }
 

@@ -1,12 +1,13 @@
 import React, { Component } from 'react';
 import { View, Text, StyleSheet, ListView, Image, ScrollView, Dimensions, TouchableOpacity } from 'react-native';
 import Net from '../Tool';
-import SchoolmatesDatails from './SchoolmatesDatails';
+import SchoolmatesDetails from './NotificationsDetail';
 import NormalToolbar from './NormalToolbar';
 import {SwRefreshScrollView, SwRefreshListView, RefreshStatus, LoadMoreStatus} from 'react-native-swRefresh';
 import { Card, Button } from 'react-native-elements';
 
 const BRIEF = '/schoolmates';
+const DETAIL = '/schoolmates/';
 const IS_LOAD_MORE = 5;
 const LENGTH = 30;
 export default class NewsItem extends Component {
@@ -27,9 +28,8 @@ export default class NewsItem extends Component {
     render() {
         return (
             <View style={{backgroundColor:'#eff0f3'}}>
-                <ScrollView>
-                    <NormalToolbar title='校友风采' leftImageSource={require('../img/back.png')} leftItemFunc={this.back.bind(this)}/>
-                </ScrollView>
+                <NormalToolbar title='校友风采' leftImageSource={require('../img/back.png')} leftItemFunc={this.back.bind(this)}/>
+
                 <SwRefreshListView
                     ref="listView"
                     style={{marginBottom:50,marginLeft:10,marginTop:10,marginRight:10}}
@@ -127,9 +127,10 @@ export default class NewsItem extends Component {
         return new Net().getMethod(url);
     }
 
+    //这里的SchoolmatesDetails是和Notifications共用一个NotificationsDetail的，详情看上面的import
     Press(id){
-        var params = {id:id};
-        new Net().toOther(this.props, 'SchoolmatesDatails',SchoolmatesDatails,params);
+        var params = {url:DETAIL+id};
+        new Net().toOther(this.props, 'SchoolmatesDetails',SchoolmatesDetails,params);
     }
 
     componentWillMount() {

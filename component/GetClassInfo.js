@@ -40,9 +40,8 @@ export default class GetClassInfo extends Component {
     isLogin(){
         return (
             <View >
-                <ScrollView>
-                    <NormalToolbar title="我的班级" rightItemFunc={this.toSign.bind(this,this.props.classNumber)} rightItemTitle='请签到' rightTextColor='#fff'/>
-                </ScrollView>
+                <NormalToolbar title="我的班级" rightItemFunc={this.toSign.bind(this,this.props.classNumber)} rightItemTitle='请签到' rightTextColor='#fff'/>
+
                 <SwRefreshListView
                     dataSource={this.state.dataSource.cloneWithRows(this.state.userData)}
                     ref="listView"

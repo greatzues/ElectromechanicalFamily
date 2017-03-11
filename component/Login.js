@@ -9,7 +9,7 @@ import {Button} from 'react-native-elements'
 import BottomTap from './BottomTap';
 import Toast from 'react-native-root-toast'
 
-
+const LOGIN = '/students/login';
 export default class Login extends Component{
     constructor(props){
         super(props);
@@ -101,38 +101,24 @@ export default class Login extends Component{
 
     //此处编写登录逻辑,然后加到loginButton（）里面去
     logining(myUsername,myPassword){
-        var URL = '/students/login';
-        return new Net().postLoginMethod(URL,myUsername,myPassword).then((data) => {
-            var myCode = data.code;
-            if (myCode === 200){
-                this.setState({
-                    editable: false,
-                    login:true,
-                    disabled:true,
-                });
+        return new Net().postLoginMethod(LOGIN,myUsername,myPassword).then((data) => {
+            if (data.code === 200){
+                this.setState({editable: false, login:true, disabled:true,});
+
                 let timer =  setTimeout(()=>{
-                    clearTimeout(timer)
+                    clearTimeout(timer);
+                    this.setState({editable: true, login:false, disabled:false,});
+
                     const { navigator } = this.props;
                     navigator.resetTo({name: 'BottomTap', component: BottomTap});
-                    this.setState({
-                        editable: true,
-                        login:false,
-                        disabled:false,
-                    });
                 },3000);
             }else {
-                this.setState({
-                    editable: false,
-                    login:true,
-                    disabled:true,
-                });
+                this.setState({editable: false, login:true, disabled:true,});
+
                 let timer =  setTimeout(()=>{
-                    clearTimeout(timer)
-                    this.setState({
-                        editable: true,
-                        login:false,
-                        disabled:false,
-                    });
+                    clearTimeout(timer);
+
+                    this.setState({editable: true, login:false, disabled:false,});
                 },1000);
                 Toast.show("账号或密码错误");
             }

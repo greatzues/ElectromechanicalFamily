@@ -28,7 +28,7 @@ export default class Home extends Component {
 
     render() {
         return (
-            <ScrollView style={{backgroundColor:'#eff0f3'}}>
+            <View style={{backgroundColor:'#eff0f3'}}>
                 <NormalToolbar
                     title='机电E家人'
                     leftImageSource={require('./../img/login.png')}
@@ -36,43 +36,45 @@ export default class Home extends Component {
                     rightTextColor='#fff'
                     leftItemFunc={this.props.toLogin}
                     rightItemFunc={this._setModalVisible.bind(this, true)}/>
-                <View><PicBanner bannerClick={this.props.bannerClick}/></View>
-                <View style={styles.body}>
-                    <TouchableOpacity onPress={this.props.toJDGround}>
-                        <View style = {[styles.textStyle,{backgroundColor:'rgba(30,144,255,0.5)'}]}>
-                            <Icon reverse name='users' type='font-awesome' color='transparent'/>
-                            <Text style={styles.text}>校友小广场</Text>
-                        </View>
-                    </TouchableOpacity>
+                <ScrollView>
+                    <View><PicBanner bannerClick={this.props.bannerClick}/></View>
+                    <View style={styles.body}>
+                        <TouchableOpacity onPress={this.props.toJDGround}>
+                            <View style = {[styles.textStyle,{backgroundColor:'rgba(30,144,255,0.5)'}]}>
+                                <Icon reverse name='users' type='font-awesome' color='transparent'/>
+                                <Text style={styles.text}>校友小广场</Text>
+                            </View>
+                        </TouchableOpacity>
 
-                    <TouchableOpacity onPress={this.props.toMyClass}>
-                        <View style = {[styles.textStyle,{backgroundColor:'rgba(0,139,69,0.5)'}]}>
-                            <Icon reverse name='home' type='simple-line-icon' color='transparent'/>
-                            <Text style={styles.text}>我的班级，我的家</Text>
-                        </View>
-                    </TouchableOpacity>
+                        <TouchableOpacity onPress={this.props.toMyClass}>
+                            <View style = {[styles.textStyle,{backgroundColor:'rgba(0,139,69,0.5)'}]}>
+                                <Icon reverse name='home' type='simple-line-icon' color='transparent'/>
+                                <Text style={styles.text}>我的班级，我的家</Text>
+                            </View>
+                        </TouchableOpacity>
 
-                    <TouchableOpacity onPress={this.props.toBriefNews}>
-                        <View style = {[styles.textStyle,{backgroundColor:'rgba(255,106,106,0.5)'}]}>
-                            <Icon reverse name='cursor' type='simple-line-icon' color='transparent'/>
-                            <Text style={styles.text}>机电简讯</Text>
-                        </View>
-                    </TouchableOpacity>
+                        <TouchableOpacity onPress={this.props.toBriefNews}>
+                            <View style = {[styles.textStyle,{backgroundColor:'rgba(255,106,106,0.5)'}]}>
+                                <Icon reverse name='cursor' type='simple-line-icon' color='transparent'/>
+                                <Text style={styles.text}>机电简讯</Text>
+                            </View>
+                        </TouchableOpacity>
 
-                    <TouchableOpacity onPress={this.props.toJdInform}>
-                        <View style = {[styles.textStyle,{backgroundColor:'rgba(186,85,211,0.5)'}]}>
-                            <Icon reverse name='volume-2' type='simple-line-icon' color='transparent'/>
-                            <Text style={styles.text}>机电通知</Text>
-                        </View>
-                    </TouchableOpacity>
+                        <TouchableOpacity onPress={this.props.toJdInform}>
+                            <View style = {[styles.textStyle,{backgroundColor:'rgba(186,85,211,0.5)'}]}>
+                                <Icon reverse name='volume-2' type='simple-line-icon' color='transparent'/>
+                                <Text style={styles.text}>机电通知</Text>
+                            </View>
+                        </TouchableOpacity>
 
-                    <TouchableOpacity onPress={this.props.toXiaoYouIntro}>
-                        <View style = {[styles.textStyle,{backgroundColor:'rgba(205,102,0,0.5)'}]}>
-                            <Icon reverse name='trophy' type='simple-line-icon' color='transparent'/>
-                            <Text style={styles.text}>校友风采</Text>
-                        </View>
-                    </TouchableOpacity>
-                </View>
+                        <TouchableOpacity onPress={this.props.toXiaoYouIntro}>
+                            <View style = {[styles.textStyle,{backgroundColor:'rgba(205,102,0,0.5)'}]}>
+                                <Icon reverse name='trophy' type='simple-line-icon' color='transparent'/>
+                                <Text style={styles.text}>校友风采</Text>
+                            </View>
+                        </TouchableOpacity>
+                    </View>
+                </ScrollView>
 
                 <Modal
                     animationType={"fade"}
@@ -92,7 +94,7 @@ export default class Home extends Component {
                         </View>
                     </View>
                 </Modal>
-            </ScrollView>
+            </View>
         );
     }
 
