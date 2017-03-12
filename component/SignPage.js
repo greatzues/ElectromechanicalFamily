@@ -7,41 +7,61 @@ import Toast from 'react-native-root-toast';
 import Net from '../Tool';
 import NormalToolbar from './NormalToolbar'
 import SignDetail from './SignDetail'
-import {ListItem , Icon} from 'react-native-elements'
+import { ListItem } from 'react-native-elements'
+import {SwRefreshScrollView, SwRefreshListView, RefreshStatus, LoadMoreStatus} from 'react-native-swRefresh';
 
-const TIME = '/signTable/student';
+const TIME_TABLE = '/signTable/student';
+const IS_LOAD_MORE = 5;
+const LENGTH = 30;
+const TIME = 400;
 export default class SignPage extends Component{
+    _page=1;
+    _dataSource = new ListView.DataSource({rowHasChanged:(row1,row2)=>row1 !== row2})
     // 构造
       constructor(props) {
         super(props);
-          var ds = new ListView.DataSource({rowHasChanged: (r1, r2) => r1 !== r2});
           this.state = {
-            page:1,
-            signTable:[],
-            dataSource:ds,
-            currentTime:null,
-              test:true,
+              dataSource:this._dataSource,
+              isLoadMore:0,
+              dataLength:0,
+              mesData:[],
         };
       }
 
-    componentWillMount() {
-        this.fetchData();
+    componentDidMount() {
+        let timer = setTimeout(() => {
+            clearTimeout(timer);
+            this.fetchData(this._page).then(r => {
+                console.log(r);
+                this.setState({
+                    mesData:r.messages,
+                    isLoadMore:r.messages.length
+                })
+                this.getAvatarAndName(r.messages)
+            }).catch(e => {});
+            try {this.refs.listView.beginRefresh()}catch (e){}; //刷新动画
+        },TIME)
     }
 
       render(){
           return (
               <View style={styles.container}>
                   <NormalToolbar title='签到页面' leftImageSource={require('../img/back.png')} leftItemFunc={this.back.bind(this)}/>
-                  <ListView
-                      dataSource={this.state.dataSource.cloneWithRows(this.state.signTable)}
-                      renderRow={this.renderRow.bind(this)}
-                      enableEmptySections={true}
+                  <SwRefreshListView
+                      dataSource={this.state.dataSource.cloneWithRows(this.state.mesData)}
+                      ref="listView"
+                      renderRow={this._renderRow.bind(this)}
+                      onRefresh={this._onListRefersh.bind(this)}
+                      onLoadMore={this._onLoadMore.bind(this)}
+                      customRefreshView={this.state.isLoadMore>IS_LOAD_MORE?null:this.renderRefreshView.bind(this)}
+                      pusuToLoadMoreTitle={this.state.isLoadMore>IS_LOAD_MORE?'上拉加载更多':''}
+                      noMoreDataTitle="无更多数据！"
                   />
               </View>
           )
       }
 
-    renderRow(rowData){
+    _renderRow(rowData){
         let startTime = new Net().timeToDate(rowData.startTime);
         let endTime = new Net().timeToDate(rowData.endTime);
         let  signAble = this.ifSignAble(rowData.startTime,rowData.endTime,rowData.isOverdue);
@@ -64,19 +84,14 @@ export default class SignPage extends Component{
         new Net().toOther(this.props,'SignDetail', SignDetail, params)
     }
 
-      fetchData(){
-          var url = TIME+'?page='+ this.state.page;
-          new Net().getMethod(url).then(r => {
-              console.log(r);
-              this.setState({
-                  signTable:r.signTables
-              })
-          }).catch(e => {})
+      fetchData(pages){
+          var url = TIME_TABLE+'?page='+ pages;
+          return new Net().getMethod(url).catch(e => {})
       }
-    //只有符合在开始时间和结束时间之间以及isOverdue等于0，也就是这个时间段还未签到过才能才能进行签到操作,生病了
+    //只有符合在开始时间和结束时间之间以及isOverdue等于0，也就是这个时间段还未签到过才能才能进行签到操作
       ifSignAble(startTime, endTime, isOverdue){
           var timeStamp = new Date().getTime();
-          if(timeStamp>startTime&&timeStamp<endTime&&isOverdue!==1){
+          if(timeStamp > startTime && timeStamp < endTime && isOverdue === null){
               return true;
           }else {
               return false; //记得改回来false
@@ -94,8 +109,76 @@ export default class SignPage extends Component{
     reRender(ifRefresh){
         Toast.show('您已成功签到，签到功能已锁');
         if(ifRefresh){
-            this.fetchData();
+            this.componentDidMount();
         }
+    }
+    /**
+     * 当item数目不满一个屏,该组件会出现下拉刷新头部不能自动隐藏
+     * 于是不足一个page的数量时，自定义下拉刷新视图
+     * @param refreshStatus
+     * @param offsetY
+     * @returns {XML}
+     */
+    renderRefreshView(refreshStatus, offsetY){
+        switch (refreshStatus) {
+            case 0:
+                return(<View></View>);
+                break;
+            case 1:
+                return(<View></View>);
+                break;
+            case 2:
+                return(<View></View>);
+                break;
+            default:
+                break;
+        }
+    }
+
+    /**
+     * 模拟刷新
+     * @param end
+     * @private
+     */
+    _onListRefersh(end){
+        let timer =  setTimeout(()=>{
+            clearTimeout(timer);
+            this.fetchData(this._page).then(r => {
+                this.setState({
+                    mesData:r.signTables
+                })
+                this.getAvatarAndName(r.signTables)
+            }).catch(e => {});
+            try {
+                this.refs.listView.resetStatus() //重置上拉加载的状态
+                end()//刷新成功后需要调用end结束刷新
+            }catch (e){};
+        },TIME)
+    }
+
+    /**
+     * 模拟加载更多
+     * @param end
+     * @private
+     */
+    _onLoadMore(end){
+        let timer =  setTimeout(()=>{
+            clearTimeout(timer)
+            this._page++;
+            this.fetchData(this._page).then(r => {
+                for(x in r.signTables){
+                    this.state.mesData.push(r.signTables[x]);
+                }
+                this.setState({
+                    mesData:this.state.mesData,
+                    dataLength:r.signTables.length,
+                })
+            }).catch(e =>{});
+            try {
+                this.refs.listView.resetStatus();
+                this.refs.listView.endLoadMore(this.state.dataLength<LENGTH?true:false);
+            }catch (e){}
+        },TIME)
     }
 }
 

@@ -31,7 +31,7 @@ export default class SignDetail extends  Component{
                           placeholder="如果出现特殊情况，请在此处填写不签到原因，点击不签到按钮，可再次回来签到详情修改签到状态"
                           placeholderTextColor='white'
                           maxLength={255}
-                          numberOfLines={8}
+                          numberOfLines={6}
                           style={styles.input}
                           onEndEditing ={event => this.setState({reason:event.nativeEvent.text})}
                       />
@@ -100,7 +100,7 @@ const styles=StyleSheet.create({
         backgroundColor:'#393e42',
         margin:10,
         borderRadius:15,
-        flex:1
+        color:'white',
     },
     logo:{
         width:device.width*0.8,
