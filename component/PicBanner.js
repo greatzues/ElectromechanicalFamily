@@ -13,6 +13,7 @@ const BANNER_PIC = [
     ['http://www.wyu.edu.cn/news/file/indexpic/20151120083072957295.jpg','http://dept.wyu.edu.cn/jidianxi/','五邑大学机电学院'],
     ['http://www.wyu.edu.cn/news/file/indexpic/20160604212098269826.jpg','http://jwc.wyu.edu.cn/www/','五邑大学图书馆'],
 ];
+const BANNER_HEIGHT = 200;
 export default class PicBanner extends Component {
     constructor(props){
         super(props);
@@ -53,7 +54,7 @@ export default class PicBanner extends Component {
 const styles = StyleSheet.create({
     page: {
         width: device.width,
-        height: 170,
+        height: BANNER_HEIGHT,
         resizeMode: 'stretch',
         justifyContent:'flex-end'
     },
