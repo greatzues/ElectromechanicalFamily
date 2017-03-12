@@ -23,7 +23,8 @@ import LittleGround from './LittleGround';
 import ClassGround from './ClassGround';
 import Toast from 'react-native-root-toast';
 import ChangePassword from './ChangePassword';
-import GetPersonalMessages from './GetPersonalMessages'
+import GetPersonalMessages from './GetPersonalMessages';
+import AlumniAssociation from './AlumniAssociation';
 
 const LOGIN = '/students/login';
 const INFO = '/students/getinfo';
@@ -89,6 +90,7 @@ export default class BottomTap extends Component {
                           ShareToGround={this.toShare.bind(this,0)}
                           toMyClass={this.toMyClass.bind(this,this.state.classNumber)}
                           toJDGround={() => this.setState({selectTab:'new'})}
+                          toAlumniAssociation={this.toAlumniAssociation.bind(this)}
                     />
                 </TabNavigator.Item>
 
@@ -242,6 +244,10 @@ export default class BottomTap extends Component {
     myShare(){
         new Net().toOther(this.props, 'GetPersonalMessages',GetPersonalMessages);
         this.refs.drawer.closeDrawer();
+    }
+
+    toAlumniAssociation(){
+        new Net().toOther(this.props,'AlumniAssociation',AlumniAssociation);
     }
 }
 

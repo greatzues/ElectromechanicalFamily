@@ -158,8 +158,7 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
     },
     nav_bar: {
-        //flex:1,
-        flex: 1,
+        //flex: 1,
         flexDirection:'row',
         justifyContent: 'center',
     },
