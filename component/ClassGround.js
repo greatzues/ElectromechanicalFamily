@@ -6,11 +6,11 @@ import Net from '../Tool';
 import commentDetail from './commentDetail';
 import PicDetail from './PicDetail';
 import NormalToolbar from './NormalToolbar';
-import Toast from 'react-native-root-toast'
 
 const MESSAGE = '/messages';
 const IS_LOAD_MORE = 5;
 const LENGTH = 30;
+const TIME = 400;
 export default class LittleGround extends Component{
     _page=1
     _dataSource = new ListView.DataSource({rowHasChanged:(row1,row2)=>row1 !== row2})
@@ -25,28 +25,29 @@ export default class LittleGround extends Component{
             mesData:[],
             isLoadMore:0,
             dataLength:0,
+            userName:[],
+            userAvatar:[],
         };
     }
 
     render(){
         return(
             <View style={styles.container}>
-                <ScrollView>
-                    <NormalToolbar
-                        title='班级圈'
-                        leftImageSource={require('./../img/back.png')}
-                        leftItemFunc={this.back.bind(this)} />
-                </ScrollView>
+                <NormalToolbar
+                    title='班级圈'
+                    leftImageSource={require('./../img/back.png')}
+                    leftItemFunc={this.back.bind(this)} />
                 <SwRefreshListView
                     dataSource={this.state.dataSource.cloneWithRows(this.state.mesData)}
                     ref="listView"
                     style={{marginBottom:45}}
                     renderRow={this._renderRow.bind(this)}
                     onRefresh={this._onListRefersh.bind(this)}
-                    onLoadMore={this.state.isLoadMore>IS_LOAD_MORE?this._onLoadMore.bind(this):null}
+                    onLoadMore={this._onLoadMore.bind(this)}
                     customRefreshView={this.state.isLoadMore>IS_LOAD_MORE?null:this.renderRefreshView.bind(this)}
                     pusuToLoadMoreTitle={this.state.isLoadMore>IS_LOAD_MORE?'上拉加载更多':''}
                     noMoreDataTitle="无更多数据！"
+                    initialListSize={3}
                 />
             </View>
         )
@@ -81,10 +82,10 @@ export default class LittleGround extends Component{
             <Card>
                 <View style={styles.cardTop}>
                     {this.userAvatar[rowId] === null?<Image source={require('../img/UserDafault.png')}  style={styles.renderRowImg}/>:
-                        <Image source={{uri:BASEURL+'/avatar/'+this.userAvatar[rowId]}}  style={styles.renderRowImg}/>
+                        <Image source={{uri:BASEURL+'/avatar/'+this.state.userAvatar[rowId]}}  style={styles.renderRowImg}/>
                     }
                     <View style={styles.avatarAndTime}>
-                        <Text style={styles.cardavatar}>{this.userName[rowId]}</Text>
+                        <Text style={styles.cardavatar}>{this.state.userName[rowId]}</Text>
                         <Text style={styles.cardTime}>{d}</Text>
                     </View>
                     <Icon name='pencil-square-o' type='font-awesome' color='#f5811f' containerStyle={styles.comment} onPress={this.toDetails.bind(this,rowData)}/>
@@ -115,6 +116,7 @@ export default class LittleGround extends Component{
     _onListRefersh(end){
         let timer =  setTimeout(()=>{
             clearTimeout(timer);
+            this._page = 1;
             this.fetchData(this._page).then(r => {
                 this.setState({
                     mesData:r.messages
@@ -125,7 +127,7 @@ export default class LittleGround extends Component{
                 this.refs.listView.resetStatus() //重置上拉加载的状态
                 end()//刷新成功后需要调用end结束刷新
             }catch (e){};
-        },1500)
+        },TIME)
     }
 
     /**
@@ -150,18 +152,21 @@ export default class LittleGround extends Component{
                 this.refs.listView.resetStatus();
                 this.refs.listView.endLoadMore(this.state.dataLength<LENGTH?true:false);
             }catch (e){}
-        },2000)
+        },TIME)
     }
 
     componentDidMount() {
-        this.fetchData(this._page).then(r => {
-            this.setState({
-                mesData:r.messages,
-                isLoadMore:r.messages.length
-            })
-            this.getAvatarAndName(r.messages)
-        }).catch(e => {});
-        this.refs.listView.beginRefresh() //刷新动画
+        let timer = setTimeout(() => {
+            clearTimeout(timer);
+            this.fetchData(this._page).then(r => {
+                this.setState({
+                    mesData:r.messages,
+                    isLoadMore:r.messages.length
+                })
+                this.getAvatarAndName(r.messages)
+            }).catch(e => {});
+            try {this.refs.listView.beginRefresh()}catch (e){}; //刷新动画
+        },TIME)
     }
 
     picList(rowData, sectionID, rowID){
@@ -199,23 +204,36 @@ export default class LittleGround extends Component{
         var url = MESSAGE+'?page='+pages+'&filters={classNumber:"'+this.props.classNumber+'"}';
         return new Net().getMethod(url).catch(error => {});
     }
-    //通过id来拿到student的所有基本信息
-    getAvatarAndName(messages){
+    /**
+     * 函数前面的async关键字，表明该函数将返回一个Promise对象
+     * 调用该函数时，当遇到await关键字，立即返回它后面的表达式（getStockPrice函数）产生的Promise对象
+     * 不再执行函数体内后面的语句。等到getStockPrice完成，再自动回到函数体内，执行剩下的语句
+     * @param messages
+     * @returns {*}
+     */
+    async getAvatarAndName(messages){
         for(let x in messages){
-            new Net().getStudentInfoById(messages[x].belong).then(r => {
-                this.userName[x] = r.realname;
-                this.userAvatar[x] = r.avatar;
+            let total = (this._page-1)*30;
+            let i = parseInt(total)+parseInt(x);
+            await new Net().getStudentInfoById(messages[x].belong).then(r => {
+                this.state.userName[i] = r.realname;
+                this.state.userAvatar[i] = r.avatar;
             }).catch(e => {})
         }
+        return this.forceUpdate();
     }
 
     back(){
-        new Net().back(this.props);
+        let timer = setTimeout(() => {
+            clearTimeout(timer);
+            new Net().back(this.props);
+        },1000)
     }
 
 }
 const styles=StyleSheet.create({
     container: {
+        flex:1,
         backgroundColor: '#ffffff',
     },
     cardavatar:{

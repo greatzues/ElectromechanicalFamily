@@ -24,6 +24,8 @@ export default class LittleGround extends Component{
             mesData:[],
             isLoadMore:0,
             dataLength:0,
+            userName:[],
+            userAvatar:[],
         };
     }
 
@@ -44,7 +46,7 @@ export default class LittleGround extends Component{
                     pusuToLoadMoreTitle={this.state.isLoadMore>IS_LOAD_MORE?'上拉加载更多':''}
                     noMoreDataTitle="无更多数据！"
                     showsVerticalScrollIndicator={true}
-                    initialListSize={1} />
+                    initialListSize={3} />
             </View>
         )
     }
@@ -77,10 +79,10 @@ export default class LittleGround extends Component{
             <Card>
                 <View style={styles.cardTop}>
                     {this.userAvatar[rowId] === null?<Image source={require('../img/UserDafault.png')}  style={styles.renderRowImg}/>:
-                        <Image source={{uri:BASEURL+'/avatar/'+this.userAvatar[rowId]}}  style={styles.renderRowImg}/>
+                        <Image source={{uri:BASEURL+'/avatar/'+this.state.userAvatar[rowId]}}  style={styles.renderRowImg}/>
                     }
                     <View style={styles.avatarAndTime}>
-                        <Text style={styles.cardavatar}>{this.userName[rowId]}</Text>
+                        <Text style={styles.cardavatar}>{this.state.userName[rowId]}</Text>
                         <Text style={styles.cardTime}>{d}</Text>
                     </View>
 
@@ -111,11 +113,12 @@ export default class LittleGround extends Component{
     _onListRefersh(end){
         let timer =  setTimeout(()=>{
             clearTimeout(timer);
+            this._page = 1;
             this.fetchData(this._page).then(r => {
                 this.setState({
                     mesData:r.messages
-                })
-                this.getAvatarAndName(r.messages)
+                });
+                this.getAvatarAndName(r.messages);
             }).catch(e => {});
             this.refs.listView.resetStatus() //重置上拉加载的状态
             end()//刷新成功后需要调用end结束刷新
@@ -139,6 +142,7 @@ export default class LittleGround extends Component{
                     mesData:this.state.mesData,
                     dataLength:r.messages.length,
                 })
+                 this.getAvatarAndName(r.messages);
             }).catch(e =>{});
             //end(this._page > 2)//加载成功后需要调用end结束刷新 假设加载4页后数据全部加载完毕
             this.refs.listView.resetStatus();
@@ -152,7 +156,7 @@ export default class LittleGround extends Component{
                 mesData:r.messages,
                 isLoadMore:r.messages.length
             })
-            this.getAvatarAndName(r.messages)
+            this.getAvatarAndName(r.messages);
         }).catch(e => {});
         this.refs.listView.beginRefresh() //刷新动画
     }
@@ -192,14 +196,24 @@ export default class LittleGround extends Component{
         var url = MESSAGE+'?page='+pages;
         return new Net().getMethod(url).catch(error => {});
     }
-    //通过id来拿到student的所有基本信息
-    getAvatarAndName(messages){
+
+    /**
+     * 函数前面的async关键字，表明该函数将返回一个Promise对象
+     * 调用该函数时，当遇到await关键字，立即返回它后面的表达式（getStockPrice函数）产生的Promise对象
+     * 不再执行函数体内后面的语句。等到getStockPrice完成，再自动回到函数体内，执行剩下的语句
+     * @param messages
+     * @returns {*}
+     */
+    async getAvatarAndName(messages){
         for(let x in messages){
-            new Net().getStudentInfoById(messages[x].belong).then(r => {
-                this.userName[x] = r.realname;
-                this.userAvatar[x] = r.avatar;
+            let total = (this._page-1)*30;
+            let i = parseInt(total)+parseInt(x);
+            await new Net().getStudentInfoById(messages[x].belong).then(r => {
+                this.state.userName[i] = r.realname;
+                this.state.userAvatar[i] = r.avatar;
             }).catch(e => {})
         }
+        return this.forceUpdate();
     }
 
 }
