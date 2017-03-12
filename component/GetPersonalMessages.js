@@ -35,7 +35,7 @@ export default class GetPersonalMessages extends Component{
         return(
             <View style={styles.container}>
                 <NormalToolbar
-                    title='班级圈'
+                    title='我的分享'
                     leftImageSource={require('./../img/back.png')}
                     leftItemFunc={this.back.bind(this)} />
                 <SwRefreshListView
@@ -116,6 +116,7 @@ export default class GetPersonalMessages extends Component{
     _onListRefersh(end){
         let timer =  setTimeout(()=>{
             clearTimeout(timer);
+            this._page = 1;
             this.fetchData(this._page).then(r => {
                 this.setState({
                     mesData:r.messages
@@ -155,14 +156,17 @@ export default class GetPersonalMessages extends Component{
     }
 
     componentDidMount() {
-        this.fetchData(this._page).then(r => {
-            this.setState({
-                mesData:r.messages,
-                isLoadMore:r.messages.length
-            })
-            this.getAvatarAndName(r.messages)
-        }).catch(e => {});
-        this.refs.listView.beginRefresh() //刷新动画
+        let timer =  setTimeout(()=>{
+            clearTimeout(timer)
+            this.fetchData(this._page).then(r => {
+                this.setState({
+                    mesData:r.messages,
+                    isLoadMore:r.messages.length
+                })
+                this.getAvatarAndName(r.messages)
+            }).catch(e => {});
+            this.refs.listView.beginRefresh() //刷新动画
+        },500)
     }
 
     picList(rowData, sectionID, rowID){
