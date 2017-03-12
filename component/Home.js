@@ -14,6 +14,12 @@ const TITLE = [{title:'校友小广场',icon:'users',type:'font-awesome',bg:'rgb
                         {title:'机电通知',icon:'volume-2',type:'simple-line-icon',bg:'rgba(186,85,211,0.5)'},
                             {title:'校友风采',icon:'trophy',type:'simple-line-icon',bg:'rgba(205,102,0,0.5)'},
                                 {title:'校友会',icon:'trophy',type:'simple-line-icon',bg:'rgba(205,102,0,0.5)'}]
+//底部tab栏高度大概是50，顶部toolbar是40，banner的高度是200,所以中间item的高度是device.height-320
+const ITEM_HEIGHT = device.height-305;
+const ICON_SIZE = 20;
+const CARD_MARGIN_TOP = 7; //这个是格子父布局，也就是那两行距离顶部的距离，也是中间格子距离旁边两个格子的宽度
+const CARD_HEIGHT = ITEM_HEIGHT*0.45;  //每个格子的高度
+const CARD_WIDTH = device.width*0.31;  //每个格子的宽度
 export default class Home extends Component {
     constructor(props){
         super(props);
@@ -38,39 +44,48 @@ export default class Home extends Component {
                     rightItemFunc={this._setModalVisible.bind(this, true)}/>
                 <ScrollView>
                     <View><PicBanner bannerClick={this.props.bannerClick}/></View>
-                    <View style={styles.body}>
+                    <View style={{flexDirection:'row',justifyContent:'center',marginTop:CARD_MARGIN_TOP}}>
                         <TouchableOpacity onPress={this.props.toJDGround}>
                             <View style = {[styles.textStyle,{backgroundColor:'rgba(30,144,255,0.5)'}]}>
-                                <Icon reverse name='users' type='font-awesome' color='transparent'/>
+                                <Icon reverse name='users' type='font-awesome' color='transparent' size={ICON_SIZE}/>
                                 <Text style={styles.text}>校友小广场</Text>
                             </View>
                         </TouchableOpacity>
 
                         <TouchableOpacity onPress={this.props.toMyClass}>
-                            <View style = {[styles.textStyle,{backgroundColor:'rgba(0,139,69,0.5)'}]}>
-                                <Icon reverse name='home' type='simple-line-icon' color='transparent'/>
+                            <View style = {[styles.textStyle,{backgroundColor:'rgba(0,139,69,0.5)',marginRight:CARD_MARGIN_TOP,marginLeft:CARD_MARGIN_TOP}]}>
+                                <Icon reverse name='home' type='simple-line-icon' color='transparent' size={ICON_SIZE}/>
                                 <Text style={styles.text}>我的班级，我的家</Text>
                             </View>
                         </TouchableOpacity>
 
                         <TouchableOpacity onPress={this.props.toBriefNews}>
                             <View style = {[styles.textStyle,{backgroundColor:'rgba(255,106,106,0.5)'}]}>
-                                <Icon reverse name='cursor' type='simple-line-icon' color='transparent'/>
+                                <Icon reverse name='cursor' type='simple-line-icon' color='transparent' size={ICON_SIZE}/>
                                 <Text style={styles.text}>机电简讯</Text>
                             </View>
                         </TouchableOpacity>
+                    </View>
 
+                    <View style={{flexDirection:'row',justifyContent:'center',marginTop:CARD_MARGIN_TOP}}>
                         <TouchableOpacity onPress={this.props.toJdInform}>
                             <View style = {[styles.textStyle,{backgroundColor:'rgba(186,85,211,0.5)'}]}>
-                                <Icon reverse name='volume-2' type='simple-line-icon' color='transparent'/>
+                                <Icon reverse name='volume-2' type='simple-line-icon' color='transparent' size={ICON_SIZE}/>
                                 <Text style={styles.text}>机电通知</Text>
                             </View>
                         </TouchableOpacity>
 
                         <TouchableOpacity onPress={this.props.toXiaoYouIntro}>
-                            <View style = {[styles.textStyle,{backgroundColor:'rgba(205,102,0,0.5)'}]}>
-                                <Icon reverse name='trophy' type='simple-line-icon' color='transparent'/>
+                            <View style = {[styles.textStyle,{backgroundColor:'rgba(205,102,0,0.5)',marginRight:CARD_MARGIN_TOP,marginLeft:CARD_MARGIN_TOP}]}>
+                                <Icon reverse name='trophy' type='simple-line-icon' color='transparent' size={ICON_SIZE}/>
                                 <Text style={styles.text}>校友风采</Text>
+                            </View>
+                        </TouchableOpacity>
+
+                        <TouchableOpacity onPress={this.props.toAlumniAssociation}>
+                            <View style = {[styles.textStyle,{backgroundColor:'rgba(205,0,0,0.5)'}]}>
+                                <Icon reverse name='cup' type='simple-line-icon' color='transparent' size={ICON_SIZE}/>
+                                <Text style={styles.text}>校友会</Text>
                             </View>
                         </TouchableOpacity>
                     </View>
@@ -148,21 +163,17 @@ class ModalButton extends Component{
 
 const styles = StyleSheet.create({
     textStyle: {
-        marginTop:3,
-        borderRadius: 5,
-        height: 60,
-        width: device.width-6,
+        height: CARD_HEIGHT,
+        width: CARD_WIDTH,
         backgroundColor: '#eee',
         alignItems: 'center',
-        flexDirection:'row',
         justifyContent:'center',
-        marginLeft:3
     },
 
     text: {
-        fontSize: 20,
-        fontWeight:'200',
+        fontSize: 13,
         color:'white',
+        alignSelf:'center',
     },
 
     drawerTextStyle: {
