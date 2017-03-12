@@ -17,6 +17,7 @@ const PARALLAX_HEADER_HEIGHT = 200;
 const STICKY_HEADER_HEIGHT = 38;
 const IS_LOAD_MORE = 15;
 const LENGTH = 30;
+const TIME = 400;
 export default class BriefNews extends Component {
     _page=1
     _dataSource = new ListView.DataSource({rowHasChanged:(row1,row2)=>row1 !== row2})
@@ -126,7 +127,6 @@ export default class BriefNews extends Component {
      * @private
      */
     _onListRefresh(end){
-        // this.setState({isRefreshing: true});
         let timer =  setTimeout(()=>{
             clearTimeout(timer);
             this.fetchData(this._page).then(r => {
@@ -140,7 +140,7 @@ export default class BriefNews extends Component {
                 this.refs.listView.resetStatus();
                 end();
             }catch (e){};
-        },1500)
+        },TIME)
     }
 
     /**
@@ -151,21 +151,21 @@ export default class BriefNews extends Component {
     _onLoadMore(end){
         let timer =  setTimeout(()=>{
             clearTimeout(timer);
-            this._page++;
-            this.fetchData(this._page).then(r => {
-                for(x in r.newsList){
-                    this.state.news.push(r.newsList[x]);
-                }
-                this.setState({
-                    news : this.state.news,
-                    dataLength:r.newsList.length
-                })
-            }).catch(e =>{});
             try {
-                this.refs.listView.resetStatus();
-                this.refs.listView.endLoadMore(this.state.dataLength<LENGTH?true:false);
+                this._page++;
+                this.fetchData(this._page).then(r => {
+                    for(x in r.newsList){
+                        this.state.news.push(r.newsList[x]);
+                    }
+                    this.setState({
+                        news : this.state.news,
+                        dataLength:r.newsList.length
+                    })
+                }).catch(e =>{});
+                    this.refs.listView.resetStatus();
+                    this.refs.listView.endLoadMore(this.state.dataLength<LENGTH?true:false);
             }catch (e){};
-        },2000)
+        },TIME)
     }
 
     componentDidMount() {
@@ -178,7 +178,7 @@ export default class BriefNews extends Component {
                 });
             });
             try {this.refs.listView.beginRefresh()}catch (e){};
-        },400)
+        },TIME)
     }
 
     _renderRow(rowData,sectionID,rowID){
@@ -198,9 +198,12 @@ export default class BriefNews extends Component {
         var params = {url:DETAIL+id};
         new Net().toOther(this.props,'BriefNewsDetail',BriefNewsDetail,params);
     }
-
+    //如果测试的时候出现点击物理back键的时候，弹出一个warning，再去监听安卓的物理键，现在我测试下来暂时没事
     back(){
-        new Net().back(this.props);
+        let timer = setTimeout(() => {
+            clearTimeout(timer);
+            new Net().back(this.props);
+        },1000)
     };
 
     //获取原始数据

@@ -10,6 +10,7 @@ const BRIEF = '/schoolmates';
 const DETAIL = '/schoolmates/';
 const IS_LOAD_MORE = 5;
 const LENGTH = 30;
+const TIME = 400;
 export default class NewsItem extends Component {
     // 构造
     _page=1
@@ -27,7 +28,7 @@ export default class NewsItem extends Component {
 
     render() {
         return (
-            <View style={{backgroundColor:'#eff0f3'}}>
+            <View style={{backgroundColor:'#eff0f3',flex:1}}>
                 <NormalToolbar title='校友风采' leftImageSource={require('../img/back.png')} leftItemFunc={this.back.bind(this)}/>
 
                 <SwRefreshListView
@@ -81,7 +82,7 @@ export default class NewsItem extends Component {
             this.refs.listView.resetStatus() //重置上拉加载的状态
             end()//刷新成功后需要调用end结束刷新
             // this.refs.listView.endRefresh() //建议使用end() 当然 这个可以在任何地方使用
-        },1500)
+        },TIME)
     }
 
     /**
@@ -105,7 +106,7 @@ export default class NewsItem extends Component {
                 this.refs.listView.resetStatus();
                 this.refs.listView.endLoadMore(this.state.dataLength<LENGTH?true:false)
             }catch (e){};
-        },2000)
+        },TIME)
     }
 
     renderRow(rowData, sectionID, rowID){
@@ -134,11 +135,14 @@ export default class NewsItem extends Component {
     }
 
     componentWillMount() {
-        this.fetchData(this._page).then(r => {
-            this.setState({
-                userData : r.notificationList,
+        let timer = setTimeout(() => {
+            clearTimeout(timer);
+            this.fetchData(this._page).then(r => {
+                this.setState({
+                    userData : r.notificationList,
+                });
             });
-        });
+        },TIME)
     }
 
     back(){

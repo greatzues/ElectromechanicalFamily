@@ -7,7 +7,7 @@ import Net from '../Tool';
 import Toast from 'react-native-root-toast';
 import NormalToolbar from './NormalToolbar'
 
-const DETAIL = '/notifications/';
+const startInLoadingState = true;
 export default class BriefNewsDetailPage extends Component{
     constructor(props) {
         super(props);
@@ -33,22 +33,25 @@ export default class BriefNewsDetailPage extends Component{
                     style={styles.webView}
                     source={{html:this.state.detail}}
                     scalesPageToFit={this.state.scalesPageToFit}
-                    startInLoadingState={this.state.startInLoadingState}
+                    startInLoadingState={startInLoadingState}
                 />
             </View>
         );
     }
 
     fetchData(){
-        new Net().getMethod(this.props.url).then(r => {
-            this.setState({
-                title:r.title,
-                cover:r.cover,
-                detail:r.detail,
-            })
-        }).catch(error =>{
-            Toast.show('网络出现异常');
-        });
+        let timer = setTimeout(() => {
+            clearTimeout(timer);
+            new Net().getMethod(this.props.url).then(r => {
+                this.setState({
+                    title:r.title,
+                    cover:r.cover,
+                    detail:r.detail,
+                })
+            }).catch(error =>{
+                Toast.show('网络出现异常');
+            });
+        },1000)
     }
 
     componentWillMount() {

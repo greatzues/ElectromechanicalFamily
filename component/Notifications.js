@@ -16,6 +16,7 @@ const PARALLAX_HEADER_HEIGHT = 200;
 const STICKY_HEADER_HEIGHT = 38;
 const IS_LOAD_MORE = 15;
 const LENGTH = 30;
+const TIME = 400;
 export default class Notifications extends Component {
     _page=1
     _dataSource = new ListView.DataSource({rowHasChanged:(row1,row2)=>row1 !== row2})
@@ -137,7 +138,7 @@ export default class Notifications extends Component {
                 this.refs.listView.resetStatus();
                 end();
             }catch (e){};
-        },1500)
+        },TIME)
     }
 
     /**
@@ -162,7 +163,7 @@ export default class Notifications extends Component {
                 this.refs.listView.resetStatus();
                 this.refs.listView.endLoadMore(this.state.dataLength<LENGTH?true:false);
             }catch (e){};
-        },2000)
+        },TIME)
     }
 
     componentDidMount() {
@@ -175,7 +176,7 @@ export default class Notifications extends Component {
                 });
             });
             try {this.refs.listView.beginRefresh()}catch (e){};
-        },400)
+        },TIME)
     }
 
     _renderRow(rowData,sectionID,rowID){
@@ -197,7 +198,10 @@ export default class Notifications extends Component {
     }
 
     back(){
-        new Net().back(this.props);
+        let timer = setTimeout(() => {
+            clearTimeout(timer);
+            new Net().back(this.props);
+        },1000)
     };
 
     //获取原始数据
