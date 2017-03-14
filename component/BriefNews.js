@@ -14,7 +14,7 @@ import BriefNewsDetail from './NotificationsDetail';
 const NEWS = '/news';
 const DETAIL = '/news/';
 const PARALLAX_HEADER_HEIGHT = 200;
-const STICKY_HEADER_HEIGHT = 38;
+const STICKY_HEADER_HEIGHT = 55;
 const IS_LOAD_MORE = 15;
 const LENGTH = 30;
 const TIME = 400;
@@ -61,7 +61,9 @@ export default class BriefNews extends Component {
                             汇集机电学院最新短资讯
                         </Text>
                         <TouchableOpacity style={styles.foreBack} onPress={this.back.bind(this)}>
-                            <Image source={require('../img/back.png')}/>
+                            <View style={{backgroundColor:'rgba(250,250,250,.5)',borderRadius:15}}>
+                                <Image source={require('../img/back.png')}/>
+                            </View>
                         </TouchableOpacity>
                     </View>
 
@@ -246,7 +248,7 @@ const styles = StyleSheet.create({
     },
     foreBack:{
         position:'absolute',
-        top:20,
+        top:40,
         left:10,
     },
 });

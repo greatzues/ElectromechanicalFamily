@@ -166,7 +166,7 @@ export default class Net  {
         ImagePicker.openPicker({
             multiple: true,
             maxFiles: 9 //ios only
-        }).then(callback).catch(e => Toast.show('肯定是相册在偷懒！'));
+        }).then(callback).catch(e => Toast.show(''));
     }
 
     pickCamera(callback){
@@ -175,9 +175,7 @@ export default class Net  {
             height: 400,
             cropping: true
         }).then(callback).catch(e => {
-            Toast.show('我就纳闷了，怎么就出错了！');
-            console.log('----------------------->>>>>>>>>>>>>>>>>>>>>>')
-            console.log(e);
+            Toast.show('');
         });
     }
 

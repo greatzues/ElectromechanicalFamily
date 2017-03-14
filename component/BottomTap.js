@@ -192,8 +192,6 @@ export default class BottomTap extends Component {
 
     quitLogin(){
         storage.remove({key: 'loginState'});
-        // new Net().toOther(this.props,'Login',Login);
-        // new Net().toOther(this.props,'Login',Login);
         // this.refs.drawer.closeDrawer();
 
         const { navigator } = this.props;
@@ -207,11 +205,13 @@ export default class BottomTap extends Component {
                     this.setState({refresh:true});
                     this.reRenderData(true);
                 }).catch(error => {
-                    Toast.show("网络出现错误");
+                    Toast.show("网络出现错误，请检查网络");
                 });
             }
         }).catch(e => {
             this.setState({refresh:false});
+            const { navigator } = this.props;
+            navigator.resetTo({name:'Login',component:Login});
         })
     }
 

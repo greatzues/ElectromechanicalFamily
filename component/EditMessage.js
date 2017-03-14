@@ -8,10 +8,9 @@ import NormalToolbar from './NormalToolbar';
 import Net from '../Tool';
 import PicDetail from './PicDetail';
 import {Button} from 'react-native-elements'
-import ImagePicker from 'react-native-image-crop-picker';
+import Toast from 'react-native-root-toast';
 
 
-var window = Dimensions.get('window'); //这个参数可以全局使用
 const picKey = [
     'messagePic1',
     'messagePic2',
@@ -122,12 +121,12 @@ export default class EditMessage extends Component{
     fileUpload(){
         if(Platform.OS === 'android'){
             if(this.state.message === ""){
-                ToastAndroid.show("亲，分享点文字吧！",ToastAndroid.SHORT);
+                Toast.show("限制9张长按图片进行删除！");
                 return null;
             }
 
             if(this.state.images.length >9){
-                ToastAndroid.show("限制9张长按图片进行删除！",ToastAndroid.SHORT);
+                Toast.show("限制9张长按图片进行删除！");
                 return null;
             }
         }
@@ -139,6 +138,7 @@ export default class EditMessage extends Component{
             this.props.update(true);
         }
         navigator.pop();
+        Toast.show("分享成功");
     }
 
     /**
@@ -213,6 +213,8 @@ const styles = StyleSheet.create({
     },
     body:{
         textAlignVertical: 'top', //这段代码可以让TextInput在多行的情况下，text位于最高，而不是居中。
+        height: 200,
+        fontSize: 18,
     },
     shareButton:{
         width: device.width - 10,
@@ -223,7 +225,7 @@ const styles = StyleSheet.create({
         alignSelf:'flex-end'
     },
     imageItem:{
-        width:window.width*0.3,
+        width:device.width*0.3,
         height:80,
     },
     itemContainer:{
@@ -231,8 +233,8 @@ const styles = StyleSheet.create({
     },
     textInput:{
         flex:1,
-        height:window.height*0.2,
-        width:window.width,
+        height:device.height*0.2,
+        width:device.width,
         justifyContent: 'flex-start',
         alignItems: 'flex-start',
         backgroundColor: 'red',

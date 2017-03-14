@@ -26,10 +26,10 @@ export default class Users extends Component {
         return (
             <View style={styles.container}>
                 <Image
-                    source={this.props.ifLogin === false?require('./../img/UserBackground.jpg'): {uri:BASEURL+AVATAR+this.props.avatar}}
+                    source={this.props.avatar === null?require('./../img/UserBackground.jpg'): {uri:BASEURL+AVATAR+this.props.avatar}}
                     style={styles.userBackground}>
                         <View>
-                            { this.props.ifLogin === false ?
+                            { this.props.avatar === null ?
                                 <Image source={require('./../img/UserDafault.png')} style={styles.avatar}></Image> :
                                 <TouchableOpacity onPress={this.toPicDetail.bind(this,this.props.avatar)}>
                                     <Image style={styles.avatar} source={{uri:BASEURL+AVATAR+this.props.avatar}} />
@@ -38,7 +38,7 @@ export default class Users extends Component {
                         </View>
                         <Text style={{color:'white',backgroundColor: 'transparent'}}>你好，{this.props.username===null?this.state.myResponse:this.props.username}</Text>
                         <View style={{marginTop:5,marginBottom:5,marginLeft:15,marginRight:15 }}>
-                            <Text style={{color:'white'}}>个性签名：{this.props.ifLogin === false?'请登录':this.props.user.others === null?'我就是我，不一样的烟火':this.props.user.others}</Text>
+                            <Text style={{color:'white',backgroundColor: 'transparent'}}>个性签名：{this.props.ifLogin === false?'请登录':this.props.user.others === null?'我就是我，不一样的烟火':this.props.user.others}</Text>
                         </View>
                     <TouchableOpacity style={styles.set} onPress={this.props.toEdit}>
                         <Icon name='settings' color="white"/>

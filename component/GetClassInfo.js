@@ -34,7 +34,7 @@ export default class GetClassInfo extends Component {
     }
 
     render(){
-        return this.props.ifLogin === false? this.isNotLogin():this.isLogin();
+        return this.isLogin();
     }
 
     isLogin(){
@@ -57,23 +57,6 @@ export default class GetClassInfo extends Component {
         );
     }
 
-    isNotLogin(){
-        return(
-            <View style={styles.container}>
-                <Tile
-                    imageSrc={{uri:'http://pic1.win4000.com/mobile/3/53be3adb9585d.jpg'}}
-                    title="欢迎来到我的班级!"
-                    featured
-                    caption="请登录之后查看班级信息"
-                    imageContainerStyle={{resizeMode:'cover'}}
-                    height={device.height-70}
-                    activeOpacity={0.5}
-                    width={device.width}
-                    onPress={() => Toast.show('请先登录')}
-                />
-            </View>
-        );
-    }
 
     _renderRow(rowData,sectionID,rowID){
         return (
