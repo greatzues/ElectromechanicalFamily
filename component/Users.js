@@ -99,8 +99,8 @@ const styles = StyleSheet.create({
     },
     set:{
         position: "absolute",
-        top: 5,
-        right: 5
+        top: 15,
+        right: 10
     },
     bottomAvatar:{
         borderRadius:10,
