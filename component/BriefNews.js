@@ -61,9 +61,7 @@ export default class BriefNews extends Component {
                             汇集机电学院最新短资讯
                         </Text>
                         <TouchableOpacity style={styles.foreBack} onPress={this.back.bind(this)}>
-                            <View style={{backgroundColor:'rgba(250,250,250,.5)',borderRadius:15}}>
-                                <Image source={require('../img/back.png')}/>
-                            </View>
+                            <Image source={require('../img/back.png')}/>
                         </TouchableOpacity>
                     </View>
 
