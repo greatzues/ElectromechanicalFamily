@@ -14,7 +14,7 @@ import BriefNewsDetail from './NotificationsDetail';
 const NEWS = '/alunmniAssocation';
 const DETAIL = '/alunmniAssocation/';
 const PARALLAX_HEADER_HEIGHT = 200;
-const STICKY_HEADER_HEIGHT = 38;
+const STICKY_HEADER_HEIGHT = 55;
 const IS_LOAD_MORE = 15;
 const LENGTH = 30;
 const TIME = 400;
@@ -247,7 +247,7 @@ const styles = StyleSheet.create({
     },
     foreBack:{
         position:'absolute',
-        top:20,
+        top:40,
         left:10,
     },
 });
