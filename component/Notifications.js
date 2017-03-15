@@ -170,6 +170,7 @@ export default class Notifications extends Component {
         let timer = setTimeout(() => {
             clearTimeout(timer);
             this.fetchData(this._page).then(r => {
+                console.log(r);
                 this.setState({
                     notification : r.notificationList,
                     isLoadMore:r.notificationList.length
@@ -182,11 +183,10 @@ export default class Notifications extends Component {
     _renderRow(rowData,sectionID,rowID){
         return (
             <ListItem
-                roundAvatar
                 key={sectionID}
                 title={rowData.title}
                 subtitle={rowData.summary}
-                avatar={rowData.cover===null?require('../img/news.png'):{uri:BASEURL+'/upload/'+rowData.cover}}
+                avatar={rowData.cover===null?require('../img/news.png'):{uri:BASEURL+'/u/'+rowData.cover}}
                 onPress={() => this.Press(rowData.id)}
             />
         );

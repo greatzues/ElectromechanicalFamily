@@ -115,7 +115,7 @@ export default class NewsItem extends Component {
                 <TouchableOpacity onPress={() => this.Press(rowData.id)} style={styles.itemContainer}>
                     <Image
                         style={styles.imageItem}
-                        source={rowData.cover === null? require('../img/UserDafault.png'):{uri:BASEURL+'/upload/'+rowData.cover}}
+                        source={rowData.cover === null? require('../img/UserDafault.png'):{uri:BASEURL+'/u/'+rowData.cover}}
                         resizeMode='cover'/>
                     <Text style={styles.itemText}>{rowData.title}</Text>
                 </TouchableOpacity>

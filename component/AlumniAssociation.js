@@ -185,11 +185,10 @@ export default class AlumniAssociation extends Component {
     _renderRow(rowData,sectionID,rowID){
         return (
             <ListItem
-                roundAvatar
                 key={sectionID}
                 title={rowData.title}
                 subtitle={rowData.summary}
-                avatar={require('../img/news.png')}
+                avatar={rowData.cover===null?require('../img/news.png'):{uri:BASEURL+'/u/'+rowData.cover}}
                 onPress={() => this.Press(rowData.id)}
             />
         );
