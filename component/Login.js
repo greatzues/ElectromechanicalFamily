@@ -120,7 +120,7 @@ export default class Login extends Component{
 
                     this.setState({editable: true, login:false, disabled:false,});
                 },1000);
-                Toast.show("账号或密码错误");
+                Toast.show(data.status);
             }
         }).catch(error => {
             Toast.show("网络出现错误");
