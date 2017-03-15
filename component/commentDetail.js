@@ -282,6 +282,7 @@ const styles = StyleSheet.create({
         alignSelf:'flex-start',
         alignItems:'center',
         width:device.width,
+        margin:10,
     },
     cardContent: {
         marginBottom:3,
@@ -327,8 +328,11 @@ const styles = StyleSheet.create({
         fontSize:15
     },
     commentTextInput:{
-        width:device.width-50,
-        height:50,
+        width:device.width-70,
+        height:30,
+        backgroundColor:'#eff0f3',
+        textAlignVertical: 'center',
+        marginRight:10,
     },
     imageItem:{
         width:device.width*0.3,
